@@ -106,10 +106,10 @@ const Header = () => {
                                             <span className="text-gray-800">{user.email}</span>
                                         </div>
                                         <NavLink to="/profile" className="block px-1 pt-1">
-                                            <div className="hover:bg-gray-100 text-gray-700 px-2 py-1 rounded-md transition">Profile</div>
+                                            <div onClick={() => setDropdownOpen(false)} className="hover:bg-gray-100 text-gray-700 px-2 py-1 rounded-md transition">Profile</div>
                                         </NavLink>
                                         <NavLink to="/wishlist" className="block px-1">
-                                            <div className="hover:bg-gray-100 text-gray-700 px-2 py-1 rounded-md transition">Wishlist</div>
+                                            <div onClick={() => setDropdownOpen(false)} className="hover:bg-gray-100 text-gray-700 px-2 py-1 rounded-md transition">Wishlist</div>
                                         </NavLink>
                                         <button onClick={handleLogout} className="block px-1 pb-1 w-full text-left cursor-pointer">
                                             <div className="hover:bg-gray-100 text-gray-700 px-2 py-1 rounded-md transition">Log Out</div>

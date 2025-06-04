@@ -12,11 +12,13 @@ import Wishlist from "../Pages/Wishlist";
 import Profile from "../Pages/Profile";
 import UpdateProfile from "../Pages/UpdateProfile";
 import { ProtectedRoute } from "../Provider/ProtectedRoute";
+import ErrorPage from "../Pages/ErrorPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Root></Root>,
+    errorElement: <ErrorPage></ErrorPage>,
     children: [
       { index: true, path: '/', element: <Home /> },
       { path: '/login', element: <Login /> },
