@@ -9,6 +9,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../Firebase/Firebase.init';
 import { toast } from 'sonner';
+import axios from 'axios';
 
 const Login = ({ onRegister }) => {
     const [email, setEmail] = useState('');
@@ -51,17 +52,9 @@ const Login = ({ onRegister }) => {
             lastSignInTime: user.metadata?.lastSignInTime || '',
         };
 
-        fetch('http://localhost:3000/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-        })
+        axios.post('http://localhost:3000/users', userData)
             .then((response) => {
-                if (!response.ok) {
-                    console.error('Failed to save user data to backend');
-                }
+                console.log('User data saved successfully:', response.data);
             })
             .catch((error) => {
                 console.error('Error sending user data to backend:', error);

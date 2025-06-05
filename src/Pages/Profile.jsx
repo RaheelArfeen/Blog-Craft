@@ -30,7 +30,7 @@ const Profile = () => {
                 });
             }
             setLoading(false);
-        }, 1500);
+        }, 100);
         return () => clearTimeout(timeout);
     }, [user]);
 
@@ -82,7 +82,7 @@ const Profile = () => {
                     {loading ? (
                         <Skeleton width={140} height={40} borderRadius={8} />
                     ) : (
-                        <button onClick={() => navigate('/edit-profile')}  className="mt-6 md:mt-0 bg-white text-[#3A63D8] px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition-all flex items-center gap-2 font-medium">
+                        <button onClick={() => navigate('/edit-profile')} className="mt-6 md:mt-0 bg-white text-[#3A63D8] px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition-all flex items-center gap-2 font-medium">
                             <PenSquare size={18} /> Edit Profile
                         </button>
                     )}

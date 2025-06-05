@@ -13,6 +13,7 @@ import Profile from "../Pages/Profile";
 import UpdateProfile from "../Pages/UpdateProfile";
 import { ProtectedRoute } from "../Provider/ProtectedRoute";
 import ErrorPage from "../Pages/ErrorPage";
+import BlogDetail from "../Pages/BlogDetail";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       { path: '/login', element: <Login /> },
       { path: '/register', element: <Register /> },
       { path: '/blogs', element: <AllBlogs /> },
+      { path: '/blogs/:id', element: <BlogDetail /> },
       { path: '/add-blog', element: <ProtectedRoute><AddBlogs /></ProtectedRoute> },
       { path: '/featured', element: <Featured /> },
       { path: '/wishlist', element: <ProtectedRoute><Wishlist /></ProtectedRoute> },
