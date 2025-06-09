@@ -23,7 +23,6 @@ const Profile = () => {
     useEffect(() => {
         const timeout = setTimeout(() => {
             if (user) {
-                // Ensure full user metadata is fetched
                 const auth = getAuth();
                 auth.currentUser?.reload().then(() => {
                     setUserMeta(auth.currentUser.metadata);

@@ -1,10 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import {
   Save, Upload, X, Plus, Eye, Edit2,
   Clock, Calendar, User, ChevronDown, ChevronUp
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { AuthContext } from '../Provider/AuthProvider';
+import { v4 as uuidv4 } from 'uuid'; // 👈 Added
 
 function AddBlogs() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -12,6 +14,7 @@ function AddBlogs() {
   const [tagInput, setTagInput] = useState('');
   const [categoryOpen, setCategoryOpen] = useState(false);
   const categoryRef = useRef(null);
+  const { user } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -19,6 +22,7 @@ function AddBlogs() {
     tags: '',
     shortDescription: '',
     content: '',
+    email: user.email,
     image: null
   });
 
@@ -97,7 +101,7 @@ function AddBlogs() {
     return true;
   };
 
-  const fileToBase64 = (file) => {
+  const fileToBase = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -116,7 +120,7 @@ function AddBlogs() {
     try {
       let imageBase64 = '';
       if (formData.image) {
-        imageBase64 = await fileToBase64(formData.image);
+        imageBase64 = await fileToBase(formData.image);
       }
 
       const tagsArray = formData.tags
@@ -131,9 +135,10 @@ function AddBlogs() {
         ...formData,
         tags: tagsArray,
         image: imageBase64,
-        author: 'Current User',
+        author: user.displayName,
         date: new Date().toISOString(),
-        readTime
+        readTime,
+        blogId: uuidv4() // 👈 Added here
       };
 
       await axios.post('http://localhost:3000/blogs', blogData);
@@ -145,6 +150,7 @@ function AddBlogs() {
         tags: '',
         shortDescription: '',
         content: '',
+        email: user.email,
         image: null
       });
     } catch (error) {
