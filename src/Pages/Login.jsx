@@ -52,13 +52,9 @@ const Login = ({ onRegister }) => {
             lastSignInTime: user.metadata?.lastSignInTime || '',
         };
 
-        axios.post('http://localhost:3000/users', userData)
-            .then((response) => {
-                console.log('User data saved successfully:', response.data);
-            })
-            .catch((error) => {
-                console.error('Error sending user data to backend:', error);
-            });
+        axios.post('https://blog-craft-server.vercel.app/users', userData)
+            .then(() => {})
+            .catch(() => {});
     };
 
     const handleGoogleLogin = () => {
@@ -68,7 +64,6 @@ const Login = ({ onRegister }) => {
             .then((result) => {
                 const user = result.user;
                 sendUserToBackend(user);
-                console.log(user);
 
                 toast.success('Successfully logged in with Google');
                 navigate(from, { replace: true });
@@ -111,7 +106,7 @@ const Login = ({ onRegister }) => {
                     email,
                     lastSignInTime: user.metadata?.lastSignInTime,
                 };
-                fetch('http://localhost:3000', {
+                fetch('https://blog-craft-server.vercel.app', {
                     method: 'PATCH',
                     headers: {
                         'content-type': 'application/json'

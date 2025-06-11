@@ -14,6 +14,7 @@ import UpdateProfile from "../Pages/UpdateProfile";
 import { ProtectedRoute } from "../Provider/ProtectedRoute";
 import ErrorPage from "../Pages/ErrorPage";
 import BlogDetail from "../Pages/BlogDetail";
+import EditBlogs from "../Pages/EditBlogs";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
       { path: '/register', element: <Register /> },
       { path: '/blogs', element: <AllBlogs /> },
       { path: '/blogs/:id', element: <ProtectedRoute><BlogDetail /></ProtectedRoute> },
+      { path: '/edit-blogs/:id', element: <ProtectedRoute><EditBlogs /></ProtectedRoute> },
       { path: '/add-blog', element: <ProtectedRoute><AddBlogs /></ProtectedRoute> },
       { path: '/featured', element: <Featured /> },
       { path: '/wishlist', element: <ProtectedRoute><Wishlist /></ProtectedRoute> },

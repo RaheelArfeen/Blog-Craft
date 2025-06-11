@@ -26,10 +26,7 @@ function AddBlogs() {
     image: null
   });
 
-  const categories = [
-    'Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing',
-    'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'
-  ];
+  const categories = ['Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -127,18 +124,22 @@ function AddBlogs() {
 
       const readTime = `${Math.floor(Math.random() * 30) + 1} min read`;
 
+      const userName = user?.displayName || "Anonymous";
+      const userInitial = user?.displayName?.charAt(0).toUpperCase() || "A";
+      const userImage = user?.photoURL || userInitial;
+
       const blogData = {
         ...formData,
         tags: tagsArray,
         image: imageBase64,
-        author: user.displayName,
-        userImage: user.photoURL,
+        author: userName,
+        userImage: userImage,
         date: new Date().toISOString(),
         readTime,
         blogId: uuidv4()
       };
 
-      await axios.post('http://localhost:3000/blogs', blogData);
+      await axios.post('https://blog-craft-server.vercel.app/blogs', blogData);
 
       toast.success('Blog published successfully!');
       setFormData({

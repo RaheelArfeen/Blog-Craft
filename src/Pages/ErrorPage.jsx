@@ -23,7 +23,7 @@ const ErrorPage = () => {
                         Oops! The page you're looking for seems to have wandered off. Maybe it's gone to find some sunlight?
                     </p>
                     <Link to='/'>
-                        <button className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 rounded-md transition-colors cursor-pointer">
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-md transition-colors cursor-pointer">
                             Return to Home
                         </button>
                     </Link>

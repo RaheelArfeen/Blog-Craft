@@ -28,7 +28,7 @@ const AllBlogs = () => {
 
     // Fetch blogs
     useEffect(() => {
-        axios.get('http://localhost:3000/blogs')
+        axios.get('https://blog-craft-server.vercel.app/blogs')
             .then(res => {
                 setBlogs(res.data);
                 setLoading(false);
@@ -43,7 +43,7 @@ const AllBlogs = () => {
             return;
         }
 
-        axios.get('http://localhost:3000/wishlist', {
+        axios.get('https://blog-craft-server.vercel.app/wishlist', {
             params: { email: user.email }
         })
             .then(res => {
@@ -88,7 +88,6 @@ const AllBlogs = () => {
     const handleWishlist = async (blog) => {
         if (!user) return toast.error("You must log in to add to wishlist");
         if (isWishlisted(blog.email)) return toast.info("Already wishlisted");
-        console.log(isWishlisted);
 
         const payload = {
             blogId: blog._id,
@@ -106,12 +105,12 @@ const AllBlogs = () => {
 
         try {
             setWishlistLoadingIds(prev => new Set(prev).add(blog._id));
-            await axios.post('http://localhost:3000/wishlist', payload);
+            await axios.post('https://blog-craft-server.vercel.app/wishlist', payload);
             setWishlistIds(prev => new Set(prev).add(String(blog._id)));
-            toast.success("Added to wishlist!");
+            toast.success("Wishlistted Successfully");
         } catch (err) {
             if (err.response?.status === 409) {
-                toast.info("Already in wishlist (server)");
+                toast.info("Already wishlisted");
             } else {
                 toast.error("Failed to add to wishlist");
             }
@@ -205,9 +204,9 @@ const AllBlogs = () => {
                             <div key={blog._id} className="bg-white rounded-xl shadow-lg hover:-translate-y-1 transition">
                                 <div className="relative">
                                     <img
-                                        src={blog.image || 'https://via.placeholder.com/400x200'}
+                                        src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
                                         alt={blog.title}
-                                        className="w-full h-48 object-cover"
+                                        className="w-full h-72 object-cover"
                                     />
                                     <span className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
                                         {blog.category}
@@ -258,7 +257,7 @@ const AllBlogs = () => {
                         </div>
                         <h2 className="text-2xl font-bold mb-4">{blogs.length === 0 ? 'No blogs yet' : 'No articles found'}</h2>
                         <p className="mb-8 text-gray-600">{blogs.length === 0 ? 'Be the first to post!' : 'Adjust your search or category.'}</p>
-                        <button onClick={() => navigate('/createblog')} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+                        <button onClick={() => navigate('/add-blog')} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
                             Write a Blog
                         </button>
                     </div>

@@ -31,7 +31,7 @@ const Wishlists = () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await axios.get(`http://localhost:3000/wishlist/by-email?email=${user.email}`, {
+            const res = await axios.get(`https://blog-craft-server.vercel.app/wishlist?email=${user.email}`, {
                 withCredentials: 'include'
             });
             setWishlist(res.data);
@@ -56,7 +56,7 @@ const Wishlists = () => {
             confirmButtonText: "Yes, delete it!"
         }).then(result => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:3000/wishlist/${id}`, {
+                fetch(`https://blog-craft-server.vercel.app/wishlist/${id}`, {
                     method: 'DELETE',
                 })
                     .then(response => {
@@ -97,7 +97,7 @@ const Wishlists = () => {
             cell: ({ row }) => (
                 <div className="h-20 w-24 overflow-hidden rounded-md shadow-sm bg-gray-100">
                     <img
-                        src={row.original.image}
+                        src={row.original.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
                         alt={row.original.title}
                         className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
                         onError={(e) => {

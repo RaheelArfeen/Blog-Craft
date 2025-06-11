@@ -42,7 +42,7 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
             lastSignInTime: user.metadata?.lastSignInTime || '',
         };
 
-        axios.post('http://localhost:3000/users', userData)
+        axios.post('https://blog-craft-server.vercel.app/users', userData)
             .then((response) => {
                 console.log('User data saved successfully:', response.data);
             })
