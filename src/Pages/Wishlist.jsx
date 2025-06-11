@@ -35,7 +35,6 @@ const Wishlists = () => {
                 withCredentials: 'include'
             });
             setWishlist(res.data);
-            console.log(res.data);
         } catch (err) {
             console.error('Failed to fetch wishlist', err);
             setError('Unable to load your wishlist. Please try again later.');

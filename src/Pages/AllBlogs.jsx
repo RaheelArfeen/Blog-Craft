@@ -36,24 +36,22 @@ const AllBlogs = () => {
             .catch(() => setLoading(false));
     }, []);
 
-    // Fetch wishlist for current user
+    // Fetch wishlist
     useEffect(() => {
         if (!user?.email) {
             setWishlistIds(new Set());
             return;
         }
 
-        axios.get(`http://localhost:3000/wishlist/by-email?email=raheelarfeen@gmail.com`, {
+        axios.get('http://localhost:3000/wishlist', {
             params: { email: user.email }
         })
             .then(res => {
                 const ids = new Set(res.data.map(item => String(item.blogId)));
                 setWishlistIds(ids);
-                console.log(res.data);
             })
             .catch(() => setWishlistIds(new Set()));
     }, [user, loading]);
-
 
     // Debounce search
     useEffect(() => {
@@ -63,7 +61,7 @@ const AllBlogs = () => {
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
-    // Close category dropdown when clicked outside
+    // Close dropdown on outside click
     useEffect(() => {
         const handleClick = (e) => {
             if (categoryRef.current && !categoryRef.current.contains(e.target)) {
@@ -85,15 +83,15 @@ const AllBlogs = () => {
         return searchMatch && categoryMatch;
     });
 
-    const isWishlisted = (id) => wishlistIds.has(String(id));
+    const isWishlisted = (blogId) => wishlistIds.has(String(blogId));
 
     const handleWishlist = async (blog) => {
         if (!user) return toast.error("You must log in to add to wishlist");
-        if (isWishlisted(blog._id)) return toast.info("Already wishlisted");
+        if (isWishlisted(blog.email)) return toast.info("Already wishlisted");
+        console.log(isWishlisted);
 
         const payload = {
-            _id: blog._id,
-            blogId: blog._id, // ensure blogId is same as _id
+            blogId: blog._id,
             title: blog.title,
             category: blog.category,
             tags: blog.tags,
@@ -108,7 +106,7 @@ const AllBlogs = () => {
 
         try {
             setWishlistLoadingIds(prev => new Set(prev).add(blog._id));
-            await axios.post(`http://localhost:3000/wishlist`, payload);
+            await axios.post('http://localhost:3000/wishlist', payload);
             setWishlistIds(prev => new Set(prev).add(String(blog._id)));
             toast.success("Added to wishlist!");
         } catch (err) {
@@ -127,6 +125,7 @@ const AllBlogs = () => {
         }
     };
 
+
     const handleDetails = (id) => navigate(`/blogs/${id}`);
 
     return (
@@ -143,9 +142,9 @@ const AllBlogs = () => {
                 {/* Filters */}
                 <div className="flex flex-col md:flex-row gap-4 mb-8 relative" ref={categoryRef}>
                     <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 h-5 w-5" />
                         <input
-                            className="w-full pl-10 pr-4 py-3 border rounded-lg"
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-gray-600 placeholder-gray-600"
                             placeholder="Search title, author, content..."
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
@@ -154,13 +153,13 @@ const AllBlogs = () => {
                     <div className="relative">
                         <button
                             onClick={() => setCategoryOpen(open => !open)}
-                            className="flex items-center justify-between px-4 py-3 border rounded-lg w-48"
+                            className="flex items-center justify-between px-4 py-3 border text-gray-600 border-gray-300 rounded-lg w-48"
                         >
                             <span>{selectedCategory}</span>
                             <ChevronDown className="h-4 w-4 ml-2" />
                         </button>
                         {categoryOpen && (
-                            <ul className="absolute z-10 w-48 bg-white border rounded-md mt-1 shadow-md max-h-60 overflow-auto">
+                            <ul className="absolute z-10 w-48 bg-white border border-gray-300 text-gray-600 rounded-md mt-1 shadow-md">
                                 {categories.map(cat => (
                                     <li
                                         key={cat}
@@ -270,4 +269,3 @@ const AllBlogs = () => {
 };
 
 export default AllBlogs;
-
