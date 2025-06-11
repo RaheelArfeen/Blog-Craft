@@ -7,17 +7,7 @@ import {
     getPaginationRowModel,
 } from '@tanstack/react-table';
 import { toast } from 'sonner';
-import {
-    RefreshCcw,
-    BookmarkX,
-    Clock,
-    Tag,
-    User,
-    Trash2,
-    Heart,
-    LoaderCircle,
-    Eye,
-} from 'lucide-react';
+import { RefreshCcw, BookmarkX, Clock, Tag, User, Trash2, Heart, LoaderCircle, Eye, } from 'lucide-react';
 import { format } from 'date-fns';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -28,22 +18,24 @@ import Swal from 'sweetalert2';
 const Wishlists = () => {
     const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [deletingId, setDeletingId] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false)
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
-        window.scrollTo(0, 0)
-    }, [])
+        window.scrollTo(0, 0);
+    }, []);
 
     const fetchWishlist = async () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await axios.get('http://localhost:3000/wishlist');
-            const filteredBlogs = res.data.filter((blog) => blog.userEmail === user.email);
-            setWishlist(filteredBlogs);
+            const res = await axios.get(`http://localhost:3000/wishlist/by-email?email=${user.email}`, {
+                withCredentials: 'include'
+            });
+            setWishlist(res.data);
+            console.log(res.data);
         } catch (err) {
             console.error('Failed to fetch wishlist', err);
             setError('Unable to load your wishlist. Please try again later.');
@@ -53,11 +45,8 @@ const Wishlists = () => {
         }
     };
 
-    useEffect(() => {
-        fetchWishlist();
-    }, []);
-
     const handleDelete = (id) => {
+        setDeleteLoading(true)
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -68,7 +57,6 @@ const Wishlists = () => {
             confirmButtonText: "Yes, delete it!"
         }).then(result => {
             if (result.isConfirmed) {
-                setDeletingId(id);
                 fetch(`http://localhost:3000/wishlist/${id}`, {
                     method: 'DELETE',
                 })
@@ -77,24 +65,31 @@ const Wishlists = () => {
                         if (contentType && contentType.includes("application/json")) {
                             return response.json().then(data => ({ response, data }));
                         }
+                        setDeleteLoading(false)
                         return { response, data: null };
                     })
                     .then(({ response, data }) => {
                         if (!response.ok) {
                             throw new Error(data?.message || `Failed with status ${response.status}`);
                         }
-                        setWishlist(prev => prev.filter(item => item._id !== id));
-                        setDeletingId(null);
-                        Swal.fire("Deleted!", "Your wishlist has been deleted.", "success");
+                        setDeleteLoading(false)
+                        setWishlist(prev => prev.filter(plant => plant._id !== id));
+                        Swal.fire("Deleted!", "Your plant has been deleted.", "success");
                     })
                     .catch(error => {
-                        console.error('Error deleting wishlist:', error);
-                        setDeletingId(null);
+                        console.error('Error deleting plant:', error);
+                        setDeleteLoading(false)
                         Swal.fire("Error!", error.message || "Something went wrong while deleting.", "error");
                     });
             }
         });
     };
+
+    useEffect(() => {
+        if (user?.email) {
+            fetchWishlist();
+        }
+    }, [user]);
 
     const columns = useMemo(() => [
         {
@@ -119,7 +114,7 @@ const Wishlists = () => {
             accessorKey: 'title',
             cell: ({ row }) => (
                 <button
-                    onClick={() => navigate(`/blogs/${row.original._id}`)}
+                    onClick={() => navigate(`/blogs/${row.original.blogId}`)}
                     className="text-blue-600 font-medium hover:text-blue-800 transition-colors duration-200 hover:underline"
                 >
                     {row.original.title}
@@ -175,7 +170,7 @@ const Wishlists = () => {
             id: 'details',
             cell: ({ row }) => (
                 <button
-                    onClick={() => navigate(`/blogs/${row.original._id}`)}
+                    onClick={() => navigate(`/blogs/${row.original.blogId}`)}
                     className="group flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-500 transition-colors"
                     aria-label="View details"
                 >
@@ -188,23 +183,18 @@ const Wishlists = () => {
         },
         {
             header: '',
-            id: 'actions',
+            id: 'delete',
             cell: ({ row }) => (
                 <button
                     onClick={() => handleDelete(row.original._id)}
-                    disabled={deletingId === row.original._id}
-                    className="group flex items-center justify-center w-8 h-8 rounded-full bg-red-100 hover:bg-red-500 transition-colors"
-                    aria-label="Delete"
+                    className="group flex items-center justify-center w-8 h-8 rounded-full bg-red-100 hover:bg-red-500 transition-colors outline-none border-none"
+                    aria-label="Delete from wishlist"
                 >
-                    {deletingId === row.original._id ? (
-                        <LoaderCircle size={16} className="text-red-500 animate-spin group-hover:text-white" />
-                    ) : (
-                        <Trash2 size={16} className="text-red-500 group-hover:text-white" />
-                    )}
+                    {deleteLoading ? <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" /> : <Trash2 size={16} className="text-red-500 group-hover:text-white transition-colors duration-200" />}
                 </button>
             ),
         },
-    ], [navigate, deletingId]);
+    ], [navigate]);
 
     const table = useReactTable({
         data: wishlist,
@@ -249,7 +239,7 @@ const Wishlists = () => {
             {loading ? (
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200 bg-gradient-to-r from-cyan-500 to-blue-600">
+                        <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gradient-to-r from-cyan-500 to-blue-600 w-full">
                                 <tr>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Image</th>
@@ -258,12 +248,14 @@ const Wishlists = () => {
                                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">Category</th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider hidden md:table-cell">Date</th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider hidden lg:table-cell">Read Time</th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"></th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"></th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {Array.from({ length: wishlist.length || 5 }).map((_, i) => (
+                                {Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i} className="hover:bg-blue-50 transition-colors duration-200">
-                                        <td className="px-4 py-4"><Skeleton height={80} width={100} /></td>
+                                        <td className="px-4 py-4"><Skeleton height={80} width={96} /></td>
                                         <td className="px-4 py-4"><Skeleton width={120} height={20} /></td>
                                         <td className="px-4 py-4"><Skeleton width={100} height={16} /></td>
                                         <td className="px-4 py-4 hidden md:table-cell"><Skeleton width={80} height={16} /></td>
@@ -282,8 +274,9 @@ const Wishlists = () => {
                     <BookmarkX size={60} className="mb-4" />
                     <h2 className="text-2xl font-semibold mb-2">No Blogs Found</h2>
                     <p className="max-w-md text-center text-gray-500">
-                        You don’t have any blogs saved in your wishlist yet. Start exploring and save your favorites for later!
+                        You don't have any blogs saved in your wishlist yet. Start exploring and save your favorites for later!
                     </p>
+                    <button onClick={() => navigate('/blogs')} className='mt-2 py-2 px-4 bg-red-400 text-white rounded-lg cursor-pointer'>Add your first blog to your wishlist</button>
                 </div>
             ) : (
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -307,7 +300,7 @@ const Wishlists = () => {
                                 {table.getRowModel().rows.map(row => (
                                     <tr key={row.id} className="hover:bg-blue-50 transition-colors">
                                         {row.getVisibleCells().map(cell => (
-                                            <td key={cell.id} className="px-4 py-4">
+                                            <td key={cell.id} className="px-4 py-4 whitespace-nowrap">
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </td>
                                         ))}

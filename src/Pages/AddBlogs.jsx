@@ -123,22 +123,19 @@ function AddBlogs() {
         imageBase64 = await fileToBase(formData.image);
       }
 
-      const tagsArray = formData.tags
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0);
+      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
 
-      const wordCount = formData.content.split(' ').length;
-      const readTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+      const readTime = `${Math.floor(Math.random() * 30) + 1} min read`;
 
       const blogData = {
         ...formData,
         tags: tagsArray,
         image: imageBase64,
         author: user.displayName,
+        userImage: user.photoURL,
         date: new Date().toISOString(),
         readTime,
-        blogId: uuidv4() // 👈 Added here
+        blogId: uuidv4()
       };
 
       await axios.post('http://localhost:3000/blogs', blogData);
@@ -151,6 +148,7 @@ function AddBlogs() {
         shortDescription: '',
         content: '',
         email: user.email,
+        userImage: user.photoURL,
         image: null
       });
     } catch (error) {
@@ -332,8 +330,7 @@ function AddBlogs() {
   );
 
   const renderPreview = () => {
-    const wordCount = formData.content.split(' ').filter(Boolean).length;
-    const readTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+    const readTime = `${Math.floor(Math.random() * 30) + 1} min read`;
     const formattedDate = new Date().toLocaleDateString('en-US', {
       year: 'numeric', month: 'long', day: 'numeric',
     });

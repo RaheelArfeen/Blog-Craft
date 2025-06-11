@@ -25,7 +25,7 @@ export const router = createBrowserRouter([
       { path: '/login', element: <Login /> },
       { path: '/register', element: <Register /> },
       { path: '/blogs', element: <AllBlogs /> },
-      { path: '/blogs/:id', element: <BlogDetail /> },
+      { path: '/blogs/:id', element: <ProtectedRoute><BlogDetail /></ProtectedRoute> },
       { path: '/add-blog', element: <ProtectedRoute><AddBlogs /></ProtectedRoute> },
       { path: '/featured', element: <Featured /> },
       { path: '/wishlist', element: <ProtectedRoute><Wishlist /></ProtectedRoute> },

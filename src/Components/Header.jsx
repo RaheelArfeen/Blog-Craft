@@ -18,24 +18,35 @@ const Header = () => {
             toast.error('No user to logout.');
             return;
         }
+
         try {
+            // 1. Optional: Remove JWT cookie from backend
+            await fetch('http://localhost:3000/logout', {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            // 2. Optional: Also delete user record if needed (e.g., from a user collection)
             const response = await fetch(`http://localhost:3000/users/${user.email}`, {
                 method: 'DELETE',
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                toast.error(`Failed to logout user: ${errorData.message || 'Unknown error'}`);
+                toast.error(`Failed to delete user: ${errorData.message || 'Unknown error'}`);
                 return;
             }
 
+            // 3. Firebase sign-out and cleanup
             await logOut();
+
             toast.success('Logged out successfully.');
         } catch (error) {
             toast.error('Failed to logout. Please try again.');
             console.error('Logout error:', error);
         }
     };
+
 
     useEffect(() => {
         const handleRouteChange = () => {

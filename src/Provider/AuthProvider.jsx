@@ -8,6 +8,7 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
+import axios from "axios";
 
 export const AuthContext = createContext();
 const auth = getAuth(app);
@@ -50,9 +51,18 @@ const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         const { displayName, email, photoURL, uid } = currentUser;
-        const userData = { displayName, email, photoURL, uid };
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
+        const userDatas = { displayName, email, photoURL, uid };
+        setUser(userDatas);
+        if (currentUser?.email) {
+          const userData = { email: currentUser.email }
+          axios.post('http://localhost:3000/jwt', userData, {
+            withCredentials: true
+          })
+          .then(res => {
+            console.log(res.data);
+          }).catch(error => console.log(error))
+        }
+        localStorage.setItem("user", JSON.stringify(userDatas));
       } else {
         setUser(null);
         localStorage.removeItem("user");

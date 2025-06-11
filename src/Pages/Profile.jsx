@@ -1,35 +1,60 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import {
-    CalendarDays,
-    Mail,
-    User,
-    PenSquare,
-    BookOpen,
-    Heart
-} from 'lucide-react';
+import { CalendarDays, Mail, User, PenSquare, BookOpen, Heart } from 'lucide-react';
 import { AuthContext } from '../Provider/AuthProvider';
 import { useNavigate } from 'react-router';
 import { getAuth } from 'firebase/auth';
 import { format } from 'date-fns';
+import axios from 'axios';
 
 const Profile = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [userMeta, setUserMeta] = useState(null);
+    const [wishlist, setWishlist] = useState([]);
+    const [blogs, setBlogs] = useState([]);
+
+    // Fetch wishlist for the current user
+    useEffect(() => {
+        if (!user) return;
+        const fetchWishlist = async () => {
+            try {
+                const res = await axios.get('http://localhost:3000/wishlist');
+                const userWishlist = res.data.filter(item => item.email === user.email);
+                setWishlist(userWishlist);
+            } catch (error) {
+                console.error('Error fetching wishlist:', error);
+            }
+        };
+        fetchWishlist();
+    }, [user]);
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
-            if (user) {
-                const auth = getAuth();
-                auth.currentUser?.reload().then(() => {
-                    setUserMeta(auth.currentUser.metadata);
-                });
+        if (!user) return;
+        const fetchBlogs = async () => {
+            try {
+                const res = await axios.get('http://localhost:3000/blogs');
+                const userBlogs = res.data.filter(blog => blog.email === user.email);
+                setBlogs(userBlogs);
+            } catch (error) {
+                console.error('Error fetching blogs:', error);
             }
-            setLoading(false);
+        };
+        fetchBlogs();
+    }, [user]);
+
+    useEffect(() => {
+        if (!user) return;
+        const timeout = setTimeout(() => {
+            const auth = getAuth();
+            auth.currentUser?.reload().then(() => {
+                setUserMeta(auth.currentUser.metadata);
+                setLoading(false);
+            });
         }, 100);
+
         return () => clearTimeout(timeout);
     }, [user]);
 
@@ -56,7 +81,6 @@ const Profile = () => {
 
     return (
         <div className="md:container mx-auto px-4 py-12">
-            {/* Header */}
             <div className="bg-[#3A63D8] text-white p-8 rounded-t-xl flex flex-col md:flex-row justify-between items-center">
                 <div className="flex items-center gap-4">
                     <div className="w-20 h-20 rounded-full bg-white text-[#3A63D8] flex items-center justify-center text-3xl font-bold overflow-hidden">
@@ -127,7 +151,7 @@ const Profile = () => {
                                         {loading ? (
                                             <Skeleton width={180} />
                                         ) : userMeta?.creationTime ? (
-                                            format(new Date(userMeta.creationTime), 'MMMM cc yyyy')
+                                            format(new Date(userMeta.creationTime), 'MMMM dd yyyy')
                                         ) : (
                                             'N/A'
                                         )}
@@ -149,12 +173,12 @@ const Profile = () => {
                                 <>
                                     <div className="rounded-xl p-6 text-center hover:shadow-md" style={{ backgroundColor: '#E6ECFD' }}>
                                         <BookOpen className="mx-auto mb-2" size={28} color="#3A63D8" />
-                                        <p className="text-4xl font-bold" style={{ color: '#3A63D8' }}>0</p>
+                                        <p className="text-4xl font-bold" style={{ color: '#3A63D8' }}>{blogs.length}</p>
                                         <p className="font-medium" style={{ color: '#3A63D8' }}>Blogs Published</p>
                                     </div>
                                     <div className="rounded-xl p-6 text-center hover:shadow-md" style={{ backgroundColor: '#FDE8E8' }}>
                                         <Heart className="mx-auto mb-2" size={28} color="#EF4444" />
-                                        <p className="text-4xl font-bold" style={{ color: '#EF4444' }}>0</p>
+                                        <p className="text-4xl font-bold" style={{ color: '#EF4444' }}>{wishlist.length}</p>
                                         <p className="font-medium" style={{ color: '#EF4444' }}>Wishlist Items</p>
                                     </div>
                                 </>
