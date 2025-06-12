@@ -28,7 +28,7 @@ const AllBlogs = () => {
 
     // Fetch blogs
     useEffect(() => {
-        axios.get('https://blog-craft-server.vercel.app/blogs')
+        axios.get('http://localhost:3000/blogs')
             .then(res => {
                 setBlogs(res.data);
                 setLoading(false);
@@ -43,7 +43,7 @@ const AllBlogs = () => {
             return;
         }
 
-        axios.get('https://blog-craft-server.vercel.app/wishlist', {
+        axios.get('http://localhost:3000/wishlist', {
             params: { email: user.email }
         })
             .then(res => {
@@ -87,7 +87,7 @@ const AllBlogs = () => {
 
     const handleWishlist = async (blog) => {
         if (!user) return toast.error("You must log in to add to wishlist");
-        if (isWishlisted(blog.email)) return toast.info("Already wishlisted");
+        if (isWishlisted(blog.blogId)) return toast.info("Already wishlisted");
 
         const payload = {
             blogId: blog._id,
@@ -105,7 +105,7 @@ const AllBlogs = () => {
 
         try {
             setWishlistLoadingIds(prev => new Set(prev).add(blog._id));
-            await axios.post('https://blog-craft-server.vercel.app/wishlist', payload);
+            await axios.post('http://localhost:3000/wishlist', payload);
             setWishlistIds(prev => new Set(prev).add(String(blog._id)));
             toast.success("Wishlistted Successfully");
         } catch (err) {
@@ -201,7 +201,7 @@ const AllBlogs = () => {
                             </div>
                         ))
                         : filteredBlogs.map(blog => (
-                            <div key={blog._id} className="bg-white rounded-xl shadow-lg hover:-translate-y-1 transition">
+                            <div key={blog._id} className="bg-white rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition">
                                 <div className="relative">
                                     <img
                                         src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}

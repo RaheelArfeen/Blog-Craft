@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router";
-import { Calendar, Clock, User, Share2, ArrowLeft, MessageCircle, Heart, Reply, Ban, SquarePen } from "lucide-react";
+import { Calendar, Clock, User, Share2, ArrowLeft, MessageCircle, Heart, Reply, Ban, SquarePen, EllipsisVertical } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { AuthContext } from "../Provider/AuthProvider";
+import Swal from "sweetalert2";
 
 const BlogDetails = () => {
     const { id } = useParams();
@@ -11,6 +12,7 @@ const BlogDetails = () => {
 
     const [blog, setBlog] = useState(null);
     const [comments, setComments] = useState([]);
+    const [activeMenuId, setActiveMenuId] = useState(null);
     const [commentText, setCommentText] = useState("");
     const [loading, setLoading] = useState(true);
     const [loadingComments, setLoadingComments] = useState(false);
@@ -23,12 +25,12 @@ const BlogDetails = () => {
             setLoading(true);
             setError(null);
             try {
-                const blogRes = await fetch(`https://blog-craft-server.vercel.app/blogs/${id}`);
+                const blogRes = await fetch(`http://localhost:3000/blogs/${id}`);
                 if (!blogRes.ok) throw new Error("Blog not found");
                 const blogData = await blogRes.json();
                 setBlog(blogData);
 
-                const allBlogsRes = await fetch(`https://blog-craft-server.vercel.app/blogs`);
+                const allBlogsRes = await fetch(`http://localhost:3000/blogs`);
                 if (!allBlogsRes.ok) throw new Error("Failed to fetch blogs");
 
             } catch (err) {
@@ -45,7 +47,7 @@ const BlogDetails = () => {
         if (!id) return;
         setLoadingComments(true);
         try {
-            const res = await fetch(`https://blog-craft-server.vercel.app/comments/${id}`);
+            const res = await fetch(`http://localhost:3000/comments/${id}`);
             if (!res.ok) throw new Error("Failed to fetch comments");
             const data = await res.json();
             setComments(data);
@@ -92,7 +94,7 @@ const BlogDetails = () => {
         const userImage = user?.photoURL || userInitial;
 
         try {
-            const res = await fetch(`https://blog-craft-server.vercel.app/comments/${id}`, {
+            const res = await fetch(`http://localhost:3000/comments/${id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -112,6 +114,48 @@ const BlogDetails = () => {
             setCommentLoading(false)
         }
     };
+
+    const handleDeleteComment = async (commentId) => {
+        if (!commentId) return;
+
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`http://localhost:3000/comments/${commentId}`, {
+                    method: "DELETE",
+                });
+
+                if (!res.ok) throw new Error("Failed to delete comment");
+
+                setComments((prevComments) => prevComments.filter(comment => comment._id !== commentId));
+                setActiveMenuId(null);
+
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "Your comment has been deleted.",
+                    icon: "success"
+                });
+
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    title: "Error!",
+                    text: "Failed to delete comment.",
+                    icon: "error"
+                });
+            }
+        }
+    };
+
 
     if (loading) {
         return (
@@ -334,11 +378,11 @@ const BlogDetails = () => {
                                 <p className="text-gray-600 max-w-sm mx-auto">Be the first to share your thoughts!</p>
                             </div>
                         ) : (
-                            <div className="space-y-6">
+                            <div className="mt-10 space-y-4">
                                 {comments.map((comment) => (
                                     <div
                                         key={comment._id}
-                                        className="group hover:bg-gray-50 rounded-2xl md:p-6 transition-all duration-200 border border-transparent hover:border-gray-100 border-t"
+                                        className="group hover:bg-gray-50 rounded-2xl md:p-6 transition-all duration-200 border border-transparent hover:border-gray-100 border-t relative"
                                     >
                                         <div className="flex space-x-4 border-b border-gray-200 pb-4">
                                             <div className="relative flex-shrink-0">
@@ -354,17 +398,46 @@ const BlogDetails = () => {
                                                     </div>
                                                 )}
                                             </div>
+
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex flex-wrap items-center space-x-2 mb-2">
-                                                    <h4 className="font-semibold text-gray-900">{comment.userName}</h4>
-                                                    <span className="text-gray-400">•</span>
-                                                    <time className="text-sm text-gray-500">
-                                                        {comment.createdAt
-                                                            ? format(new Date(comment.createdAt), "MMM dd, yyyy 'at' HH:mm")
-                                                            : "Just now"}
-                                                    </time>
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <div className="flex flex-col">
+                                                        <h4 className="font-semibold text-gray-900">{comment.userName}</h4>
+                                                        <time className="text-sm text-gray-500">
+                                                            {comment.createdAt
+                                                                ? format(new Date(comment.createdAt), "MMM dd, yyyy 'at' HH:mm")
+                                                                : "Just now"}
+                                                        </time>
+                                                    </div>
+
+                                                    {user?.email !== blog?.email && (
+                                                        <div className="relative">
+                                                            <button
+                                                                onClick={() =>
+                                                                    setActiveMenuId((prev) =>
+                                                                        prev === comment._id ? null : comment._id
+                                                                    )
+                                                                }
+                                                                className="p-2 hover:bg-gray-200 rounded-full transition"
+                                                            >
+                                                                <EllipsisVertical className="h-5 w-5 text-gray-500" />
+                                                            </button>
+
+                                                            {activeMenuId === comment._id && (
+                                                                <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg overflow-hidden shadow-lg z-10">
+                                                                    <button
+                                                                        onClick={() => handleDeleteComment(comment._id)}
+                                                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer transition"
+                                                                    >
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <p className="text-gray-700 leading-relaxed mb-3 break-words whitespace-pre-wrap pr-8">
+
+                                                <p className="text-gray-700 whitespace-pre-wrap break-words">
                                                     {comment.text}
                                                 </p>
                                             </div>

@@ -28,7 +28,7 @@ function EditBlog() {
     useEffect(() => {
         async function fetchBlog() {
             try {
-                const res = await fetch(`https://blog-craft-server.vercel.app/blogs/${id}`);
+                const res = await fetch(`http://localhost:3000/blogs/${id}`);
                 if (!res.ok) throw new Error("Failed to fetch blog");
                 const blog = await res.json();
 
@@ -142,7 +142,7 @@ function EditBlog() {
                 image: imageBase64,
             };
 
-            const res = await fetch(`https://blog-craft-server.vercel.app/blogs/${id}`, {
+            const res = await fetch(`http://localhost:3000/blogs/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatePayload),

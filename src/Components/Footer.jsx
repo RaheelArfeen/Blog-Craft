@@ -24,9 +24,7 @@ const Footer = () => {
                             </span>
                         </div>
                         <p className="text-gray-600 text-sm leading-relaxed">
-                            Your digital assistant for managing all your plant care needs.
-                            Track watering schedules, monitor health, and never forget to care
-                            for your green friends.
+                            Your digital assistant for managing all your Blog Craft needs. Create, organize, and publish your blog posts with ease. Track drafts, schedule publications, and engage your readers effortlessly.
                         </p>
                     </div>
 
@@ -62,7 +60,7 @@ const Footer = () => {
                         <ul className="space-y-2 text-sm">
                             <li className="flex items-center text-gray-600">
                                 <Mail className="h-4 w-4 mr-2 text-blue-600" />
-                                <span>support@plantcare.com</span>
+                                <span>support@blogcraft.com</span>
                             </li>
                             <li className="flex items-center text-gray-600">
                                 <Phone className="h-4 w-4 mr-2 text-blue-600" />
@@ -70,7 +68,7 @@ const Footer = () => {
                             </li>
                             <li className="flex items-center text-gray-600">
                                 <MapPin className="h-4 w-4 mr-2 text-blue-600" />
-                                <span>123 Green St, Plant City</span>
+                                <span>123 Green St, Blog City</span>
                             </li>
                         </ul>
                     </div>
@@ -96,7 +94,7 @@ const Footer = () => {
                         </div>
 
                         <p className="text-sm text-gray-600">
-                            Subscribe to our newsletter for plant care tips and updates.
+                            Subscribe to our newsletter for Blog Craft tips and updates.
                         </p>
                         <form
                             className="mt-3 flex flex-col sm:flex-row gap-y-2"
