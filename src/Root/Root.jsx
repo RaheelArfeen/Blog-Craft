@@ -7,7 +7,9 @@ const Root = () => {
     return (
         <div className='flex flex-col justify-between min-h-screen'>
             <Header></Header>
-            <Outlet></Outlet>
+            <div className='min-h-screen'>
+                <Outlet></Outlet>
+            </div>
             <Footer></Footer>
         </div>
     );

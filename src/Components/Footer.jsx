@@ -1,122 +1,138 @@
-import React from "react";
-import { NavLink } from "react-router";
-import {
-    Mail,
-    Phone,
-    MapPin,
-    Facebook,
-    Twitter,
-    Instagram,
-    BookOpen,
-} from "lucide-react";
+import React from 'react';
+import { Link } from 'react-router';
+import { BookOpen, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-50 border-t border-gray-200">
-            <div className="md:container w-full mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-                    {/* Brand Description */}
-                    <div>
-                        <div className="flex items-center mb-4">
-                            <BookOpen className="h-6 w-6 text-blue-600 mr-2" />
-                            <span className="text-xl font-bold text-gray-900">
-                                BlogCraft
-                            </span>
-                        </div>
-                        <p className="text-gray-600 text-sm leading-relaxed">
-                            Your digital assistant for managing all your Blog Craft needs. Create, organize, and publish your blog posts with ease. Track drafts, schedule publications, and engage your readers effortlessly.
+        <footer className="bg-gray-900 text-gray-300 drop-shadow-2xl drop-shadow-black">
+            <div className="md:container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {/* Company Info */}
+                    <div className="space-y-4">
+                        <Link to="/" className="flex items-center space-x-2">
+                            <BookOpen className="h-8 w-8 text-blue-400" />
+                            <span className="font-bold text-xl text-white">BlogCraft</span>
+                        </Link>
+                        <p className="leading-relaxed">
+                            Empowering writers and readers to share knowledge, stories, and insights that matter. Join our community of passionate creators.
                         </p>
+                        <div className="flex space-x-4">
+                            <a href="#" className="hover:text-blue-400 transition-colors text-gray-400">
+                                <Facebook className="h-6 w-6" />
+                            </a>
+                            <a href="#" className="hover:text-blue-400 transition-colors text-gray-400">
+                                <Twitter className="h-6 w-6" />
+                            </a>
+                            <a href="#" className="hover:text-blue-400 transition-colors text-gray-400">
+                                <Instagram className="h-6 w-6" />
+                            </a>
+                            <a href="#" className="hover:text-blue-400 transition-colors text-gray-400">
+                                <Linkedin className="h-6 w-6" />
+                            </a>
+                        </div>
                     </div>
 
                     {/* Quick Links */}
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4 text-gray-900">
-                            Quick Links
-                        </h3>
-                        <ul className="space-y-2 text-sm">
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white">Quick Links</h3>
+                        <ul className="space-y-2">
                             <li>
-                                <NavLink to="/" className="text-gray-600 hover:text-blue-600 transition-colors">Home</NavLink>
+                                <Link to="/" className="hover:text-blue-400 transition-colors">
+                                    Home
+                                </Link>
                             </li>
                             <li>
-                                <NavLink to="/blogs" className="text-gray-600 hover:text-blue-600 transition-colors">All blogs</NavLink>
+                                <Link to="/blogs" className="hover:text-blue-400 transition-colors">
+                                    All Blogs
+                                </Link>
                             </li>
                             <li>
-                                <NavLink to="/add-blogs" className="text-gray-600 hover:text-blue-600 transition-colors">Add blogs</NavLink>
+                                <Link to="/add-blog" className="hover:text-blue-400 transition-colors">
+                                    Add blogs
+                                </Link>
                             </li>
                             <li>
-                                <NavLink to="/featured" className="text-gray-600 hover:text-blue-600 transition-colors">Featured</NavLink>
+                                <Link to="/featured" className="hover:text-blue-400 transition-colors">
+                                    Featured Blogs
+                                </Link>
                             </li>
                             <li>
-                                <NavLink to="/wishlist" className="text-gray-600 hover:text-blue-600 transition-colors">Wishlist</NavLink>
+                                <Link to="/wishlist" className="hover:text-blue-400 transition-colors">
+                                    Wishlist
+                                </Link>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Contact Us */}
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4 text-gray-900">
-                            Contact Us
-                        </h3>
-                        <ul className="space-y-2 text-sm">
-                            <li className="flex items-center text-gray-600">
-                                <Mail className="h-4 w-4 mr-2 text-blue-600" />
-                                <span>support@blogcraft.com</span>
-                            </li>
-                            <li className="flex items-center text-gray-600">
-                                <Phone className="h-4 w-4 mr-2 text-blue-600" />
-                                <span>(123) 456-7890</span>
-                            </li>
-                            <li className="flex items-center text-gray-600">
-                                <MapPin className="h-4 w-4 mr-2 text-blue-600" />
-                                <span>123 Green St, Blog City</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Newsletter & Social */}
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4 text-gray-900">
-                            Follow Us
-                        </h3>
-                        <div className="flex space-x-4 mb-4">
-                            {[Facebook, Twitter, Instagram].map((Icon, idx) => (
-                                <a
-                                    key={idx}
-                                    href="#"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-gray-600 hover:text-blue-600 transition-colors"
-                                >
-                                    <Icon className="h-6 w-6" />
-                                    <span className="sr-only">{Icon.name}</span>
+                    {/* Categories */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white">Categories</h3>
+                        <ul className="space-y-2">
+                            <li>
+                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                    Technology
                                 </a>
-                            ))}
-                        </div>
+                            </li>
+                            <li>
+                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                    Design
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                    Business
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                    Lifestyle
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                    Travel
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-                        <p className="text-sm text-gray-600">
-                            Subscribe to our newsletter for Blog Craft tips and updates.
-                        </p>
-                        <form
-                            className="mt-3 flex flex-col sm:flex-row gap-y-2"
-                            onSubmit={(e) => e.preventDefault()}
-                        >
-                            <input
-                                type="email"
-                                placeholder="Your email"
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md sm:rounded-l-md sm:rounded-r-none outline-none"
-                            />
-                            <button
-                                type="submit"
-                                className="bg-blue-600 text-white px-4 py-2 rounded-md sm:rounded-l-none sm:rounded-r-md hover:bg-blue-700 transition-colors"
-                            >
-                                Subscribe
-                            </button>
-                        </form>
+                    {/* Contact Info */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white">Contact Info</h3>
+                        <div className="space-y-3">
+                            <div className="flex items-center space-x-3">
+                                <Mail className="h-5 w-5 text-blue-400" />
+                                <span>hello@blogcraft.com</span>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                                <Phone className="h-5 w-5 text-blue-400" />
+                                <span>+1 (555) 123-4567</span>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                                <MapPin className="h-5 w-5 text-blue-400" />
+                                <span>123 Blog Street, Writer City, WC 12345</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-600">
-                    <p>&copy; {new Date().getFullYear()} BlogCraft. All rights reserved.</p>
+                <div className="border-t border-gray-700 mt-12 pt-8">
+                    <div className="flex flex-col md:flex-row justify-between items-center">
+                        <p className="text-gray-500 text-sm">
+                            © 2024 BlogCraft. All rights reserved.
+                        </p>
+                        <div className="flex space-x-6 mt-4 md:mt-0">
+                            <Link to="/privacy" className="hover:text-blue-400 transition-colors text-sm text-gray-400">
+                                Privacy Policy
+                            </Link>
+                            <Link to="/terms" className="hover:text-blue-400 transition-colors text-sm text-gray-400">
+                                Terms of Service
+                            </Link>
+                            <Link to="/cookies" className="hover:text-blue-400 transition-colors text-sm text-gray-400">
+                                Cookie Policy
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
         </footer>

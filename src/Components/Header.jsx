@@ -87,7 +87,7 @@ const Header = () => {
                         <NavLink to="/" className="text-[#374151] hover:text-blue-500 px-3 py-2">Home</NavLink>
                         <NavLink to="/blogs" className="text-[#374151] hover:text-blue-500 px-3 py-2">All Blogs</NavLink>
                         <NavLink to="/add-blog" className="text-[#374151] hover:text-blue-500 px-3 py-2">Add Blogs</NavLink>
-                        <NavLink to="/featured" className="text-[#374151] hover:text-blue-500 px-3 py-2">Featured</NavLink>
+                        <NavLink to="/featured" className="text-[#374151] hover:text-blue-500 px-3 py-2">Featured Blogs</NavLink>
                         <NavLink to="/wishlist" className="text-[#374151] hover:text-blue-500 px-3 py-2">Wishlist</NavLink>
                     </div>
 
@@ -151,7 +151,7 @@ const Header = () => {
                             <NavLink onClick={() => setIsOpen(false)} to="/" className="block text-[#374151] hover:text-blue-500 px-3 py-2 hover:scale-105 transition-transform">Home</NavLink>
                             <NavLink onClick={() => setIsOpen(false)} to="/blogs" className="block text-[#374151] hover:text-blue-500 px-3 py-2 hover:scale-105 transition-transform">All blogs</NavLink>
                             <NavLink onClick={() => setIsOpen(false)} to="/add-blog" className="block text-[#374151] hover:text-blue-500 px-3 py-2 hover:scale-105 transition-transform">Add blogs</NavLink>
-                            <NavLink onClick={() => setIsOpen(false)} to="/featured" className="block text-[#374151] hover:text-blue-500 px-3 py-2 hover:scale-105 transition-transform">Featured</NavLink>
+                            <NavLink onClick={() => setIsOpen(false)} to="/featured" className="block text-[#374151] hover:text-blue-500 px-3 py-2 hover:scale-105 transition-transform">Featured Blogs</NavLink>
                             <NavLink onClick={() => setIsOpen(false)} to="/wishlist" className="block text-[#374151] hover:text-blue-500 px-3 py-2 hover:scale-105 transition-transform">wishlist</NavLink>
                             {loading ? (
                                 <div className="px-3 mt-4 space-y-2">

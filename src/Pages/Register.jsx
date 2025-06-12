@@ -263,7 +263,7 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
 
                 <div className="mt-8 text-center">
                     <p className="text-gray-600">
-                        Already have an account?{' '}
+                        Already have an account?
                         <Link
                             to="/login"
                             onClick={onLogin}

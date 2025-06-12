@@ -267,7 +267,7 @@ const Login = ({ onRegister }) => {
                 {/* Register Link */}
                 <div className="mt-8 text-center">
                     <p className="text-gray-600">
-                        Don&apos;t have an account?{' '}
+                        Don&apos;t have an account?
                         <Link
                             to="/register"
                             onClick={onRegister}

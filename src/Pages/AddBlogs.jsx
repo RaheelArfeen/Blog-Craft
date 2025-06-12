@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import {
-  Save, Upload, X, Plus, Eye, Edit2,
-  Clock, Calendar, User, ChevronDown, ChevronUp
+  Save, Upload, X, Plus, ChevronDown, ChevronUp
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -12,10 +11,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 function AddBlogs() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [preview, setPreview] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const [imageMode, setImageMode] = useState('upload'); // 'upload' or 'url'
+  const [imageMode, setImageMode] = useState('upload');
   const categoryRef = useRef(null);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -27,8 +25,8 @@ function AddBlogs() {
     shortDescription: '',
     content: '',
     email: user.email,
-    image: null, // file object if upload mode
-    imageUrl: '' // string if url mode
+    image: null,
+    imageUrl: ''
   });
 
   const categories = ['Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
@@ -65,16 +63,13 @@ function AddBlogs() {
 
   const handleAddTag = () => {
     if (!tagInput.trim()) return;
-
     const currentTags = formData.tags
       ? formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
       : [];
-
     if (!currentTags.includes(tagInput.trim())) {
       const newTags = [...currentTags, tagInput.trim()].join(', ');
       setFormData(prev => ({ ...prev, tags: newTags }));
     }
-
     setTagInput('');
   };
 
@@ -93,20 +88,16 @@ function AddBlogs() {
 
   const validateForm = () => {
     const errors = [];
-
     if (!formData.title.trim()) errors.push('Title is required.');
     if (!formData.category) errors.push('Please select a category.');
     if (!formData.shortDescription.trim()) errors.push('Short description is required.');
     if (!formData.content.trim()) errors.push('Content is required.');
-
     if (imageMode === 'upload' && !formData.image) errors.push('Please upload an image.');
     if (imageMode === 'url' && !formData.imageUrl.trim()) errors.push('Please enter an image URL.');
-
     if (errors.length > 0) {
       toast.error(errors.join('\n'));
       return false;
     }
-
     return true;
   };
 
@@ -121,27 +112,20 @@ function AddBlogs() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
-
     setIsSubmitting(true);
-
     try {
       let imageData = '';
       if (imageMode === 'upload' && formData.image) {
         imageData = await fileToBase(formData.image);
-      } else if (imageMode === 'url' && formData.imageUrl.trim()) {
+      } else if (imageMode === 'url') {
         imageData = formData.imageUrl.trim();
       }
-
-      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
-
+      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean);
       const readTime = `${Math.floor(Math.random() * 30) + 1} min read`;
-
       const userName = user?.displayName || "Anonymous";
       const userInitial = user?.displayName?.charAt(0).toUpperCase() || "A";
       const userImage = user?.photoURL || userInitial;
-
       const blogData = {
         ...formData,
         tags: tagsArray,
@@ -152,9 +136,7 @@ function AddBlogs() {
         readTime,
         blogId: uuidv4()
       };
-
       await axios.post('http://localhost:3000/blogs', blogData);
-
       toast.success('Blog published successfully!');
       setFormData({
         title: '',
@@ -178,9 +160,7 @@ function AddBlogs() {
 
   const renderTags = () => {
     if (!formData.tags) return null;
-
     const tags = formData.tags.split(',').map(tag => tag.trim()).filter(Boolean);
-
     return (
       <div className="flex flex-wrap gap-2 mt-2">
         {tags.map((tag, index) => (
@@ -195,12 +175,8 @@ function AddBlogs() {
     );
   };
 
-  const togglePreview = () => {
-    setPreview(prev => !prev);
-  };
-
-  const renderForm = () => (
-    <form onSubmit={handleSubmit} className="space-y-6">
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6 md:container mx-auto px-4 py-12">
       <div className="space-y-2">
         <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
         <input
@@ -210,7 +186,7 @@ function AddBlogs() {
           value={formData.title}
           onChange={handleInputChange}
           placeholder="An engaging title for your blog post"
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -269,8 +245,6 @@ function AddBlogs() {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">Featured Image</label>
-
-        {/* Toggle buttons for image mode */}
         <div className="mb-2 flex gap-4">
           <button
             type="button"
@@ -298,13 +272,7 @@ function AddBlogs() {
               transition={{ duration: 0.3 }}
             >
               {formData.image ? (
-                <motion.div
-                  className="relative"
-                  initial={{ scale: 0.95 }}
-                  animate={{ scale: 1 }}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                >
+                <motion.div className="relative mt-2">
                   <img
                     src={URL.createObjectURL(formData.image)}
                     alt="Preview"
@@ -319,13 +287,7 @@ function AddBlogs() {
                   </button>
                 </motion.div>
               ) : (
-                <motion.div
-                  key="upload-placeholder"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center"
-                >
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   <Upload className="mx-auto h-10 w-10 text-gray-400" />
                   <input
                     type="file"
@@ -338,7 +300,7 @@ function AddBlogs() {
                     Click to upload an image
                   </label>
                   <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                </motion.div>
+                </div>
               )}
             </motion.div>
           )}
@@ -360,13 +322,7 @@ function AddBlogs() {
                 className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
               />
               {formData.imageUrl && (
-                <motion.div
-                  className="relative mt-4"
-                  initial={{ scale: 0.95 }}
-                  animate={{ scale: 1 }}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                >
+                <motion.div className="relative mt-4">
                   <img
                     src={formData.imageUrl}
                     alt="Image URL Preview"
@@ -417,54 +373,17 @@ function AddBlogs() {
         />
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 justify-end">
         <button
           type="submit"
           disabled={isSubmitting}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg px-6 py-3 font-semibold transition"
         >
           <Save size={20} />
-          {isSubmitting ? 'Publishing...' : 'Publish'}
-        </button>
-
-        <button
-          type="button"
-          onClick={togglePreview}
-          className="flex items-center gap-2 border border-gray-300 rounded-lg px-6 py-3 font-semibold hover:bg-gray-100"
-        >
-          <Eye size={20} />
-          {preview ? 'Edit' : 'Preview'}
+          {isSubmitting ? 'Publishing...' : 'Publish Blog'}
         </button>
       </div>
     </form>
-  );
-
-  const renderPreview = () => (
-    <article className="prose prose-blue max-w-none">
-      <h1>{formData.title || 'Blog Title'}</h1>
-      <p className="text-gray-500">{formData.shortDescription || 'Short description preview...'}</p>
-      {imageMode === 'upload' && formData.image && (
-        <img
-          src={URL.createObjectURL(formData.image)}
-          alt={formData.title}
-          className="w-full max-h-[400px] object-cover rounded-lg"
-        />
-      )}
-      {imageMode === 'url' && formData.imageUrl && (
-        <img
-          src={formData.imageUrl}
-          alt={formData.title}
-          className="w-full max-h-[400px] object-cover rounded-lg"
-        />
-      )}
-      <div className="mt-4 whitespace-pre-wrap">{formData.content || 'Blog content preview...'}</div>
-    </article>
-  );
-
-  return (
-    <section className="md:container mx-auto p-6">
-      {preview ? renderPreview() : renderForm()}
-    </section>
   );
 }
 
