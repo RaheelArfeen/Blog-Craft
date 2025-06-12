@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { AuthContext } from '../../Provider/AuthProvider';
 import { motion } from "motion/react"
-import { useInView } from 'react-intersection-observer'; // <-- new import
+import { useInView } from 'react-intersection-observer';
 
 const RecentBlogPosts = () => {
     const navigate = useNavigate();
