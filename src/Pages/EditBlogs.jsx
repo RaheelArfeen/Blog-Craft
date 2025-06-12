@@ -2,10 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { X, Plus, ChevronDown, ChevronUp, Upload, Save } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 
-const categories = ['Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
+const categories = [
+    "Technology", "Design", "Backend", "AI", "CSS",
+    "Marketing", "Lifestyle", "Business", "Development",
+    "UI/UX", "Career", "Tutorial"
+];
 
-function EditBlog() {
+export default function EditBlog() {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -19,12 +24,12 @@ function EditBlog() {
     const [tagInput, setTagInput] = useState("");
     const [shortDescription, setShortDescription] = useState("");
     const [content, setContent] = useState("");
-    const [image, setImage] = useState(null);
 
-    // Store the object URL for cleanup
-    const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+    const [imageMode, setImageMode] = useState("upload");
+    const [imageFile, setImageFile] = useState(null);
+    const [imageUrl, setImageUrl] = useState("");
+    const [imagePreview, setImagePreview] = useState(null);
 
-    // Load blog data
     useEffect(() => {
         async function fetchBlog() {
             try {
@@ -37,38 +42,23 @@ function EditBlog() {
                 setTags(blog.tags || []);
                 setShortDescription(blog.shortDescription || "");
                 setContent(blog.content || "");
-                setImage(blog.image || null); // Can be string URL or null
+
+                if (blog.image?.startsWith("data:image")) {
+                    setImageFile(null);
+                    setImageMode("upload");
+                    setImagePreview(blog.image);
+                } else {
+                    setImageUrl(blog.image || "");
+                    setImageMode("url");
+                    setImagePreview(blog.image || "");
+                }
             } catch (err) {
-                console.error("Fetch error:", err); // DEBUG
                 toast.error(err.message);
             }
         }
+
         fetchBlog();
     }, [id]);
-
-    // Generate image preview URL for File or use existing string URL
-    useEffect(() => {
-        if (!image) {
-            setImagePreviewUrl(null);
-            return;
-        }
-
-        if (image instanceof File) {
-            // Create a blob URL for file preview
-            const objectUrl = URL.createObjectURL(image);
-            setImagePreviewUrl(objectUrl);
-
-            return () => {
-                // Cleanup memory when image changes or component unmounts
-                URL.revokeObjectURL(objectUrl);
-            };
-        } else if (typeof image === "string") {
-            // It's a URL string (from backend)
-            setImagePreviewUrl(image);
-        } else {
-            setImagePreviewUrl(null);
-        }
-    }, [image]);
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -80,16 +70,14 @@ function EditBlog() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const addTag = () => {
-        const trimmed = tagInput.trim();
-        if (trimmed && !tags.includes(trimmed)) {
-            setTags((prev) => [...prev, trimmed]);
+    useEffect(() => {
+        if (imageFile) {
+            const objectUrl = URL.createObjectURL(imageFile);
+            setImagePreview(objectUrl);
+            return () => URL.revokeObjectURL(objectUrl);
         }
-        setTagInput("");
-    };
-    const removeTag = (tag) => {
-        setTags((prev) => prev.filter((t) => t !== tag));
-    };
+    }, [imageFile]);
+
     const handleTagKeyDown = (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -97,19 +85,34 @@ function EditBlog() {
         }
     };
 
+    const addTag = () => {
+        const trimmed = tagInput.trim();
+        if (trimmed && !tags.includes(trimmed)) {
+            setTags((prev) => [...prev, trimmed]);
+        }
+        setTagInput("");
+    };
+
+    const removeTag = (tag) => setTags((prev) => prev.filter((t) => t !== tag));
+
     const handleImageChange = (e) => {
         const file = e.target.files?.[0];
-        if (file) setImage(file);
+        if (file) {
+            setImageFile(file);
+            setImageUrl("");
+            setImageMode("upload");
+        }
     };
-    const removeImage = () => setImage(null);
 
-    const fileToBase64 = (file) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (err) => reject(err);
-        });
+    const handleRemoveImage = () => {
+        setImageFile(null);
+        setImagePreview(null);
+    };
+
+    const handleRemoveImageUrl = () => {
+        setImageUrl("");
+        setImagePreview(null);
+    };
 
     const validate = () => {
         if (!title.trim()) return toast.error("Title is required"), false;
@@ -117,56 +120,56 @@ function EditBlog() {
         if (tags.length === 0) return toast.error("Please add at least one tag"), false;
         if (!shortDescription.trim()) return toast.error("Short description is required"), false;
         if (!content.trim()) return toast.error("Content is required"), false;
+        if (imageMode === "url" && !imageUrl.trim()) return toast.error("Image URL is required"), false;
         return true;
     };
+
+    const fileToBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+        });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) return;
+
         setIsSubmitting(true);
 
         try {
-            let imageBase64 = "";
-            if (image && image instanceof File) {
-                imageBase64 = await fileToBase64(image);
-            } else if (typeof image === "string") {
-                imageBase64 = image;
+            let imageData = "";
+
+            if (imageMode === "upload" && imageFile) {
+                imageData = await fileToBase64(imageFile);
+            } else if (imageMode === "url") {
+                imageData = imageUrl.trim();
             }
 
-            const updatePayload = {
+            const payload = {
                 title,
                 category,
                 tags,
                 shortDescription,
                 content,
-                image: imageBase64,
+                image: imageData,
             };
 
             const res = await fetch(`http://localhost:3000/blogs/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatePayload),
+                body: JSON.stringify(payload),
             });
 
             if (!res.ok) {
-                // Try to parse error message from backend JSON
-                let errMsg = "Update failed";
-                try {
-                    const errData = await res.json();
-                    errMsg = errData.message || errMsg;
-                } catch {
-                    // ignore JSON parse errors
-                }
-                throw new Error(errMsg);
+                const errData = await res.json();
+                throw new Error(errData.message || "Update failed");
             }
 
             toast.success("Blog updated successfully!");
-
-            // After update, navigate to blog detail page
-            // Check if your route /blogs/:id exists and works
             navigate(`/blogs/${id}`);
         } catch (err) {
-            console.error("Update error:", err); // DEBUG
             toast.error(err.message);
         } finally {
             setIsSubmitting(false);
@@ -174,180 +177,213 @@ function EditBlog() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <div className="md:container mx-auto px-4 py-12">
-                <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                    <div className="flex justify-between items-center flex-wrap p-6 border-b border-gray-100 gap-y-2">
-                        <h2 className="text-3xl font-bold text-blue-500">Edit Blog</h2>
+        <div className="min-h-screen py-12 px-4 md:container mx-auto">
+            <div className="bg-white shadow-md rounded-lg p-8">
+                <h2 className="text-3xl font-bold text-blue-600 mb-6">Edit Blog</h2>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Title */}
+                    <div>
+                        <label className="block font-medium text-gray-700 mb-1">Title</label>
+                        <input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full border border-gray-300 p-3 rounded-lg"
+                        />
                     </div>
 
-                    <div className="p-6">
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Title */}
-                            <div className="space-y-2">
-                                <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-                                <input
-                                    id="title"
-                                    name="title"
-                                    type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    required
-                                />
-                            </div>
-
-                            {/* Category */}
-                            <div className="space-y-2 relative" ref={categoryRef}>
-                                <label className="block text-sm font-medium text-gray-700">Category</label>
-                                <div className="relative border border-gray-300 rounded-lg">
-                                    <button
-                                        type="button"
-                                        onClick={() => setCategoryOpen((o) => !o)}
-                                        className="w-full flex justify-between items-center px-4 py-3 text-left"
+                    {/* Category */}
+                    <div ref={categoryRef} className="relative">
+                        <label className="block font-medium text-gray-700 mb-1">Category</label>
+                        <button
+                            type="button"
+                            onClick={() => setCategoryOpen((p) => !p)}
+                            className="w-full flex justify-between items-center border border-gray-300 p-3 rounded-lg"
+                        >
+                            <span>{category || "Select a category"}</span>
+                            {categoryOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                        </button>
+                        {categoryOpen && (
+                            <ul className="absolute z-10 bg-white border mt-1 w-full shadow-md rounded-lg max-h-48 overflow-auto">
+                                {categories.map((cat) => (
+                                    <li
+                                        key={cat}
+                                        onClick={() => {
+                                            setCategory(cat);
+                                            setCategoryOpen(false);
+                                        }}
+                                        className="p-2 hover:bg-blue-100 cursor-pointer"
                                     >
-                                        <span>{category || "Select a category"}</span>
-                                        {categoryOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                                    </button>
-                                    {categoryOpen && (
-                                        <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md mt-1 shadow-lg h-fit overflow-auto">
-                                            {categories.map((cat) => (
-                                                <li
-                                                    key={cat}
-                                                    className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
-                                                    onClick={() => {
-                                                        setCategory(cat);
-                                                        setCategoryOpen(false);
-                                                    }}
-                                                >
-                                                    {cat}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </div>
-                            </div>
+                                        {cat}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
 
-                            {/* Tags */}
-                            <div className="space-y-2">
-                                <label htmlFor="tagInput" className="block text-sm font-medium text-gray-700">Tags</label>
-                                <div className="flex items-center">
-                                    <input
-                                        type="text"
-                                        id="tagInput"
-                                        value={tagInput}
-                                        onChange={(e) => setTagInput(e.target.value)}
-                                        onKeyDown={handleTagKeyDown}
-                                        placeholder="Add a tag and press Enter"
-                                        className="flex-1 border border-gray-300 rounded-l-lg p-3 outline-none"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={addTag}
-                                        className="bg-blue-500 text-white p-3.5 rounded-r-lg border border-blue-500 hover:bg-blue-600"
-                                        aria-label="Add tag"
-                                    >
-                                        <Plus size={20} />
+                    {/* Tags */}
+                    <div>
+                        <label className="block font-medium text-gray-700 mb-1">Tags</label>
+                        <div className="flex items-center">
+                            <input
+                                value={tagInput}
+                                onChange={(e) => setTagInput(e.target.value)}
+                                onKeyDown={handleTagKeyDown}
+                                className="flex-1 border border-gray-300 p-3 rounded-l-lg"
+                                placeholder="Type a tag and press Enter"
+                            />
+                            <button
+                                type="button"
+                                onClick={addTag}
+                                className="bg-blue-600 text-white p-4 rounded-r-lg"
+                            >
+                                <Plus size={18} />
+                            </button>
+                        </div>
+                        <div className="flex gap-2 mt-2 flex-wrap">
+                            {tags.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                                >
+                                    {tag}
+                                    <button onClick={() => removeTag(tag)}>
+                                        <X size={14} />
                                     </button>
-                                </div>
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                    {tags.map((tag) => (
-                                        <div key={tag} className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm group">
-                                            <span>{tag}</span>
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Image Upload / URL */}
+                    <div>
+                        <label className="block font-medium text-gray-700 mb-1">Image</label>
+                        <div className="flex gap-4 mb-4">
+                            <button
+                                type="button"
+                                onClick={() => setImageMode("upload")}
+                                className={`px-4 py-2 rounded-lg border ${imageMode === "upload" ? "bg-blue-600 text-white" : "bg-white border-gray-300"
+                                    }`}
+                            >
+                                Upload
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setImageMode("url")}
+                                className={`px-4 py-2 rounded-lg border ${imageMode === "url" ? "bg-blue-600 text-white" : "bg-white border-gray-300"
+                                    }`}
+                            >
+                                URL
+                            </button>
+                        </div>
+
+                        <AnimatePresence>
+                            {imageMode === "upload" && (
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                    {!imagePreview ? (
+                                        <label className="block border-dashed border-2 border-gray-300 p-6 text-center rounded-lg cursor-pointer">
+                                            <Upload className="mx-auto text-gray-400" />
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleImageChange}
+                                            />
+                                            <p className="mt-2 text-blue-600">Click to upload</p>
+                                        </label>
+                                    ) : (
+                                        <div className="relative mt-4">
+                                            <img src={imagePreview} alt="Preview" className="w-full h-80 object-cover rounded-lg" />
                                             <button
                                                 type="button"
-                                                onClick={() => removeTag(tag)}
-                                                className="opacity-70 hover:opacity-100 transition-opacity"
-                                                aria-label={`Remove tag ${tag}`}
+                                                onClick={handleRemoveImage}
+                                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
                                             >
-                                                <X size={14} />
+                                                <X size={16} />
                                             </button>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
+                                    )}
+                                </motion.div>
+                            )}
 
-                            {/* Image */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Featured Image</label>
-                                {imagePreviewUrl ? (
-                                    <div className="relative">
-                                        <img
-                                            src={imagePreviewUrl}
-                                            alt="Preview"
-                                            className="w-full h-48 object-cover rounded-lg"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={removeImage}
-                                            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                                        <Upload className="mx-auto h-10 w-10 text-gray-400" />
-                                        <input
-                                            type="file"
-                                            id="image"
-                                            accept="image/*"
-                                            onChange={handleImageChange}
-                                            className="hidden"
-                                        />
-                                        <label htmlFor="image" className="mt-2 block text-sm font-medium text-blue-600 cursor-pointer">
-                                            Click to upload an image
-                                        </label>
-                                        <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Short Description */}
-                            <div className="space-y-2">
-                                <label htmlFor="shortDescription" className="block text-sm font-medium text-gray-700">Short Description</label>
-                                <textarea
-                                    id="shortDescription"
-                                    name="shortDescription"
-                                    value={shortDescription}
-                                    onChange={(e) => setShortDescription(e.target.value)}
-                                    rows={3}
-                                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                            </div>
-
-                            {/* Content */}
-                            <div className="space-y-2">
-                                <label htmlFor="content" className="block text-sm font-medium text-gray-700">Content</label>
-                                <textarea
-                                    id="content"
-                                    name="content"
-                                    value={content}
-                                    onChange={(e) => setContent(e.target.value)}
-                                    rows={10}
-                                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
-                                    required
-                                />
-                            </div>
-
-                            {/* Submit */}
-                            <div className="flex justify-end">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className={`inline-flex items-center gap-2 rounded-md bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700 disabled:opacity-50`}
-                                >
-                                    <Save size={20} />
-                                    {isSubmitting ? "Saving..." : "Save Changes"}
-                                </button>
-                            </div>
-                        </form>
+                            {imageMode === "url" && (
+                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                    <input
+                                        type="text"
+                                        placeholder="Paste image URL"
+                                        value={imageUrl}
+                                        onChange={(e) => {
+                                            setImageUrl(e.target.value);
+                                            setImagePreview(e.target.value);
+                                        }}
+                                        className="w-full border border-gray-300 p-3 rounded-lg"
+                                    />
+                                    {imagePreview && (
+                                        <div className="relative mt-4">
+                                            <img
+                                                src={imagePreview}
+                                                alt="Preview"
+                                                className="w-full h-80 object-cover rounded-lg"
+                                                onError={() => {
+                                                    setImagePreview(null);
+                                                    toast.error("Invalid image URL.");
+                                                }}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={handleRemoveImageUrl}
+                                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
-                </div>
+
+                    {/* Short Description */}
+                    <div>
+                        <label className="block font-medium text-gray-700 mb-1">Short Description</label>
+                        <textarea
+                            value={shortDescription}
+                            onChange={(e) => setShortDescription(e.target.value)}
+                            rows={3}
+                            className="w-full border border-gray-300 p-3 rounded-lg"
+                        />
+                    </div>
+
+                    {/* Content */}
+                    <div>
+                        <label className="block font-medium text-gray-700 mb-1">Content</label>
+                        <textarea
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            rows={10}
+                            className="w-full border border-gray-300 p-3 rounded-lg"
+                        />
+                    </div>
+
+                    {/* Submit & Cancel */}
+                    <div className="flex justify-end gap-4">
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2"
+                        >
+                            <Save size={20} />
+                            {isSubmitting ? "Saving..." : "Save Changes"}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => navigate(`/blogs/${id}`)}
+                            className="bg-gray-300 text-gray-800 px-6 py-3 rounded-lg flex items-center gap-2"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );
 }
-
-export default EditBlog;

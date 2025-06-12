@@ -6,15 +6,19 @@ import {
 import axios from 'axios';
 import { toast } from 'sonner';
 import { AuthContext } from '../Provider/AuthProvider';
-import { v4 as uuidv4 } from 'uuid'; // 👈 Added
+import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from 'react-router';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function AddBlogs() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [preview, setPreview] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [imageMode, setImageMode] = useState('upload'); // 'upload' or 'url'
   const categoryRef = useRef(null);
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -23,7 +27,8 @@ function AddBlogs() {
     shortDescription: '',
     content: '',
     email: user.email,
-    image: null
+    image: null, // file object if upload mode
+    imageUrl: '' // string if url mode
   });
 
   const categories = ['Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
@@ -46,12 +51,16 @@ function AddBlogs() {
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFormData(prev => ({ ...prev, image: file }));
+      setFormData(prev => ({ ...prev, image: file, imageUrl: '' }));
     }
   };
 
   const handleRemoveImage = () => {
     setFormData(prev => ({ ...prev, image: null }));
+  };
+
+  const handleRemoveImageUrl = () => {
+    setFormData(prev => ({ ...prev, imageUrl: '' }));
   };
 
   const handleAddTag = () => {
@@ -90,6 +99,9 @@ function AddBlogs() {
     if (!formData.shortDescription.trim()) errors.push('Short description is required.');
     if (!formData.content.trim()) errors.push('Content is required.');
 
+    if (imageMode === 'upload' && !formData.image) errors.push('Please upload an image.');
+    if (imageMode === 'url' && !formData.imageUrl.trim()) errors.push('Please enter an image URL.');
+
     if (errors.length > 0) {
       toast.error(errors.join('\n'));
       return false;
@@ -115,9 +127,11 @@ function AddBlogs() {
     setIsSubmitting(true);
 
     try {
-      let imageBase64 = '';
-      if (formData.image) {
-        imageBase64 = await fileToBase(formData.image);
+      let imageData = '';
+      if (imageMode === 'upload' && formData.image) {
+        imageData = await fileToBase(formData.image);
+      } else if (imageMode === 'url' && formData.imageUrl.trim()) {
+        imageData = formData.imageUrl.trim();
       }
 
       const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
@@ -131,7 +145,7 @@ function AddBlogs() {
       const blogData = {
         ...formData,
         tags: tagsArray,
-        image: imageBase64,
+        image: imageData,
         author: userName,
         userImage: userImage,
         date: new Date().toISOString(),
@@ -149,9 +163,11 @@ function AddBlogs() {
         shortDescription: '',
         content: '',
         email: user.email,
-        userImage: user.photoURL,
-        image: null
+        image: null,
+        imageUrl: ''
       });
+      setImageMode('upload');
+      navigate('/blogs');
     } catch (error) {
       console.error('Error submitting blog:', error);
       toast.error('Failed to publish blog. Please try again.');
@@ -253,37 +269,126 @@ function AddBlogs() {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">Featured Image</label>
-        {formData.image ? (
-          <div className="relative">
-            <img
-              src={URL.createObjectURL(formData.image)}
-              alt="Preview"
-              className="w-full h-48 object-cover rounded-lg"
-            />
-            <button
-              type="button"
-              onClick={handleRemoveImage}
-              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+
+        {/* Toggle buttons for image mode */}
+        <div className="mb-2 flex gap-4">
+          <button
+            type="button"
+            onClick={() => setImageMode('upload')}
+            className={`px-4 py-2 rounded-lg border ${imageMode === 'upload' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white border-gray-300'}`}
+          >
+            Upload Image
+          </button>
+          <button
+            type="button"
+            onClick={() => setImageMode('url')}
+            className={`px-4 py-2 rounded-lg border ${imageMode === 'url' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white border-gray-300'}`}
+          >
+            Image URL
+          </button>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {imageMode === 'upload' && (
+            <motion.div
+              key="upload-mode"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
             >
-              <X size={16} />
-            </button>
-          </div>
-        ) : (
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <Upload className="mx-auto h-10 w-10 text-gray-400" />
-            <input
-              type="file"
-              id="image"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-            />
-            <label htmlFor="image" className="mt-2 block text-sm font-medium text-blue-600 cursor-pointer">
-              Click to upload an image
-            </label>
-            <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-          </div>
-        )}
+              {formData.image ? (
+                <motion.div
+                  className="relative"
+                  initial={{ scale: 0.95 }}
+                  animate={{ scale: 1 }}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  <img
+                    src={URL.createObjectURL(formData.image)}
+                    alt="Preview"
+                    className="w-full h-96 object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                  >
+                    <X size={16} />
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="upload-placeholder"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center"
+                >
+                  <Upload className="mx-auto h-10 w-10 text-gray-400" />
+                  <input
+                    type="file"
+                    id="image"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                  <label htmlFor="image" className="mt-2 block text-sm font-medium text-blue-600 cursor-pointer">
+                    Click to upload an image
+                  </label>
+                  <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+
+          {imageMode === 'url' && (
+            <motion.div
+              key="url-mode"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              <input
+                type="text"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={handleInputChange}
+                placeholder="Enter image URL here"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+              />
+              {formData.imageUrl && (
+                <motion.div
+                  className="relative mt-4"
+                  initial={{ scale: 0.95 }}
+                  animate={{ scale: 1 }}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  <img
+                    src={formData.imageUrl}
+                    alt="Image URL Preview"
+                    className="w-full h-96 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.target.src = '';
+                      toast.error('Image URL is invalid or inaccessible.');
+                      setFormData(prev => ({ ...prev, imageUrl: '' }));
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImageUrl}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                  >
+                    <X size={16} />
+                  </button>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="space-y-2">
@@ -291,9 +396,10 @@ function AddBlogs() {
         <textarea
           id="shortDescription"
           name="shortDescription"
+          rows={3}
           value={formData.shortDescription}
           onChange={handleInputChange}
-          rows={3}
+          placeholder="Write a short summary of your blog post"
           className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -303,79 +409,62 @@ function AddBlogs() {
         <textarea
           id="content"
           name="content"
+          rows={10}
           value={formData.content}
           onChange={handleInputChange}
-          rows={12}
+          placeholder="Write the full content of your blog here"
           className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition-all ${isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
-      >
-        {isSubmitting ? (
-          <>
-            <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-            <span>Publishing...</span>
-          </>
-        ) : (
-          <>
-            <Save className="h-5 w-5" />
-            <span>Publish Blog Post</span>
-          </>
-        )}
-      </button>
+      <div className="flex gap-4">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg px-6 py-3 font-semibold transition"
+        >
+          <Save size={20} />
+          {isSubmitting ? 'Publishing...' : 'Publish'}
+        </button>
+
+        <button
+          type="button"
+          onClick={togglePreview}
+          className="flex items-center gap-2 border border-gray-300 rounded-lg px-6 py-3 font-semibold hover:bg-gray-100"
+        >
+          <Eye size={20} />
+          {preview ? 'Edit' : 'Preview'}
+        </button>
+      </div>
     </form>
   );
 
-  const renderPreview = () => {
-    const readTime = `${Math.floor(Math.random() * 30) + 1} min read`;
-    const formattedDate = new Date().toLocaleDateString('en-US', {
-      year: 'numeric', month: 'long', day: 'numeric',
-    });
-
-    return (
-      <article className="space-y-6">
-        <h1 className="text-4xl font-bold">{formData.title || 'Your Blog Title Will Appear Here'}</h1>
-        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-          {formData.category && (
-            <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full">{formData.category}</span>
-          )}
-          <div className="flex items-center gap-1"><User size={16} /><span>Current User</span></div>
-          <div className="flex items-center gap-1"><Calendar size={16} /><span>{formattedDate}</span></div>
-          <div className="flex items-center gap-1"><Clock size={16} /><span>{readTime}</span></div>
-        </div>
-        {formData.image && (
-          <img src={URL.createObjectURL(formData.image)} alt={formData.title} className="w-full h-96 object-cover" />
-        )}
-        <div className="text-xl text-gray-700 italic border-l-4 border-blue-500 pl-4">{formData.shortDescription || 'Your short description...'}</div>
-        <div className="prose prose-lg whitespace-pre-wrap">{formData.content || 'Your content goes here.'}</div>
-        {renderTags()}
-      </article>
-    );
-  };
+  const renderPreview = () => (
+    <article className="prose prose-blue max-w-none">
+      <h1>{formData.title || 'Blog Title'}</h1>
+      <p className="text-gray-500">{formData.shortDescription || 'Short description preview...'}</p>
+      {imageMode === 'upload' && formData.image && (
+        <img
+          src={URL.createObjectURL(formData.image)}
+          alt={formData.title}
+          className="w-full max-h-[400px] object-cover rounded-lg"
+        />
+      )}
+      {imageMode === 'url' && formData.imageUrl && (
+        <img
+          src={formData.imageUrl}
+          alt={formData.title}
+          className="w-full max-h-[400px] object-cover rounded-lg"
+        />
+      )}
+      <div className="mt-4 whitespace-pre-wrap">{formData.content || 'Blog content preview...'}</div>
+    </article>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="md:container mx-auto px-4 py-12">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="flex justify-between flex-wrap items-center p-6 border-b border-gray-100 gap-y-2">
-            <h1 className="text-3xl font-bold text-blue-500">
-              {preview ? 'Preview Your Post' : 'Create New Blog Post'}
-            </h1>
-            <button
-              onClick={togglePreview}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-600 hover:bg-blue-200 cursor-pointer transition"
-            >
-              {preview ? <><Edit2 className="h-4 w-4" /><span>Edit Post</span></> : <><Eye className="h-4 w-4" /><span>Preview Post</span></>}
-            </button>
-          </div>
-          <div className="p-6">{preview ? renderPreview() : renderForm()}</div>
-        </div>
-      </div>
-    </div>
+    <section className="md:container mx-auto p-6">
+      {preview ? renderPreview() : renderForm()}
+    </section>
   );
 }
 

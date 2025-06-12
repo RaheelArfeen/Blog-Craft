@@ -236,14 +236,14 @@ const BlogDetails = () => {
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                                 <div className="flex items-center space-x-4 mb-6 md:mb-0">
                                     <div className="relative">
-                                        {blog.userImage ? (
+                                        {blog.userImage?.startsWith("http") ? (
                                             <img
                                                 src={blog.userImage}
-                                                alt={blog.author}
-                                                className="w-14 h-14 rounded-full object-cover ring-4 ring-white shadow-lg"
+                                                alt={blog.userName}
+                                                className="w-10 h-10 rounded-full object-cover"
                                             />
                                         ) : (
-                                            <div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold ring-4 ring-white shadow-lg">
+                                            <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
                                                 {blog.userImage}
                                             </div>
                                         )}

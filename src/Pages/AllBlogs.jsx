@@ -201,7 +201,10 @@ const AllBlogs = () => {
                             </div>
                         ))
                         : filteredBlogs.map(blog => (
-                            <div key={blog._id} className="bg-white rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition">
+                            <div
+                                key={blog._id}
+                                className="bg-white rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition flex flex-col"
+                            >
                                 <div className="relative">
                                     <img
                                         src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
@@ -216,14 +219,22 @@ const AllBlogs = () => {
                                         disabled={wishlistLoadingIds.has(blog._id)}
                                         className="absolute top-4 right-4 p-2 bg-gray-200 rounded-full"
                                     >
-                                        {wishlistLoadingIds.has(blog._id)
-                                            ? <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                                            : <FaHeart className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400'}`} />}
+                                        {wishlistLoadingIds.has(blog._id) ? (
+                                            <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                                        ) : (
+                                            <FaHeart
+                                                className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400'
+                                                    }`}
+                                            />
+                                        )}
                                     </button>
                                 </div>
 
-                                <div className="p-6">
-                                    <h3 onClick={() => handleDetails(blog._id)} className="text-xl font-bold mb-2 hover:text-blue-600 cursor-pointer line-clamp-2">
+                                <div className="flex flex-col flex-1 p-6">
+                                    <h3
+                                        onClick={() => handleDetails(blog._id)}
+                                        className="text-xl font-bold mb-2 hover:text-blue-600 cursor-pointer line-clamp-2"
+                                    >
                                         {blog.title}
                                     </h3>
                                     <p className="text-gray-600 mb-4 line-clamp-3">{blog.shortDescription}</p>
@@ -241,7 +252,14 @@ const AllBlogs = () => {
                                             <span>{blog.readTime}</span>
                                         </div>
                                     </div>
-                                    <button onClick={() => handleDetails(blog._id)} className="w-full py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 font-semibold">
+
+                                    {/* Spacer to push button to bottom */}
+                                    <div className="flex-grow" />
+
+                                    <button
+                                        onClick={() => handleDetails(blog._id)}
+                                        className="w-full py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 font-semibold"
+                                    >
                                         Read More
                                     </button>
                                 </div>
