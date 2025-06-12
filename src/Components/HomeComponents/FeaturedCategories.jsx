@@ -1,6 +1,6 @@
 import React from 'react';
 import { Laptop, Heart, Plane, Camera, BookOpen, Lightbulb } from 'lucide-react';
-import { motion } from "motion/react"
+import { motion } from 'framer-motion';
 
 const FeaturedCategories = () => {
     const categories = [

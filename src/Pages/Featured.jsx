@@ -31,6 +31,10 @@ const Featured = () => {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
 
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
     // Fetch featured blogs
     useEffect(() => {
         const fetchFeatured = async () => {

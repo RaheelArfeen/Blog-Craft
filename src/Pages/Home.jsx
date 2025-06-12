@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Banner from '../Components/Banner';
 import RecentBlogs from '../Components/HomeComponents/RecentBlogPosts';
 import FeaturedCategories from '../Components/HomeComponents/FeaturedCategories';
@@ -8,15 +8,20 @@ import FeedBack from '../Components/HomeComponents/FeedBack';
 import Newsletter from '../Components/HomeComponents/NewsLetter';
 
 const Home = () => {
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
     return (
         <div>
-            <Banner/>
-            <RecentBlogs/>
-            <FeaturedCategories/>
-            <TipsSection/>
-            <StatsSection/>
-            <FeedBack/>
-            <Newsletter/>
+            <Banner />
+            <RecentBlogs />
+            <FeaturedCategories />
+            <TipsSection />
+            <StatsSection />
+            <FeedBack />
+            <Newsletter />
         </div>
     );
 };

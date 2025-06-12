@@ -16,6 +16,10 @@ const Profile = () => {
     const [wishlist, setWishlist] = useState([]);
     const [blogs, setBlogs] = useState([]);
 
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
     // Fetch wishlist for the current user
     useEffect(() => {
         if (!user) return;

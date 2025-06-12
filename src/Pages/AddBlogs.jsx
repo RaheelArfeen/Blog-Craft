@@ -29,6 +29,10 @@ function AddBlogs() {
     imageUrl: ''
   });
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const categories = ['Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
 
   useEffect(() => {

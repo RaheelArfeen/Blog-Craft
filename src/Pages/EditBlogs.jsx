@@ -31,6 +31,10 @@ const EditBlog = () => {
     const [imagePreview, setImagePreview] = useState(null);
 
     useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
+    useEffect(() => {
         async function fetchBlog() {
             try {
                 const res = await fetch(`http://localhost:3000/blogs/${id}`);

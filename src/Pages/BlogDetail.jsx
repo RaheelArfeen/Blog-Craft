@@ -21,6 +21,10 @@ const BlogDetails = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
+    useEffect(() => {
         const fetchAllData = async () => {
             setLoading(true);
             setError(null);

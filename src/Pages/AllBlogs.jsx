@@ -26,6 +26,10 @@ const AllBlogs = () => {
 
     const categoryRef = useRef(null);
 
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
     // Fetch blogs
     useEffect(() => {
         axios.get('http://localhost:3000/blogs')
