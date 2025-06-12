@@ -233,11 +233,16 @@ const AllBlogs = () => {
                                 <div className="flex flex-col flex-1 p-6">
                                     <h3
                                         onClick={() => handleDetails(blog._id)}
-                                        className="text-xl font-bold mb-2 hover:text-blue-600 cursor-pointer line-clamp-2"
-                                    >
-                                        {blog.title}
+                                        className="hover:text-blue-600 mb-4 line-clamp-2 text-xl font-bold">
+                                        {blog.title.length > 40
+                                            ? blog.title.slice(0, 40) + '...'
+                                            : blog.title}
                                     </h3>
-                                    <p className="text-gray-600 mb-4 line-clamp-3">{blog.shortDescription}</p>
+                                    <p className="text-gray-600 mb-4 line-clamp-3">
+                                        {blog.shortDescription.length > 50
+                                            ? blog.shortDescription.slice(0, 50) + '...'
+                                            : blog.shortDescription}
+                                    </p>
                                     <div className="flex justify-between text-sm text-gray-500 mb-4">
                                         <div className="flex items-center space-x-1">
                                             <User className="h-4 w-4" />

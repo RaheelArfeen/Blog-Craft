@@ -10,7 +10,7 @@ const categories = [
     "UI/UX", "Career", "Tutorial"
 ];
 
-export default function EditBlog() {
+const EditBlog = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -387,3 +387,5 @@ export default function EditBlog() {
         </div>
     );
 }
+
+export default EditBlog;

@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { AuthContext } from '../Provider/AuthProvider';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 function AddBlogs() {
   const [isSubmitting, setIsSubmitting] = useState(false);
