@@ -118,7 +118,7 @@ const RecentBlogPosts = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="min-h-screen bg-gray-50"
+            className="min-h-screen"
         >
             <div className="md:container mx-auto px-4 py-8">
                 {/* Header */}
@@ -149,10 +149,10 @@ const RecentBlogPosts = () => {
                     <>
                         {blogs.length > 0 ? (
                             <motion.div
-                                ref={blogGridRef} // Attach ref for intersection observer
+                                ref={blogGridRef}
                                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                                 initial="hidden"
-                                animate={isInView ? "visible" : "hidden"}  // Animate only if in view
+                                animate={isInView ? "visible" : "hidden"}
                                 variants={containerVariants}
                             >
                                 {blogs.map(blog => (

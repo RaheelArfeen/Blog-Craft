@@ -4,6 +4,8 @@ import RecentBlogs from '../Components/HomeComponents/RecentBlogPosts';
 import FeaturedCategories from '../Components/HomeComponents/FeaturedCategories';
 import TipsSection from '../Components/HomeComponents/TipsSection';
 import StatsSection from '../Components/HomeComponents/StatsSection';
+import FeedBack from '../Components/HomeComponents/FeedBack';
+import Newsletter from '../Components/HomeComponents/NewsLetter';
 
 const Home = () => {
     return (
@@ -13,6 +15,8 @@ const Home = () => {
             <FeaturedCategories/>
             <TipsSection/>
             <StatsSection/>
+            <FeedBack/>
+            <Newsletter/>
         </div>
     );
 };

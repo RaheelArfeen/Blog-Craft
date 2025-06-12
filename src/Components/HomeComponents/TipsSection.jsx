@@ -48,7 +48,7 @@ const TipsSection = () => {
     };
 
     return (
-        <section className="py-16 bg-white">
+        <section className="py-16">
             <div className="md:container mx-auto px-4">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -72,7 +72,7 @@ const TipsSection = () => {
                             variants={cardVariants}
                             className="group"
                         >
-                            <div className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 h-full">
+                            <div className="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 h-full">
                                 <div className={`${tip.color} w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                                     <tip.icon className="h-6 w-6 text-white" />
                                 </div>
