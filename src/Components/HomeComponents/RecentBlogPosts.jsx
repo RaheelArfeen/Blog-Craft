@@ -24,8 +24,8 @@ const RecentBlogPosts = () => {
 
     // Intersection observer hook for triggering animation when grid is near viewport
     const { ref: blogGridRef, inView: isInView } = useInView({
-        threshold: 0.2,     // 20% visible triggers
-        triggerOnce: true,  // animate only once
+        threshold: 0.2,
+        triggerOnce: true,
     });
 
     // Fetch blogs
