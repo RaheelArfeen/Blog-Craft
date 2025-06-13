@@ -29,7 +29,7 @@ const Newsletter = () => {
         setIsSubmitting(true);
 
         setTimeout(() => {
-            toast.success("Thank you for subscribing to our newsletter.");
+            toast.success("Thank you for subscribing to our newsletter!");
             setEmail('');
             setIsSubmitting(false);
         }, 1000);
@@ -41,64 +41,104 @@ const Newsletter = () => {
     });
 
     return (
-        <section className="py-16 bg-gradient-to-br from-[#2762EB] to-[#9134EA]">
-            <div className="md:container mx-auto px-4 text-center">
+        <section className="py-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 relative overflow-hidden">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
+
+            <div className="container mx-auto px-4 text-center relative z-10">
                 <motion.div
                     ref={ref}
                     initial={{ opacity: 0, y: 50 }}
                     animate={inView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="bg-white/20 backdrop-blur-2xl border border-white/30 shadow-xl rounded-2xl p-12 md:p-16"
+                    className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-12 md:p-16 mx-auto shadow-2xl"
                 >
-                    <div className="flex justify-center mb-6">
+                    <div className="flex justify-center mb-8">
                         <motion.div
-                            initial={{ scale: 0 }}
-                            animate={inView ? { scale: 1 } : {}}
-                            transition={{ duration: 0.5, delay: 0.2 }}
-                            className="bg-blue-100 p-4 rounded-full"
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={inView ? { scale: 1, rotate: 0 } : {}}
+                            transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 200 }}
+                            className="bg-white/20 backdrop-blur-sm p-5 rounded-2xl border border-white/30"
                         >
-                            <Mail className="h-8 w-8 text-blue-600" />
+                            <Mail className="h-10 w-10 text-white" />
                         </motion.div>
                     </div>
 
-                    <h2 className="text-3xl md:text-4xl font-bold text-blue-800 mb-4">
-                        Stay Updated with Our Newsletter
-                    </h2>
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight"
+                    >
+                        Stay in the Loop
+                    </motion.h2>
 
-                    <p className="text-lg text-blue-700 mb-8 max-w-2xl mx-auto">
-                        Get the latest blog posts, exclusive content, and industry insights delivered straight to your inbox.
-                    </p>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.6 }}
+                        className="text-xl text-white/90 mb-12 max-w-2xl mx-auto leading-relaxed"
+                    >
+                        Get exclusive insights, latest updates, and premium content delivered directly to your inbox. Join our community of forward-thinkers.
+                    </motion.p>
 
-                    <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+                    <motion.form
+                        onSubmit={handleSubmit}
+                        className="max-w-lg mx-auto"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={inView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.8 }}
+                    >
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email address"
-                                className="flex-1 px-4 py-3 rounded-lg border border-blue-300 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white"
-                                disabled={isSubmitting}
-                            />
-                            <button
+                            <div className="flex-1 relative">
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Enter your email address"
+                                    className="w-full px-6 py-4 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/25 transition-all duration-300 text-lg"
+                                    disabled={isSubmitting}
+                                />
+                            </div>
+                            <motion.button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold hover:bg-white/90 transition-all duration-300 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl text-lg min-w-[140px]"
                             >
                                 {isSubmitting ? (
-                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-purple-600 border-t-transparent"></div>
                                 ) : (
                                     <>
                                         <span>Subscribe</span>
-                                        <Send className="h-4 w-4" />
+                                        <Send className="h-5 w-5" />
                                     </>
                                 )}
-                            </button>
+                            </motion.button>
                         </div>
-                    </form>
+                    </motion.form>
 
-                    <p className="text-sm text-blue-600 mt-4">
-                        No spam, unsubscribe anytime. Join 10,000+ readers who trust our content.
-                    </p>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={inView ? { opacity: 1 } : {}}
+                        transition={{ duration: 0.6, delay: 1 }}
+                        className="mt-8 flex items-center justify-center space-x-6 text-sm text-white/80"
+                    >
+                        <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span>No spam, ever</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span>Unsubscribe anytime</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                            <span>12,000+ subscribers</span>
+                        </div>
+                    </motion.div>
                 </motion.div>
             </div>
         </section>

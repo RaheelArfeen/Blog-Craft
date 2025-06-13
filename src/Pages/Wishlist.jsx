@@ -310,21 +310,7 @@ const Wishlists = () => {
                     </div>
 
                     <div className="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                        <p className="text-sm text-gray-700">
-                            Showing
-                            <span className="font-medium">
-                                {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
-                            </span>
-                            to
-                            <span className="font-medium">
-                                {Math.min(
-                                    (table.getState().pagination.pageIndex + 1) *
-                                    table.getState().pagination.pageSize,
-                                    wishlist.length
-                                )}
-                            </span>
-                            of <span className="font-medium">{wishlist.length}</span> results
-                        </p>
+                        <p className="text-sm text-gray-700">Showing <span className="font-medium">{table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}</span> to <span className="font-medium">{Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, wishlist.length)}</span>of <span className="font-medium">{wishlist.length}</span> results</p>
                         <div className="flex space-x-2">
                             <button
                                 onClick={() => table.previousPage()}

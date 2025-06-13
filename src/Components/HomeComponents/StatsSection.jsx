@@ -1,6 +1,6 @@
 import React from 'react';
 import { Users, BookOpen, Heart, Award } from 'lucide-react';
-import { motion } from "motion/react"
+import { motion } from "framer-motion"
 import { useInView } from 'react-intersection-observer';
 
 const StatsSection = () => {

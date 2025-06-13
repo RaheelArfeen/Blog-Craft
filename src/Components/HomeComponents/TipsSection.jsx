@@ -1,6 +1,6 @@
 import React from 'react';
 import { Lightbulb, BookOpen, Users, TrendingUp } from 'lucide-react';
-import { motion } from "motion/react"
+import { motion } from "framer-motion"
 import { useInView } from 'react-intersection-observer';
 
 const TipsSection = () => {

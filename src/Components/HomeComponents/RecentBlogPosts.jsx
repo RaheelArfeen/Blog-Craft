@@ -10,7 +10,7 @@ import { FaHeart } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { AuthContext } from '../../Provider/AuthProvider';
-import { motion } from "motion/react"
+import { motion } from "framer-motion"
 import { useInView } from 'react-intersection-observer';
 
 const RecentBlogPosts = () => {

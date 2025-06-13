@@ -17,16 +17,16 @@ const Footer = () => {
                             Empowering writers and readers to share knowledge, stories, and insights that matter. Join our community of passionate creators.
                         </p>
                         <div className="flex space-x-4">
-                            <a href="#" className="hover:text-blue-400 transition-colors text-gray-400">
+                            <a className="hover:text-blue-400 transition-colors text-gray-400">
                                 <Facebook className="h-6 w-6" />
                             </a>
-                            <a href="#" className="hover:text-blue-400 transition-colors text-gray-400">
+                            <a className="hover:text-blue-400 transition-colors text-gray-400">
                                 <Twitter className="h-6 w-6" />
                             </a>
-                            <a href="#" className="hover:text-blue-400 transition-colors text-gray-400">
+                            <a className="hover:text-blue-400 transition-colors text-gray-400">
                                 <Instagram className="h-6 w-6" />
                             </a>
-                            <a href="#" className="hover:text-blue-400 transition-colors text-gray-400">
+                            <a className="hover:text-blue-400 transition-colors text-gray-400">
                                 <Linkedin className="h-6 w-6" />
                             </a>
                         </div>
@@ -69,27 +69,27 @@ const Footer = () => {
                         <h3 className="text-lg font-semibold text-white">Categories</h3>
                         <ul className="space-y-2">
                             <li>
-                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                <a className="hover:text-blue-400 transition-colors">
                                     Technology
                                 </a>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                <a className="hover:text-blue-400 transition-colors">
                                     Design
                                 </a>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                <a className="hover:text-blue-400 transition-colors">
                                     Business
                                 </a>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                <a className="hover:text-blue-400 transition-colors">
                                     Lifestyle
                                 </a>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-blue-400 transition-colors">
+                                <a className="hover:text-blue-400 transition-colors">
                                     Travel
                                 </a>
                             </li>
