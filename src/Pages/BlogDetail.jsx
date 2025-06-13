@@ -29,12 +29,12 @@ const BlogDetails = () => {
             setLoading(true);
             setError(null);
             try {
-                const blogRes = await fetch(`https://blog-craft-server.vercel.app/blogs/${id}`);
+                const blogRes = await fetch(`http://localhost:3000/blogs/${id}`);
                 if (!blogRes.ok) throw new Error("Blog not found");
                 const blogData = await blogRes.json();
                 setBlog(blogData);
 
-                const allBlogsRes = await fetch(`https://blog-craft-server.vercel.app/blogs`);
+                const allBlogsRes = await fetch(`http://localhost:3000/blogs`);
                 if (!allBlogsRes.ok) throw new Error("Failed to fetch blogs");
 
             } catch (err) {
@@ -51,7 +51,7 @@ const BlogDetails = () => {
         if (!id) return;
         setLoadingComments(true);
         try {
-            const res = await fetch(`https://blog-craft-server.vercel.app/comments/${id}`);
+            const res = await fetch(`http://localhost:3000/comments/${id}`);
             if (!res.ok) throw new Error("Failed to fetch comments");
             const data = await res.json();
             setComments(data);
@@ -98,7 +98,7 @@ const BlogDetails = () => {
         const userImage = user?.photoURL || userInitial;
 
         try {
-            const res = await fetch(`https://blog-craft-server.vercel.app/comments/${id}`, {
+            const res = await fetch(`http://localhost:3000/comments/${id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -134,7 +134,7 @@ const BlogDetails = () => {
 
         if (result.isConfirmed) {
             try {
-                const res = await fetch(`https://blog-craft-server.vercel.app/comments/${commentId}`, {
+                const res = await fetch(`http://localhost:3000/comments/${commentId}`, {
                     method: "DELETE",
                 });
 

@@ -124,19 +124,21 @@ const Newsletter = () => {
                         initial={{ opacity: 0 }}
                         animate={inView ? { opacity: 1 } : {}}
                         transition={{ duration: 0.6, delay: 1 }}
-                        className="mt-8 flex items-center justify-center space-x-6 text-sm text-white/80"
+                        className="mt-8 text-sm text-white/80"
                     >
-                        <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <span>No spam, ever</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                            <span>Unsubscribe anytime</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                            <span>12,000+ subscribers</span>
+                        <div className="flex flex-wrap items-center justify-center gap-6">
+                            <div className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                <span>No spam, ever</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                <span>Unsubscribe anytime</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                <span>12,000+ subscribers</span>
+                            </div>
                         </div>
                     </motion.div>
                 </motion.div>

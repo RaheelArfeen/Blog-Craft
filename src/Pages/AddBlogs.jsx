@@ -140,7 +140,7 @@ function AddBlogs() {
         readTime,
         blogId: uuidv4()
       };
-      await axios.post('https://blog-craft-server.vercel.app/blogs', blogData);
+      await axios.post('http://localhost:3000/blogs', blogData);
       toast.success('Blog published successfully!');
       setFormData({
         title: '',

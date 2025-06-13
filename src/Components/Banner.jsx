@@ -92,7 +92,7 @@ const Banner = () => {
                                 ease: "linear"
                             }}
                         >
-                            BlogVerse
+                            BlogCraft
                         </motion.span>
                     </motion.h1>
 
@@ -167,7 +167,7 @@ const Banner = () => {
                                     animate={{ scale: [1, 1.1, 1] }}
                                     transition={{ duration: 2, repeat: Infinity }}
                                 >
-                                    50K+
+                                    20k+
                                 </motion.h3>
                                 <p className="text-blue-200">Active Writers</p>
                             </div>
@@ -191,7 +191,7 @@ const Banner = () => {
                                     animate={{ scale: [1, 1.1, 1] }}
                                     transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
                                 >
-                                    100K+
+                                    250K+
                                 </motion.h3>
                                 <p className="text-purple-200">Stories Published</p>
                             </div>

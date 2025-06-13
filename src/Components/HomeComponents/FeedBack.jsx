@@ -8,7 +8,7 @@ const FeedBack = () => {
         {
             name: "Sarah Johnson",
             role: "Content Creator",
-            content: "BlogVerse has transformed how I share my stories. The community here is incredibly supportive and engaging.",
+            content: "BlogCraft has transformed how I share my stories. The community here is incredibly supportive and engaging.",
             rating: 5,
             avatar: "https://i.pravatar.cc/150?img=5"
         },
@@ -56,11 +56,11 @@ const FeedBack = () => {
                         What Our Writers Say
                     </h2>
                     <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Join thousands of writers who have found their voice and built their audience on BlogVerse.
+                        Join thousands of writers who have found their voice and built their audience on Blog.
                     </p>
                 </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {testimonials.map((testimonial, index) => (
                         <motion.div
                             key={index}
