@@ -36,7 +36,7 @@ const Banner = () => {
                 />
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
+            <div className="md:container relative z-10 max-w-7xl mx-auto px-4 pt-20 pb-32">
                 <div className="text-center">
                     {/* Animated Icon */}
                     <motion.div
@@ -156,10 +156,7 @@ const Banner = () => {
                             transition={{ duration: 0.3 }}
                         >
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                                <motion.div
-                                    animate={{ rotate: [0, 360] }}
-                                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                                >
+                                <motion.div>
                                     <Users className="h-8 w-8 text-blue-400 mx-auto mb-3" />
                                 </motion.div>
                                 <motion.h3
@@ -180,10 +177,7 @@ const Banner = () => {
                             transition={{ duration: 0.3 }}
                         >
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                                <motion.div
-                                    animate={{ rotate: [0, 360] }}
-                                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                                >
+                                <motion.div>
                                     <BookOpen className="h-8 w-8 text-purple-400 mx-auto mb-3" />
                                 </motion.div>
                                 <motion.h3
@@ -204,10 +198,7 @@ const Banner = () => {
                             transition={{ duration: 0.3 }}
                         >
                             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                                <motion.div
-                                    animate={{ rotate: [0, 360] }}
-                                    transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                                >
+                                <motion.div>
                                     <TrendingUp className="h-8 w-8 text-pink-400 mx-auto mb-3" />
                                 </motion.div>
                                 <motion.h3

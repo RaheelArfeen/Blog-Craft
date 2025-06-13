@@ -194,7 +194,7 @@ const Profile = () => {
                 {/* Quick Actions */}
                 <div className="p-6 border-t border-gray-200">
                     <h3 className="text-xl font-semibold mb-4">Quick Actions</h3>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex md:flex-row flex-col gap-3">
                         {loading ? (
                             <>
                                 <Skeleton width={140} height={48} borderRadius={8} />

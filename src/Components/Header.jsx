@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { Link, NavLink } from 'react-router';
+import { Link, NavLink, useNavigate } from 'react-router';
 import { BookOpen, Menu, X } from 'lucide-react';
 import { toast } from 'sonner';
 import Skeleton from 'react-loading-skeleton';
@@ -12,6 +12,7 @@ const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const Navigate = useNavigate();
 
     const handleLogout = async () => {
         if (!user || !user.email) {
@@ -160,7 +161,7 @@ const Header = () => {
                                 </div>
                             ) : user ? (
                                 <div className="border-t border-gray-200 mt-4 pt-4 px-3">
-                                    <div className="flex items-center">
+                                    <div onClick={() => {Navigate('/profile'), setIsOpen(false)}} className="flex items-center">
                                         <div className="rounded-full h-9 w-9 overflow-hidden border border-gray-300">
                                             {user.photoURL ? (
                                                 <img src={user.photoURL} alt={user.displayName} className="h-full w-full object-cover" />

@@ -60,7 +60,7 @@ const FeedBack = () => {
                     </p>
                 </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="flex flex-wrap gap-8 justify-center">
                     {testimonials.map((testimonial, index) => (
                         <motion.div
                             key={index}
@@ -68,7 +68,7 @@ const FeedBack = () => {
                             initial="hidden"
                             animate={inView ? "visible" : "hidden"}
                             variants={cardVariants}
-                            className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 flex-1 flex flex-col justify-between"
+                            className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 flex-1 flex flex-col justify-between min-w-60"
                         >
                             <div>
                                 <div className="flex items-center mb-3">

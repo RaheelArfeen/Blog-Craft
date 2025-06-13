@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle, MessageCircle, Users, Zap, Shield, DollarSign, Heart } from 'lucide-react';
+import { ChevronDown, HelpCircle, MessageCircle, Users, DollarSign, Heart, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FAQSection = () => {

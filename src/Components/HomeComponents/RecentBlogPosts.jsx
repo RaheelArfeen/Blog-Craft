@@ -12,6 +12,8 @@ import { format } from 'date-fns';
 import { AuthContext } from '../../Provider/AuthProvider';
 import { motion } from "framer-motion"
 import { useInView } from 'react-intersection-observer';
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 
 const RecentBlogPosts = () => {
     const navigate = useNavigate();
@@ -156,76 +158,80 @@ const RecentBlogPosts = () => {
                                 variants={containerVariants}
                             >
                                 {blogs.map(blog => (
-                                    <motion.div
-                                        key={blog._id}
-                                        variants={cardVariants}
-                                        className="bg-white rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition flex flex-col"
-                                    >
-                                        <div className="relative">
-                                            <img
-                                                src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
-                                                alt={blog.title}
-                                                className="w-full h-72 object-cover"
-                                            />
-                                            <span className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
-                                                {blog.category}
-                                            </span>
-                                            <button
-                                                onClick={() => handleWishlist(blog)}
-                                                disabled={wishlistLoadingIds.has(blog._id)}
-                                                className="absolute top-4 right-4 p-2 bg-gray-200 rounded-full"
-                                            >
-                                                {wishlistLoadingIds.has(blog._id) ? (
-                                                    <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                                                ) : (
-                                                    <FaHeart
-                                                        className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400'
-                                                            }`}
+                                    <PhotoProvider>
+                                        <motion.div
+                                            key={blog._id}
+                                            variants={cardVariants}
+                                            className="bg-white rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition flex flex-col"
+                                        >
+                                            <div className="relative">
+                                                <PhotoView src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}>
+                                                    <img
+                                                        src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
+                                                        alt={blog.title}
+                                                        className="w-full h-72 object-cover"
                                                     />
-                                                )}
-                                            </button>
-                                        </div>
-
-                                        <div className="flex flex-col flex-1 p-6">
-                                            <h3
-                                                onClick={() => handleDetails(blog._id)}
-                                                className="hover:text-blue-600 mb-4 line-clamp-2 text-xl font-bold cursor-pointer"
-                                            >
-                                                {blog.title.length > 40
-                                                    ? blog.title.slice(0, 40) + '...'
-                                                    : blog.title}
-                                            </h3>
-                                            <p className="text-gray-600 mb-4 line-clamp-3">
-                                                {blog.shortDescription.length > 50
-                                                    ? blog.shortDescription.slice(0, 50) + '...'
-                                                    : blog.shortDescription}
-                                            </p>
-                                            <div className="flex justify-between text-sm text-gray-500 mb-4">
-                                                <div className="flex items-center space-x-1">
-                                                    <User className="h-4 w-4" />
-                                                    <span>{blog.author}</span>
-                                                </div>
-                                                <div className="flex items-center space-x-1">
-                                                    <Calendar className="h-4 w-4" />
-                                                    <span>{format(new Date(blog.date), 'MMM dd, yyyy')}</span>
-                                                </div>
-                                                <div className="flex items-center space-x-1">
-                                                    <Eye className="h-4 w-4" />
-                                                    <span>{blog.readTime}</span>
-                                                </div>
+                                                </PhotoView>
+                                                <span className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
+                                                    {blog.category}
+                                                </span>
+                                                <button
+                                                    onClick={() => handleWishlist(blog)}
+                                                    disabled={wishlistLoadingIds.has(blog._id)}
+                                                    className="absolute top-4 right-4 p-2 bg-gray-200 rounded-full"
+                                                >
+                                                    {wishlistLoadingIds.has(blog._id) ? (
+                                                        <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                                                    ) : (
+                                                        <FaHeart
+                                                            className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400'
+                                                                }`}
+                                                        />
+                                                    )}
+                                                </button>
                                             </div>
 
-                                            {/* Spacer to push button to bottom */}
-                                            <div className="flex-grow" />
+                                            <div className="flex flex-col flex-1 p-6">
+                                                <h3
+                                                    onClick={() => handleDetails(blog._id)}
+                                                    className="hover:text-blue-600 mb-4 line-clamp-2 text-xl font-bold cursor-pointer"
+                                                >
+                                                    {blog.title.length > 40
+                                                        ? blog.title.slice(0, 40) + '...'
+                                                        : blog.title}
+                                                </h3>
+                                                <p className="text-gray-600 mb-4 line-clamp-3">
+                                                    {blog.shortDescription.length > 50
+                                                        ? blog.shortDescription.slice(0, 50) + '...'
+                                                        : blog.shortDescription}
+                                                </p>
+                                                <div className="flex justify-between text-sm text-gray-500 mb-4">
+                                                    <div className="flex items-center space-x-1">
+                                                        <User className="h-4 w-4" />
+                                                        <span>{blog.author}</span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-1">
+                                                        <Calendar className="h-4 w-4" />
+                                                        <span>{format(new Date(blog.date), 'MMM dd, yyyy')}</span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-1">
+                                                        <Eye className="h-4 w-4" />
+                                                        <span>{blog.readTime}</span>
+                                                    </div>
+                                                </div>
 
-                                            <button
-                                                onClick={() => handleDetails(blog._id)}
-                                                className="w-full py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 font-semibold"
-                                            >
-                                                Read More
-                                            </button>
-                                        </div>
-                                    </motion.div>
+                                                {/* Spacer to push button to bottom */}
+                                                <div className="flex-grow" />
+
+                                                <button
+                                                    onClick={() => handleDetails(blog._id)}
+                                                    className="w-full py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 font-semibold"
+                                                >
+                                                    Read More
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    </PhotoProvider>
                                 ))}
                             </motion.div>
                         ) : (

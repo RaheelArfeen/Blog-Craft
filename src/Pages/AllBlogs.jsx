@@ -10,6 +10,9 @@ import { FaHeart } from 'react-icons/fa';
 import { AuthContext } from '../Provider/AuthProvider';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { motion, AnimatePresence } from 'framer-motion';
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 
 const AllBlogs = () => {
     const navigate = useNavigate();
@@ -27,10 +30,9 @@ const AllBlogs = () => {
     const categoryRef = useRef(null);
 
     useEffect(() => {
-        window.scrollTo(0, 0)
-    }, [])
+        window.scrollTo(0, 0);
+    }, []);
 
-    // Fetch blogs
     useEffect(() => {
         axios.get('https://blog-craft-server.vercel.app/blogs')
             .then(res => {
@@ -40,7 +42,6 @@ const AllBlogs = () => {
             .catch(() => setLoading(false));
     }, []);
 
-    // Fetch wishlist
     useEffect(() => {
         if (!user?.email) {
             setWishlistIds(new Set());
@@ -57,7 +58,6 @@ const AllBlogs = () => {
             .catch(() => setWishlistIds(new Set()));
     }, [user, loading]);
 
-    // Debounce search
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearchTerm(searchTerm.trim().toLowerCase());
@@ -65,7 +65,6 @@ const AllBlogs = () => {
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
-    // Close dropdown on outside click
     useEffect(() => {
         const handleClick = (e) => {
             if (categoryRef.current && !categoryRef.current.contains(e.target)) {
@@ -91,7 +90,7 @@ const AllBlogs = () => {
 
     const handleWishlist = async (blog) => {
         if (!user) return toast.error("You must log in to add to wishlist");
-        if (isWishlisted(blog.blogId)) return toast.info("Already wishlisted");
+        if (isWishlisted(blog._id)) return toast.info("Already wishlisted");
 
         const payload = {
             blogId: blog._id,
@@ -111,7 +110,7 @@ const AllBlogs = () => {
             setWishlistLoadingIds(prev => new Set(prev).add(blog._id));
             await axios.post('https://blog-craft-server.vercel.app/wishlist', payload);
             setWishlistIds(prev => new Set(prev).add(String(blog._id)));
-            toast.success("Wishlistted Successfully");
+            toast.success("Wishlisted Successfully");
         } catch (err) {
             if (err.response?.status === 409) {
                 toast.info("Already wishlisted");
@@ -127,7 +126,6 @@ const AllBlogs = () => {
             });
         }
     };
-
 
     const handleDetails = (id) => navigate(`/blogs/${id}`);
 
@@ -154,29 +152,46 @@ const AllBlogs = () => {
                         />
                     </div>
                     <div className="relative">
-                        <button
+                        <motion.button
                             onClick={() => setCategoryOpen(open => !open)}
                             className="flex items-center justify-between px-4 py-3 border text-gray-600 border-gray-300 rounded-lg w-48"
+                            aria-haspopup="listbox"
+                            aria-expanded={categoryOpen}
+                            initial={false}
+                            animate={{ rotate: categoryOpen ? 180 : 0 }}
+                            transition={{ duration: 0.3 }}
                         >
                             <span>{selectedCategory}</span>
                             <ChevronDown className="h-4 w-4 ml-2" />
-                        </button>
-                        {categoryOpen && (
-                            <ul className="absolute z-10 w-48 bg-white border border-gray-300 text-gray-600 rounded-md mt-1 shadow-md">
-                                {categories.map(cat => (
-                                    <li
-                                        key={cat}
-                                        className={`px-4 py-2 cursor-pointer hover:bg-blue-100 ${selectedCategory === cat ? 'bg-blue-50 font-semibold' : ''}`}
-                                        onClick={() => {
-                                            setSelectedCategory(cat);
-                                            setCategoryOpen(false);
-                                        }}
-                                    >
-                                        {cat}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
+                        </motion.button>
+                        <AnimatePresence>
+                            {categoryOpen && (
+                                <motion.ul
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="absolute z-10 w-48 bg-white border border-gray-300 text-gray-600 rounded-md mt-1 shadow-md"
+                                    role="listbox"
+                                >
+                                    {categories.map(cat => (
+                                        <li
+                                            key={cat}
+                                            className={`px-4 py-2 cursor-pointer hover:bg-blue-100 ${selectedCategory === cat ? 'bg-blue-50 font-semibold' : ''
+                                                }`}
+                                            onClick={() => {
+                                                setSelectedCategory(cat);
+                                                setCategoryOpen(false);
+                                            }}
+                                            role="option"
+                                            aria-selected={selectedCategory === cat}
+                                        >
+                                            {cat}
+                                        </li>
+                                    ))}
+                                </motion.ul>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
 
@@ -190,9 +205,9 @@ const AllBlogs = () => {
                 )}
 
                 {/* Blog Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {loading
-                        ? Array.from({ length: 6 }).map((_, i) => (
+                {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {Array.from({ length: 6 }).map((_, i) => (
                             <div key={i} className="bg-white p-6 rounded-xl shadow-lg">
                                 <Skeleton height={192} className="mb-4" />
                                 <Skeleton height={24} width="60%" className="mb-2" />
@@ -203,81 +218,105 @@ const AllBlogs = () => {
                                 </div>
                                 <Skeleton height={40} className="mt-4 rounded-lg" />
                             </div>
-                        ))
-                        : filteredBlogs.map(blog => (
-                            <div
-                                key={blog._id}
-                                className="bg-white rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition flex flex-col"
-                            >
-                                <div className="relative">
-                                    <img
-                                        src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
-                                        alt={blog.title}
-                                        className="w-full h-72 object-cover"
-                                    />
-                                    <span className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
-                                        {blog.category}
-                                    </span>
-                                    <button
-                                        onClick={() => handleWishlist(blog)}
-                                        disabled={wishlistLoadingIds.has(blog._id)}
-                                        className="absolute top-4 right-4 p-2 bg-gray-200 rounded-full"
-                                    >
-                                        {wishlistLoadingIds.has(blog._id) ? (
-                                            <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                                        ) : (
-                                            <FaHeart
-                                                className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400'
-                                                    }`}
+                        ))}
+                    </div>
+                ) : filteredBlogs.length > 0 ? (
+                    <PhotoProvider>
+                        <motion.div
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                            initial="hidden"
+                            animate="visible"
+                            variants={{
+                                visible: {
+                                    transition: {
+                                        staggerChildren: 0.1
+                                    }
+                                }
+                            }}
+                        >
+                            {filteredBlogs.map(blog => (
+                                <motion.div
+                                    key={blog._id}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 20 },
+                                        visible: { opacity: 1, y: 0 }
+                                    }}
+                                    whileHover={{ scale: 1.02 }}
+                                    transition={{ type: 'spring', stiffness: 100, damping: 15 }}
+                                    className="bg-white rounded-xl overflow-hidden shadow-lg transition flex flex-col"
+                                >
+                                    <div className="relative cursor-pointer">
+                                        <PhotoView src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}>
+                                            <img
+                                                src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
+                                                alt={blog.title}
+                                                className="w-full h-72 object-cover"
                                             />
-                                        )}
-                                    </button>
-                                </div>
-
-                                <div className="flex flex-col flex-1 p-6">
-                                    <h3
-                                        onClick={() => handleDetails(blog._id)}
-                                        className="hover:text-blue-600 mb-4 line-clamp-2 text-xl font-bold">
-                                        {blog.title.length > 40
-                                            ? blog.title.slice(0, 40) + '...'
-                                            : blog.title}
-                                    </h3>
-                                    <p className="text-gray-600 mb-4 line-clamp-3">
-                                        {blog.shortDescription.length > 50
-                                            ? blog.shortDescription.slice(0, 50) + '...'
-                                            : blog.shortDescription}
-                                    </p>
-                                    <div className="flex justify-between text-sm text-gray-500 mb-4">
-                                        <div className="flex items-center space-x-1">
-                                            <User className="h-4 w-4" />
-                                            <span>{blog.author}</span>
-                                        </div>
-                                        <div className="flex items-center space-x-1">
-                                            <Calendar className="h-4 w-4" />
-                                            <span>{format(new Date(blog.date), 'MMM dd, yyyy')}</span>
-                                        </div>
-                                        <div className="flex items-center space-x-1">
-                                            <Eye className="h-4 w-4" />
-                                            <span>{blog.readTime}</span>
-                                        </div>
+                                        </PhotoView>
+                                        <span className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
+                                            {blog.category}
+                                        </span>
+                                        <button
+                                            onClick={() => handleWishlist(blog)}
+                                            disabled={wishlistLoadingIds.has(blog._id)}
+                                            className="absolute top-4 right-4 p-2 bg-gray-200 rounded-full"
+                                            aria-label={isWishlisted(blog._id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                                        >
+                                            {wishlistLoadingIds.has(blog._id) ? (
+                                                <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                                            ) : (
+                                                <FaHeart
+                                                    className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400'}`}
+                                                />
+                                            )}
+                                        </button>
                                     </div>
 
-                                    {/* Spacer to push button to bottom */}
-                                    <div className="flex-grow" />
+                                    <div className="flex flex-col flex-1 p-6">
+                                        <h3
+                                            onClick={() => handleDetails(blog._id)}
+                                            className="hover:text-blue-600 mb-4 line-clamp-2 text-xl font-bold cursor-pointer"
+                                        >
+                                            {blog.title.length > 40
+                                                ? blog.title.slice(0, 40) + '...'
+                                                : blog.title}
+                                        </h3>
+                                        <p className="text-gray-600 mb-4 line-clamp-3">
+                                            {blog.shortDescription.length > 50
+                                                ? blog.shortDescription.slice(0, 50) + '...'
+                                                : blog.shortDescription}
+                                        </p>
+                                        <div className="flex justify-between text-sm text-gray-500 mb-4">
+                                            <div className="flex items-center space-x-1">
+                                                <User className="h-4 w-4" />
+                                                <span>{blog.author}</span>
+                                            </div>
+                                            <div className="flex items-center space-x-1">
+                                                <Calendar className="h-4 w-4" />
+                                                <span>{format(new Date(blog.date), 'MMM dd, yyyy')}</span>
+                                            </div>
+                                            <div className="flex items-center space-x-1">
+                                                <Eye className="h-4 w-4" />
+                                                <span>{blog.readTime}</span>
+                                            </div>
+                                        </div>
 
-                                    <button
-                                        onClick={() => handleDetails(blog._id)}
-                                        className="w-full py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 font-semibold"
-                                    >
-                                        Read More
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                </div>
+                                        <div className="flex-grow" />
 
-                {/* Empty State */}
-                {!loading && filteredBlogs.length === 0 && (
+                                        <motion.button
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            onClick={() => handleDetails(blog._id)}
+                                            className="w-full py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 font-semibold"
+                                        >
+                                            Read More
+                                        </motion.button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    </PhotoProvider>
+                ) : (
                     <div className="text-center py-16">
                         <div className="mx-auto w-64 mb-6">
                             <Lottie animationData={notFound} loop />
