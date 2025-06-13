@@ -11,7 +11,7 @@ import { auth } from '../Firebase/Firebase.init';
 import { toast } from 'sonner';
 import axios from 'axios';
 
-const RegisterForm = ({ onLogin, isLoading = false }) => {
+const Register = ({ onLogin, isLoading = false }) => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [profilePhoto, setProfilePhoto] = useState('');
@@ -28,10 +28,12 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
     const hasUppercase = /[A-Z]/.test(password);
     const hasLowercase = /[a-z]/.test(password);
     const hasMinLength = password.length >= 6;
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
     useEffect(() => {
-        window.scrollTo(0, 0)
-    }, [])
+        window.scrollTo(0, 0);
+    }, []);
 
     const sendUserToBackend = (user) => {
         const userData = {
@@ -55,6 +57,7 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
         const newErrors = {};
 
         if (!fullName.trim()) newErrors.fullName = 'Full name is required';
+
         if (!email) {
             newErrors.email = 'Email is required';
         } else if (!/\S+@\S+\.\S+/.test(email)) {
@@ -63,8 +66,16 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
 
         if (!password) {
             newErrors.password = 'Password is required';
-        } else if (!hasUppercase || !hasLowercase || !hasMinLength) {
-            newErrors.password = 'Password does not meet requirements';
+        } else {
+            if (!hasMinLength) {
+                newErrors.password = 'Password must be at least 6 characters';
+            } else if (!hasUppercase) {
+                newErrors.password = 'Password must include an uppercase letter';
+            } else if (!hasNumber) {
+                newErrors.password = 'Password must include a number';
+            } else if (!hasSpecialChar) {
+                newErrors.password = 'Password must include a special character';
+            }
         }
 
         if (profilePhoto && !/^https?:\/\//.test(profilePhoto)) {
@@ -92,7 +103,6 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
                 })
                     .then(() => {
                         sendUserToBackend(user);
-
                         setTimeout(() => {
                             setLoading(false);
                             toast.success('Account created successfully!');
@@ -100,12 +110,12 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
                         }, 500);
                     })
                     .catch((error) => {
-                        alert(error.message);
+                        toast.error(error.message);
                         setLoading(false);
                     });
             })
             .catch((error) => {
-                alert(error.message);
+                toast.error(error.message);
                 setLoading(false);
             });
     };
@@ -118,10 +128,8 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
             .then((result) => {
                 const user = result.user;
                 sendUserToBackend(user);
-
                 localStorage.setItem('Photo URL:', user.photoURL);
                 toast.success('Google login successful!');
-
                 setTimeout(() => {
                     setGoogleLoading(false);
                     navigate(from, { replace: true });
@@ -205,30 +213,43 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
 
                         <div className="mt-3 space-y-2">
                             <p className="text-sm text-gray-600 font-medium">Password requirements:</p>
+
                             <div className="flex items-center">
                                 <span className={`mr-2 ${hasUppercase ? 'text-green-500' : 'text-gray-400'}`}>
                                     {hasUppercase ? <Check size={16} /> : <X size={16} />}
                                 </span>
                                 <span className="text-sm text-gray-600">At least one uppercase letter</span>
                             </div>
+
                             <div className="flex items-center">
                                 <span className={`mr-2 ${hasLowercase ? 'text-green-500' : 'text-gray-400'}`}>
                                     {hasLowercase ? <Check size={16} /> : <X size={16} />}
                                 </span>
                                 <span className="text-sm text-gray-600">At least one lowercase letter</span>
                             </div>
+
                             <div className="flex items-center">
                                 <span className={`mr-2 ${hasMinLength ? 'text-green-500' : 'text-gray-400'}`}>
                                     {hasMinLength ? <Check size={16} /> : <X size={16} />}
                                 </span>
                                 <span className="text-sm text-gray-600">At least 6 characters</span>
                             </div>
+
+                            <div className="flex items-center">
+                                <span className={`mr-2 ${hasNumber ? 'text-green-500' : 'text-gray-400'}`}>
+                                    {hasNumber ? <Check size={16} /> : <X size={16} />}
+                                </span>
+                                <span className="text-sm text-gray-600">At least one number</span>
+                            </div>
+
+                            <div className="flex items-center">
+                                <span className={`mr-2 ${hasSpecialChar ? 'text-green-500' : 'text-gray-400'}`}>
+                                    {hasSpecialChar ? <Check size={16} /> : <X size={16} />}
+                                </span>
+                                <span className="text-sm text-gray-600">At least one special character</span>
+                            </div>
                         </div>
                     </div>
-
-                    {errors.firebase && (
-                        <p className="text-red-500 text-sm mb-4">{errors.firebase}</p>
-                    )}
 
                     <button type="submit" className="w-full py-3 bg-[#3A63D8] text-white font-semibold rounded-lg hover:bg-[#2A48B5] transition disabled:opacity-60" disabled={loading || isLoading}>
                         {loading || isLoading ? 'Creating...' : 'Create Account'}
@@ -278,4 +299,4 @@ const RegisterForm = ({ onLogin, isLoading = false }) => {
     );
 };
 
-export default RegisterForm;
+export default Register;
