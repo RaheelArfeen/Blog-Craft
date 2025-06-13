@@ -25,7 +25,7 @@ const Profile = () => {
         if (!user) return;
         const fetchWishlist = async () => {
             try {
-                const res = await axios.get(`http://localhost:3000/wishlist?email=${user.email}`);
+                const res = await axios.get(`https://blog-craft-server.vercel.app/wishlist?email=${user.email}`);
                 const userWishlist = res.data.filter(item => item.email === user.email);
                 setWishlist(userWishlist);
             } catch (error) {
@@ -39,7 +39,7 @@ const Profile = () => {
         if (!user) return;
         const fetchBlogs = async () => {
             try {
-                const res = await axios.get('http://localhost:3000/blogs');
+                const res = await axios.get('https://blog-craft-server.vercel.app/blogs');
                 const userBlogs = res.data.filter(blog => blog.email === user.email);
                 setBlogs(userBlogs);
             } catch (error) {

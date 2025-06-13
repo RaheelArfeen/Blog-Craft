@@ -40,7 +40,7 @@ const Featured = () => {
         const fetchFeatured = async () => {
             setLoading(true);
             try {
-                const res = await axios.get('http://localhost:3000/blogs', {
+                const res = await axios.get('https://blog-craft-server.vercel.app/blogs', {
                     withCredentials: true
                 });
                 const sortedTop10 = res.data
@@ -68,7 +68,7 @@ const Featured = () => {
         }
 
         axios
-            .get('http://localhost:3000/wishlist', {
+            .get('https://blog-craft-server.vercel.app/wishlist', {
                 params: { email: user.email }
             })
             .then((res) => {
@@ -100,7 +100,7 @@ const Featured = () => {
 
         try {
             setWishlistLoadingIds((prev) => new Set(prev).add(blog._id));
-            await axios.post('http://localhost:3000/wishlist', payload);
+            await axios.post('https://blog-craft-server.vercel.app/wishlist', payload);
             setWishlistIds((prev) => new Set(prev).add(String(blog._id)));
             toast.success('Wishlisted Successfully');
         } catch (err) {
@@ -234,7 +234,7 @@ const Featured = () => {
     });
 
     return (
-        <div className="md:container mx-auto px-4 py-8">
+        <div className="md:container min-h-screen mx-auto px-4 py-8">
             <div className="text-center mb-12 w-full">
                 <div className="bg-gradient-to-r from-blue-100 to-purple-100 px-6 py-12 rounded-xl inline-block shadow w-full">
                     <div className="inline-flex items-center gap-2 border border-blue-200 rounded-full px-4 py-2 mb-4 text-sm font-medium text-blue-700">

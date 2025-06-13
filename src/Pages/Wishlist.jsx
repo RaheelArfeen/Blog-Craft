@@ -31,7 +31,7 @@ const Wishlists = () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await axios.get(`http://localhost:3000/wishlist?email=${user.email}`, {
+            const res = await axios.get(`https://blog-craft-server.vercel.app/wishlist?email=${user.email}`, {
                 withCredentials: 'include'
             });
             setWishlist(res.data);
@@ -56,7 +56,7 @@ const Wishlists = () => {
             confirmButtonText: "Yes, delete it!"
         }).then(result => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:3000/wishlist/${id}`, {
+                fetch(`https://blog-craft-server.vercel.app/wishlist/${id}`, {
                     method: 'DELETE',
                 })
                     .then(response => {
@@ -206,7 +206,7 @@ const Wishlists = () => {
     });
 
     return (
-        <div className="md:container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="md:container min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="mb-8">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                     <div className="flex flex-col items-center gap-y-2 justify-start w-full">
