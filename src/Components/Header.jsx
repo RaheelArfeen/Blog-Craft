@@ -21,13 +21,13 @@ const Header = () => {
 
         try {
             // 1. Optional: Remove JWT cookie from backend
-            await fetch('http://localhost:3000/logout', {
+            await fetch('https://blog-craft-server.vercel.app/logout', {
                 method: 'GET',
                 credentials: 'include',
             });
 
             // 2. Optional: Also delete user record if needed (e.g., from a user collection)
-            const response = await fetch(`http://localhost:3000/users/${user.email}`, {
+            const response = await fetch(`https://blog-craft-server.vercel.app/users/${user.email}`, {
                 method: 'DELETE',
             });
 

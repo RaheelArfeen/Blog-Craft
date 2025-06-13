@@ -32,7 +32,7 @@ const AllBlogs = () => {
 
     // Fetch blogs
     useEffect(() => {
-        axios.get('http://localhost:3000/blogs')
+        axios.get('https://blog-craft-server.vercel.app/blogs')
             .then(res => {
                 setBlogs(res.data);
                 setLoading(false);
@@ -47,7 +47,7 @@ const AllBlogs = () => {
             return;
         }
 
-        axios.get('http://localhost:3000/wishlist', {
+        axios.get('https://blog-craft-server.vercel.app/wishlist', {
             params: { email: user.email }
         })
             .then(res => {
@@ -109,7 +109,7 @@ const AllBlogs = () => {
 
         try {
             setWishlistLoadingIds(prev => new Set(prev).add(blog._id));
-            await axios.post('http://localhost:3000/wishlist', payload);
+            await axios.post('https://blog-craft-server.vercel.app/wishlist', payload);
             setWishlistIds(prev => new Set(prev).add(String(blog._id)));
             toast.success("Wishlistted Successfully");
         } catch (err) {

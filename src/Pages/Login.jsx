@@ -52,7 +52,7 @@ const Login = ({ onRegister }) => {
             lastSignInTime: user.metadata?.lastSignInTime || '',
         };
 
-        axios.post('http://localhost:3000/users', userData)
+        axios.post('https://blog-craft-server.vercel.app/users', userData)
             .then(() => {})
             .catch(() => {});
     };
@@ -106,7 +106,7 @@ const Login = ({ onRegister }) => {
                     email,
                     lastSignInTime: user.metadata?.lastSignInTime,
                 };
-                fetch('http://localhost:3000', {
+                fetch('https://blog-craft-server.vercel.app', {
                     method: 'PATCH',
                     headers: {
                         'content-type': 'application/json'
