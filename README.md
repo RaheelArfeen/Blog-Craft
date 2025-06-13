@@ -6,8 +6,7 @@
 
 ## Features
 
-**Live Website:** [https://plantcare-raheel.netlify.app/](https://plantcare-raheel.netlify.app/)
-
+**Live Website:** [https://blogcraft-raheel.netlify.app/](https://blogcraft-raheel.netlify.app/)
 ---
 
 ## Features
