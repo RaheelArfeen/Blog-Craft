@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { X, Plus, ChevronDown, ChevronUp, Upload, Save } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 const categories = [
     "Technology", "Design", "Backend", "AI", "CSS",
@@ -10,7 +10,7 @@ const categories = [
     "UI/UX", "Career", "Tutorial"
 ];
 
-const EditBlog = () => {
+export default function EditBlog() {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -29,10 +29,6 @@ const EditBlog = () => {
     const [imageFile, setImageFile] = useState(null);
     const [imageUrl, setImageUrl] = useState("");
     const [imagePreview, setImagePreview] = useState(null);
-
-    useEffect(() => {
-        window.scrollTo(0, 0)
-    }, [])
 
     useEffect(() => {
         async function fetchBlog() {
@@ -391,5 +387,3 @@ const EditBlog = () => {
         </div>
     );
 }
-
-export default EditBlog;

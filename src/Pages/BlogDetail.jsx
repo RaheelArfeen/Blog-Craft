@@ -209,7 +209,7 @@ const BlogDetails = () => {
                     {blog.image && (
                         <div className="relative">
                             <img
-                                src={blog.image}
+                                src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
                                 alt={blog.title}
                                 className="w-full h-[16rem] md:h-[32rem] object-cover"
                             />

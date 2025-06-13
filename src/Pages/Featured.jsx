@@ -234,10 +234,10 @@ const Featured = () => {
     });
 
     return (
-        <div className="md:container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="md:container mx-auto px-4 py-8">
             <div className="text-center mb-12 w-full">
                 <div className="bg-gradient-to-r from-blue-100 to-purple-100 px-6 py-12 rounded-xl inline-block shadow w-full">
-                    <div className="inline-flex items-center gap-2 border border-blue-200 bg-white rounded-full px-4 py-2 mb-4 text-sm font-medium text-blue-700">
+                    <div className="inline-flex items-center gap-2 border border-blue-200 rounded-full px-4 py-2 mb-4 text-sm font-medium text-blue-700">
                         <TrendingUp className="w-4 h-4" />
                         Featured Blogs
                         <Sparkles className="w-4 h-4 text-purple-600" />
@@ -268,7 +268,7 @@ const Featured = () => {
                     </button>
                 </div>
             ) : (
-                <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+                <div className="rounded-lg md:border border-gray-200 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white">
@@ -295,7 +295,7 @@ const Featured = () => {
                                         className="hover:bg-blue-50 transition-colors"
                                     >
                                         {row.getVisibleCells().map((cell) => (
-                                            <td key={cell.id} className="px-4 py-4">
+                                            <td key={cell.id} className="p-4">
                                                 {flexRender(
                                                     cell.column.columnDef.cell,
                                                     cell.getContext()

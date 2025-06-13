@@ -25,7 +25,7 @@ const Profile = () => {
         if (!user) return;
         const fetchWishlist = async () => {
             try {
-                const res = await axios.get('http://localhost:3000/wishlist');
+                const res = await axios.get(`http://localhost:3000/wishlist?email=${user.email}`);
                 const userWishlist = res.data.filter(item => item.email === user.email);
                 setWishlist(userWishlist);
             } catch (error) {
@@ -91,7 +91,7 @@ const Profile = () => {
                         {loading ? (
                             <Skeleton circle width={80} height={80} />
                         ) : user.photoURL ? (
-                            <img src={user.photoURL} alt="User" className="w-full h-full object-cover rounded-full" />
+                            <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover rounded-full" />
                         ) : (
                             getInitials(user.displayName)
                         )}
