@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 
 const Banner = () => {
     return (
-        <section className="relative min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white overflow-hidden">
+        <section className="relative bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white overflow-hidden">
             {/* Constant animated background dots */}
             <motion.div
                 className="absolute inset-0 z-0 pointer-events-none"
