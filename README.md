@@ -72,17 +72,6 @@ BlogCraft is built using a modern tech stack to ensure fast performance, beautif
 
 ---
 
-## Tech Stack
-
-### Frontend
-- **React**
-- **React Router**
-- **Axios**
-- **Tailwind CSS**
-- **Framer Motion**
-- **Lucide Icons**
-- **Tanstack-Table** (for Featured, Wishlist views)
-
 ### Backend
 - **Node.js & Express**
 - **MongoDB (Native Driver)**
