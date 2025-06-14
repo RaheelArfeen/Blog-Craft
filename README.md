@@ -77,8 +77,3 @@ BlogCraft is built using a modern tech stack to ensure fast performance, beautif
 - **MongoDB (Native Driver)**
 - **JWT for Auth**
 - **CORS & Cookie Parser**
-
----
-
-## Project Structure
-
