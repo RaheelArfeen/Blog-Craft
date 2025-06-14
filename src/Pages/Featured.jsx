@@ -43,7 +43,7 @@ const Featured = () => {
         const fetchFeatured = async () => {
             setLoading(true);
             try {
-                const res = await axios.get('http://https://blog-craft-server.vercel.app//blogs', {
+                const res = await axios.get('https://blog-craft-server.vercel.app/blogs', {
                     withCredentials: true
                 });
                 const sortedTop10 = res.data
@@ -68,7 +68,7 @@ const Featured = () => {
         }
 
         axios
-            .get('http://https://blog-craft-server.vercel.app//wishlist', {
+            .get('https://blog-craft-server.vercel.app/wishlist', {
                 params: { email: user.email }
             })
             .then((res) => {
@@ -100,7 +100,7 @@ const Featured = () => {
 
         try {
             setWishlistLoadingIds((prev) => new Set(prev).add(blog._id));
-            await axios.post('http://https://blog-craft-server.vercel.app//wishlist', payload);
+            await axios.post('https://blog-craft-server.vercel.app/wishlist', payload);
             setWishlistIds((prev) => new Set(prev).add(String(blog._id)));
             toast.success('Wishlisted Successfully');
         } catch (err) {
