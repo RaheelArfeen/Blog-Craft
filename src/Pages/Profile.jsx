@@ -84,7 +84,7 @@ const Profile = () => {
     }
 
     return (
-        <div className="md:container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-12">
             <div className="bg-[#3A63D8] text-white p-8 rounded-t-xl flex flex-col md:flex-row justify-between items-center">
                 <div className="flex items-center gap-4">
                     <div className="w-20 h-20 rounded-full bg-white text-[#3A63D8] flex items-center justify-center text-3xl font-bold overflow-hidden">

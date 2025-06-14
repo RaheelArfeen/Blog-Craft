@@ -242,7 +242,7 @@ const Featured = () => {
     });
 
     return (
-        <div className="md:container min-h-screen mx-auto px-4 py-8">
+        <div className="container min-h-screen mx-auto px-4 py-8">
             <div className="text-center mb-12 w-full">
                 <div className="bg-gradient-to-r from-blue-100 to-purple-100 px-6 py-12 rounded-xl inline-block shadow w-full">
                     <div className="inline-flex items-center gap-2 border border-blue-200 rounded-full px-4 py-2 mb-4 text-sm font-medium text-blue-700">
@@ -300,11 +300,15 @@ const Featured = () => {
                                     </tr>
                                 ))}
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-white divide-y divide-gray-200 whitespace-nowrap">
                                 {table.getRowModel().rows.map(row => (
-                                    <tr key={row.id} className="hover:bg-blue-50 transition-colors">
+                                    <tr key={row.id}>
                                         {row.getVisibleCells().map(cell => (
-                                            <td key={cell.id} className="p-4">
+                                            <td
+                                                key={cell.id}
+                                                className="p-4"
+                                                data-label={cell.column.columnDef.header || ''}
+                                            >
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </td>
                                         ))}

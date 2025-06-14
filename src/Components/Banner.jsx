@@ -36,7 +36,7 @@ const Banner = () => {
                 />
             </div>
 
-            <div className="md:container relative z-10 max-w-7xl mx-auto px-4 pt-20 pb-32">
+            <div className="container relative z-10 max-w-7xl mx-auto px-4 pt-20 pb-32">
                 <div className="text-center">
                     {/* Animated Icon */}
                     <motion.div

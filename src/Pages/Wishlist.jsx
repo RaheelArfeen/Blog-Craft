@@ -7,7 +7,7 @@ import {
     getPaginationRowModel,
 } from '@tanstack/react-table';
 import { toast } from 'sonner';
-import { RefreshCcw, BookmarkX, Clock, Tag, User, Trash2, Heart, LoaderCircle, Eye, } from 'lucide-react';
+import { RefreshCcw, BookmarkX, Clock, Tag, User, Trash2, Heart, LoaderCircle, Eye, ChevronUp, ChevronDown, } from 'lucide-react';
 import { format } from 'date-fns';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -206,7 +206,7 @@ const Wishlists = () => {
     });
 
     return (
-        <div className="md:container min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="container min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="mb-8">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                     <div className="flex flex-col items-center gap-y-2 justify-start w-full">
@@ -279,27 +279,41 @@ const Wishlists = () => {
                 </div>
             ) : (
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="overflow-x-auto">
+                    <div className="overflow-auto">
                         <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gradient-to-r from-cyan-500 to-blue-600">
+                            <thead className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white">
                                 {table.getHeaderGroups().map(headerGroup => (
                                     <tr key={headerGroup.id}>
                                         {headerGroup.headers.map(header => (
                                             <th
                                                 key={header.id}
-                                                className={`px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider ${header.column.columnDef.meta?.className || ''}`}
+                                                onClick={header.column.getToggleSortingHandler()}
+                                                className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider cursor-pointer select-none"
                                             >
-                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                <div className="flex items-center gap-1">
+                                                    {flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )}
+                                                    {{
+                                                        asc: <ChevronUp className="w-4 h-4" />,
+                                                        desc: <ChevronDown className="w-4 h-4" />
+                                                    }[header.column.getIsSorted()] ?? null}
+                                                </div>
                                             </th>
                                         ))}
                                     </tr>
                                 ))}
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-white divide-y divide-gray-200 whitespace-nowrap">
                                 {table.getRowModel().rows.map(row => (
-                                    <tr key={row.id} className="hover:bg-blue-50 transition-colors">
+                                    <tr key={row.id}>
                                         {row.getVisibleCells().map(cell => (
-                                            <td key={cell.id} className="px-4 py-4 whitespace-nowrap">
+                                            <td
+                                                key={cell.id}
+                                                className="p-4"
+                                                data-label={cell.column.columnDef.header || ''}
+                                            >
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </td>
                                         ))}

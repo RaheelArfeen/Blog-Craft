@@ -122,7 +122,7 @@ const RecentBlogPosts = () => {
             transition={{ duration: 0.3 }}
             className="min-h-screen"
         >
-            <div className="md:container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold mb-4">Recent Blog Posts</h1>
@@ -165,9 +165,9 @@ const RecentBlogPosts = () => {
                                             className="bg-white rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition flex flex-col"
                                         >
                                             <div className="relative">
-                                                <PhotoView src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}>
+                                                <PhotoView src={blog.image || blog.imageUrl || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}>
                                                     <img
-                                                        src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
+                                                        src={blog.image || blog.imageUrl || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
                                                         alt={blog.title}
                                                         className="w-full h-72 object-cover"
                                                     />

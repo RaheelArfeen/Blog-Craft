@@ -32,7 +32,7 @@ const UpdateProfile = () => {
     }, []);
 
     return (
-        <div className="md:container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-12">
             {/* Back Button */}
             <div className="mb-6">
                 <Link to="/profile">

@@ -177,7 +177,7 @@ export default function EditBlog() {
     };
 
     return (
-        <div className="min-h-screen py-12 px-4 md:container mx-auto">
+        <div className="min-h-screen py-12 px-4 container mx-auto">
             <div className="bg-white shadow-md rounded-lg p-8">
                 <h2 className="text-3xl font-bold text-blue-600 mb-6">Edit Blog</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">

@@ -175,7 +175,7 @@ const BlogDetails = () => {
     if (error || !blog) {
         return (
             <div className="py-40">
-                <div className="md:container mx-auto px-4 py-16 text-center">
+                <div className="container mx-auto px-4 py-16 text-center">
                     <div className="bg-white rounded-2xl shadow-xl p-12">
                         <h1 className="text-4xl font-bold text-gray-900 mb-4">Article Not Found</h1>
                         <p className="text-gray-600 mb-6 text-lg">
@@ -196,7 +196,7 @@ const BlogDetails = () => {
 
     return (
         <div className="min-h-screen">
-            <article className="md:container mx-auto px-4 py-8">
+            <article className="container mx-auto px-4 py-8">
                 <button
                     onClick={() => navigate(-1)}
                     className="inline-flex items-center mb-8 px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-white rounded-xl transition-all duration-200 group"
@@ -206,10 +206,10 @@ const BlogDetails = () => {
                 </button>
 
                 <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-                    {blog.image && (
+                    {blog.image || blog.imageUrl && (
                         <div className="relative">
                             <img
-                                src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
+                                src={blog.image || blog.imageUrl || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
                                 alt={blog.title}
                                 className="w-full h-[16rem] md:h-[32rem] object-cover"
                             />

@@ -45,7 +45,7 @@ const FeedBack = () => {
 
     return (
         <section ref={ref} className="py-16">
-            <div className="md:container mx-auto px-4">
+            <div className="container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={inView ? { opacity: 1, y: 0 } : {}}

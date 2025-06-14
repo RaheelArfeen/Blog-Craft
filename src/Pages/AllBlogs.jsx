@@ -131,7 +131,7 @@ const AllBlogs = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <div className="md:container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold mb-4">Explore Our Blog Library</h1>
@@ -246,9 +246,9 @@ const AllBlogs = () => {
                                     className="bg-white rounded-xl overflow-hidden shadow-lg transition flex flex-col"
                                 >
                                     <div className="relative cursor-pointer">
-                                        <PhotoView src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}>
+                                        <PhotoView src={blog.image || blog.imageUrl || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}>
                                             <img
-                                                src={blog.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
+                                                src={blog.image || blog.imageUrl || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
                                                 alt={blog.title}
                                                 className="w-full h-72 object-cover"
                                             />

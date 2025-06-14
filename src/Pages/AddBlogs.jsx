@@ -180,7 +180,7 @@ function AddBlogs() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 md:container mx-auto px-4 py-12">
+    <form onSubmit={handleSubmit} className="space-y-6 container mx-auto px-4 py-12">
       <div className="space-y-2">
         <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
         <input
