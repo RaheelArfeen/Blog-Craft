@@ -206,17 +206,14 @@ const BlogDetails = () => {
                 </button>
 
                 <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-                    {blog.image || blog.imageUrl && (
-                        <div className="relative">
-                            <img
-                                src={blog.image || blog.imageUrl || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
-                                alt={blog.title}
-                                className="w-full h-[16rem] md:h-[32rem] object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent"></div>
-                        </div>
-                    )}
-
+                    <div className="relative">
+                        <img
+                            src={blog.image || blog.imageUrl || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
+                            alt={blog.title}
+                            className="w-full h-[16rem] md:h-[32rem] object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent"></div>
+                    </div>
                     <div className="p-8 md:p-12">
                         <header className="mb-10">
                             <div className="flex items-center space-x-3 mb-6">
