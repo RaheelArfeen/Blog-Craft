@@ -19,7 +19,6 @@ const Wishlists = () => {
     const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false)
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
 
@@ -29,7 +28,6 @@ const Wishlists = () => {
 
     const fetchWishlist = async () => {
         setLoading(true);
-        setError(null);
         try {
             const res = await axios.get(`https://blog-craft-server.vercel.app/wishlist?email=${user.email}`, {
                 withCredentials: 'include'
@@ -37,7 +35,6 @@ const Wishlists = () => {
             setWishlist(res.data);
         } catch (err) {
             console.error('Failed to fetch wishlist', err);
-            setError('Unable to load your wishlist. Please try again later.');
             toast.error('Failed to load wishlist');
         } finally {
             setLoading(false);
@@ -228,11 +225,6 @@ const Wishlists = () => {
                         </button>
                     )}
                 </div>
-                {error && !loading && (
-                    <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-                        <p className="text-sm text-red-700">{error}</p>
-                    </div>
-                )}
             </div>
 
             {loading ? (
