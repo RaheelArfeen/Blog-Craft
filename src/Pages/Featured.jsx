@@ -58,9 +58,7 @@ const Featured = () => {
             }
         };
 
-        if (user?.email) {
-            fetchFeatured();
-        }
+        fetchFeatured();
     }, [user]);
 
     useEffect(() => {
