@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Search, Eye, Calendar, User, ChevronDown } from 'lucide-react';
+import { Eye, Calendar, User } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import Skeleton from 'react-loading-skeleton';
@@ -10,8 +10,7 @@ import { FaHeart } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { AuthContext } from '../../Provider/AuthProvider';
-import { motion } from "framer-motion"
-import { useInView } from 'react-intersection-observer';
+import { motion } from 'framer-motion';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 
@@ -24,13 +23,6 @@ const RecentBlogPosts = () => {
     const [wishlistIds, setWishlistIds] = useState(new Set());
     const [wishlistLoadingIds, setWishlistLoadingIds] = useState(new Set());
 
-    // Intersection observer hook for triggering animation when grid is near viewport
-    const { ref: blogGridRef, inView: isInView } = useInView({
-        threshold: 0.2,
-        triggerOnce: true,
-    });
-
-    // Fetch blogs
     useEffect(() => {
         axios.get('https://blog-craft-server.vercel.app/blogs')
             .then(res => {
@@ -40,7 +32,6 @@ const RecentBlogPosts = () => {
             .catch(() => setLoading(false));
     }, []);
 
-    // Fetch wishlist
     useEffect(() => {
         if (!user?.email) {
             setWishlistIds(new Set());
@@ -100,7 +91,6 @@ const RecentBlogPosts = () => {
 
     const handleDetails = (id) => navigate(`/blogs/${id}`);
 
-    // Variants for motion
     const containerVariants = {
         hidden: {},
         visible: {
@@ -122,7 +112,6 @@ const RecentBlogPosts = () => {
             transition={{ duration: 0.3 }}
         >
             <div className="container mx-auto px-4 py-8">
-                {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold mb-4">Recent Blog Posts</h1>
                     <p className="text-xl text-gray-600 mx-auto max-w-3xl">
@@ -130,7 +119,6 @@ const RecentBlogPosts = () => {
                     </p>
                 </div>
 
-                {/* Blog Grid */}
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {Array.from({ length: 6 }).map((_, i) => (
@@ -150,16 +138,14 @@ const RecentBlogPosts = () => {
                     <>
                         {blogs.length > 0 ? (
                             <motion.div
-                                ref={blogGridRef}
                                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                                 initial="hidden"
-                                animate={isInView ? "visible" : "hidden"}
+                                animate="visible"
                                 variants={containerVariants}
                             >
                                 {blogs.map(blog => (
-                                    <PhotoProvider>
+                                    <PhotoProvider key={blog._id}>
                                         <motion.div
-                                            key={blog._id}
                                             variants={cardVariants}
                                             className="bg-white rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition flex flex-col"
                                         >
@@ -183,8 +169,7 @@ const RecentBlogPosts = () => {
                                                         <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
                                                     ) : (
                                                         <FaHeart
-                                                            className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400'
-                                                                }`}
+                                                            className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400'}`}
                                                         />
                                                     )}
                                                 </button>
@@ -195,14 +180,10 @@ const RecentBlogPosts = () => {
                                                     onClick={() => handleDetails(blog._id)}
                                                     className="hover:text-blue-600 mb-4 line-clamp-2 text-xl font-bold cursor-pointer"
                                                 >
-                                                    {blog.title.length > 40
-                                                        ? blog.title.slice(0, 40) + '...'
-                                                        : blog.title}
+                                                    {blog.title.length > 40 ? blog.title.slice(0, 40) + '...' : blog.title}
                                                 </h3>
                                                 <p className="text-gray-600 mb-4 line-clamp-3">
-                                                    {blog.shortDescription.length > 50
-                                                        ? blog.shortDescription.slice(0, 50) + '...'
-                                                        : blog.shortDescription}
+                                                    {blog.shortDescription.length > 50 ? blog.shortDescription.slice(0, 50) + '...' : blog.shortDescription}
                                                 </p>
                                                 <div className="flex justify-between text-sm text-gray-500 mb-4">
                                                     <div className="flex items-center space-x-1">
@@ -219,7 +200,6 @@ const RecentBlogPosts = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* Spacer to push button to bottom */}
                                                 <div className="flex-grow" />
 
                                                 <button
