@@ -6,6 +6,7 @@ import {
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
     signInWithPopup,
+    deleteUser
 } from 'firebase/auth';
 import { auth } from '../Firebase/Firebase.init';
 import { toast } from 'sonner';
@@ -28,22 +29,19 @@ const Login = ({ onRegister }) => {
 
     const validateForm = () => {
         const newErrors = {};
-
         if (!email) {
             newErrors.email = 'Email is required';
         } else if (!/\S+@\S+\.\S+/.test(email)) {
             newErrors.email = 'Email is invalid';
         }
-
         if (!password) {
             newErrors.password = 'Password is required';
         }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const sendUserToBackend = (user) => {
+    const sendUserToBackend = async (user) => {
         const userData = {
             uid: user.uid,
             email: user.email,
@@ -51,28 +49,39 @@ const Login = ({ onRegister }) => {
             photoURL: user.photoURL || '',
             lastSignInTime: user.metadata?.lastSignInTime || '',
         };
-
-        axios.post('https://blog-craft-server.vercel.app/users', userData)
-            .then(() => {})
-            .catch(() => {});
+        try {
+            const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
+            if (res.status === 200 || res.status === 201) {
+                return true;
+            } else {
+                throw new Error('Backend rejected user');
+            }
+        } catch (error) {
+            throw new Error('Failed to send user to backend');
+        }
     };
 
-    const handleGoogleLogin = () => {
+    const handleGoogleLogin = async () => {
+        setLoading(true);
         const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
 
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                const user = result.user;
-                sendUserToBackend(user);
+            await sendUserToBackend(user);
 
-                toast.success('Successfully logged in with Google');
-                navigate(from, { replace: true });
-            })
-            .catch((error) => {
-                console.error('Google sign-in error:', error);
-                toast.error('Google sign-in failed. Please try again.');
-            });
+            toast.success('Successfully logged in with Google');
+            navigate(from, { replace: true });
+        } catch (error) {
+            if (auth.currentUser) {
+                await deleteUser(auth.currentUser);
+            }
+            toast.error(error.message || 'Google login failed');
+        } finally {
+            setLoading(false);
+        }
     };
+
     const handleResetPassword = async () => {
         if (!email) {
             setErrors({ email: 'Please enter your email to reset password' });
@@ -90,54 +99,49 @@ const Login = ({ onRegister }) => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
 
         setErrors({});
         setLoading(true);
 
-        signInWithEmailAndPassword(auth, email, password)
-            .then((result) => {
-                const user = result.user;
-                sendUserToBackend(user);
+        try {
+            const result = await signInWithEmailAndPassword(auth, email, password);
+            const user = result.user;
 
-                const signInInfo = {
-                    email,
-                    lastSignInTime: user.metadata?.lastSignInTime,
-                };
-                fetch('https://blog-craft-server.vercel.app', {
-                    method: 'PATCH',
-                    headers: {
-                        'content-type': 'application/json'
-                    },
-                    body: JSON.stringify(signInInfo)
-                })
-                    .then(res => res.json())
-                    .then(data => console.log('after update patch', data))
+            await sendUserToBackend(user);
 
-                setTimeout(() => {
-                    navigate(from, { replace: true });
-                    toast.success('Successfully logged in.');
-                    setLoading(false);
-                }, 300);
-            })
-            .catch((error) => {
-                setLoading(false);
-                if (error.code === 'auth/user-not-found') {
-                    const message = 'No user found with this email';
-                    setErrors({ email: message });
-                    toast.error(message);
-                } else if (error.code === 'auth/wrong-password') {
-                    const message = 'Incorrect password';
-                    setErrors({ password: message });
-                    toast.error(message);
-                } else {
-                    const message = 'Failed to sign in. Please try again.';
-                    setErrors({ general: message });
-                    toast.error(message);
-                }
+            const signInInfo = {
+                email,
+                lastSignInTime: user.metadata?.lastSignInTime,
+            };
+
+            await fetch('https://blog-craft-server.vercel.app/users', {
+                method: 'PATCH',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify(signInInfo),
             });
+
+            toast.success('Successfully logged in.');
+            navigate(from, { replace: true });
+        } catch (error) {
+            if (auth.currentUser) {
+                await deleteUser(auth.currentUser);
+            }
+
+            setLoading(false);
+
+            if (error.code === 'auth/user-not-found') {
+                setErrors({ email: 'No user found with this email' });
+                toast.error('No user found with this email');
+            } else if (error.code === 'auth/wrong-password') {
+                setErrors({ password: 'Incorrect password' });
+                toast.error('Incorrect password');
+            } else {
+                toast.error(error.message || 'Failed to sign in. Please try again.');
+            }
+        }
     };
 
     return (

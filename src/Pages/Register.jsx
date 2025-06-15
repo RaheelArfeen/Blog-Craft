@@ -5,7 +5,8 @@ import {
     createUserWithEmailAndPassword,
     updateProfile,
     signInWithPopup,
-    GoogleAuthProvider
+    GoogleAuthProvider,
+    deleteUser,
 } from 'firebase/auth';
 import { auth } from '../Firebase/Firebase.init';
 import { toast } from 'sonner';
@@ -35,35 +36,14 @@ const Register = ({ onLogin, isLoading = false }) => {
         window.scrollTo(0, 0);
     }, []);
 
-    const sendUserToBackend = (user) => {
-        const userData = {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName || '',
-            photoURL: user.photoURL || '',
-            lastSignInTime: user.metadata?.lastSignInTime || '',
-        };
-
-        axios.post('https://blog-craft-server.vercel.app/users', userData)
-            .then((response) => {
-                console.log('User data saved successfully:', response.data);
-            })
-            .catch((error) => {
-                console.error('Error sending user data to backend:', error);
-            });
-    };
-
     const validateForm = () => {
         const newErrors = {};
-
         if (!fullName.trim()) newErrors.fullName = 'Full name is required';
-
         if (!email) {
             newErrors.email = 'Email is required';
         } else if (!/\S+@\S+\.\S+/.test(email)) {
             newErrors.email = 'Email is invalid';
         }
-
         if (!password) {
             newErrors.password = 'Password is required';
         } else {
@@ -77,7 +57,6 @@ const Register = ({ onLogin, isLoading = false }) => {
                 newErrors.password = 'Password must include a special character';
             }
         }
-
         if (profilePhoto && !/^https?:\/\//.test(profilePhoto)) {
             newErrors.profilePhoto = 'Please enter a valid URL starting with http:// or https://';
         }
@@ -86,62 +65,84 @@ const Register = ({ onLogin, isLoading = false }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!validateForm()) return;
-
         setLoading(true);
 
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
-                updateProfile(user, {
+            // Try sending to backend first
+            const userData = {
+                uid: user.uid,
+                email: user.email,
+                displayName: fullName,
+                photoURL: profilePhoto || '',
+                lastSignInTime: user.metadata?.lastSignInTime || '',
+            };
+
+            const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
+
+            if (res.status === 200 || res.status === 201) {
+                // Backend saved, now update Firebase profile
+                await updateProfile(user, {
                     displayName: fullName,
                     photoURL: profilePhoto || null,
-                })
-                    .then(() => {
-                        sendUserToBackend(user);
-                        setTimeout(() => {
-                            setLoading(false);
-                            toast.success('Account created successfully!');
-                            navigate(from, { replace: true });
-                        }, 500);
-                    })
-                    .catch((error) => {
-                        toast.error(error.message);
-                        setLoading(false);
-                    });
-            })
-            .catch((error) => {
-                toast.error(error.message);
-                setLoading(false);
-            });
+                });
+
+                toast.success('Account created successfully!');
+                navigate(from, { replace: true });
+            } else {
+                await deleteUser(user);
+                toast.error('Failed to save user to database. Account creation cancelled.');
+            }
+        } catch (error) {
+            if (auth.currentUser) {
+                await deleteUser(auth.currentUser);
+            }
+            toast.error(error.message || 'Failed to register. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleGoogleLogin = () => {
+    const handleGoogleLogin = async () => {
         setGoogleLoading(true);
         const provider = new GoogleAuthProvider();
 
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                const user = result.user;
-                sendUserToBackend(user);
-                localStorage.setItem('Photo URL:', user.photoURL);
-                toast.success('Google login successful!');
-                setTimeout(() => {
-                    setGoogleLoading(false);
-                    navigate(from, { replace: true });
-                }, 500);
-            })
-            .catch((error) => {
-                console.error('Google sign-in error:', error);
-                toast.error('Google sign-in failed');
-                setGoogleLoading(false);
-            });
-    };
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
 
+            const userData = {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName || '',
+                photoURL: user.photoURL || '',
+                lastSignInTime: user.metadata?.lastSignInTime || '',
+            };
+
+            const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
+
+            if (res.status === 200 || res.status === 201) {
+                toast.success('Google login successful!');
+                navigate(from, { replace: true });
+            } else {
+                await deleteUser(user);
+                toast.error('Google login failed to save user. Account creation cancelled.');
+            }
+        } catch (error) {
+            if (auth.currentUser) {
+                await deleteUser(auth.currentUser);
+            }
+            toast.error(error.message || 'Google sign-in failed.');
+        } finally {
+            setGoogleLoading(false);
+        }
+    };
+    
     return (
         <div className='px-3'>
             <div className="w-full max-w-md my-12 mx-auto p-6 bg-white rounded-xl shadow-sm">
@@ -151,6 +152,7 @@ const Register = ({ onLogin, isLoading = false }) => {
                 </div>
 
                 <form onSubmit={handleSubmit}>
+                    {/* Full Name */}
                     <div className="mb-4">
                         <label className="block text-gray-800 font-medium mb-1">Full Name</label>
                         <input
@@ -164,6 +166,7 @@ const Register = ({ onLogin, isLoading = false }) => {
                         {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
                     </div>
 
+                    {/* Email */}
                     <div className="mb-4">
                         <label className="block text-gray-800 font-medium mb-1">Email</label>
                         <input
@@ -177,6 +180,7 @@ const Register = ({ onLogin, isLoading = false }) => {
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
 
+                    {/* Profile Photo */}
                     <div className="mb-4">
                         <label className="block text-gray-800 font-medium mb-1">Profile Photo URL (optional)</label>
                         <input
@@ -189,6 +193,7 @@ const Register = ({ onLogin, isLoading = false }) => {
                         {errors.profilePhoto && <p className="text-red-500 text-sm mt-1">{errors.profilePhoto}</p>}
                     </div>
 
+                    {/* Password */}
                     <div className="mb-6">
                         <label className="block text-gray-800 font-medium mb-2">Password</label>
                         <div className="relative">
@@ -197,8 +202,7 @@ const Register = ({ onLogin, isLoading = false }) => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-200'
-                                    } focus:ring-2 focus:ring-opacity-50 outline-none transition duration-200 pr-12`}
+                                className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-200'} focus:ring-2 focus:ring-opacity-50 outline-none transition duration-200 pr-12`}
                                 required
                             />
                             <button
@@ -211,51 +215,31 @@ const Register = ({ onLogin, isLoading = false }) => {
                         </div>
                         {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
 
+                        {/* Password Strength */}
                         <div className="mt-3 space-y-2">
                             <p className="text-sm text-gray-600 font-medium">Password requirements:</p>
-
-                            <div className="flex items-center">
-                                <span className={`mr-2 ${hasUppercase ? 'text-green-500' : 'text-gray-400'}`}>
-                                    {hasUppercase ? <Check size={16} /> : <X size={16} />}
-                                </span>
-                                <span className="text-sm text-gray-600">At least one uppercase letter</span>
-                            </div>
-
-                            <div className="flex items-center">
-                                <span className={`mr-2 ${hasLowercase ? 'text-green-500' : 'text-gray-400'}`}>
-                                    {hasLowercase ? <Check size={16} /> : <X size={16} />}
-                                </span>
-                                <span className="text-sm text-gray-600">At least one lowercase letter</span>
-                            </div>
-
-                            <div className="flex items-center">
-                                <span className={`mr-2 ${hasMinLength ? 'text-green-500' : 'text-gray-400'}`}>
-                                    {hasMinLength ? <Check size={16} /> : <X size={16} />}
-                                </span>
-                                <span className="text-sm text-gray-600">At least 6 characters</span>
-                            </div>
-
-                            <div className="flex items-center">
-                                <span className={`mr-2 ${hasNumber ? 'text-green-500' : 'text-gray-400'}`}>
-                                    {hasNumber ? <Check size={16} /> : <X size={16} />}
-                                </span>
-                                <span className="text-sm text-gray-600">At least one number</span>
-                            </div>
-
-                            <div className="flex items-center">
-                                <span className={`mr-2 ${hasSpecialChar ? 'text-green-500' : 'text-gray-400'}`}>
-                                    {hasSpecialChar ? <Check size={16} /> : <X size={16} />}
-                                </span>
-                                <span className="text-sm text-gray-600">At least one special character</span>
-                            </div>
+                            {[["At least one uppercase letter", hasUppercase], ["At least one lowercase letter", hasLowercase], ["At least 6 characters", hasMinLength], ["At least one number", hasNumber], ["At least one special character", hasSpecialChar]].map(([text, isValid], i) => (
+                                <div className="flex items-center" key={i}>
+                                    <span className={`mr-2 ${isValid ? 'text-green-500' : 'text-gray-400'}`}>
+                                        {isValid ? <Check size={16} /> : <X size={16} />}
+                                    </span>
+                                    <span className="text-sm text-gray-600">{text}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
-                    <button type="submit" className="w-full py-3 bg-[#3A63D8] text-white font-semibold rounded-lg hover:bg-[#2A48B5] transition disabled:opacity-60" disabled={loading || isLoading}>
+                    {/* Register Button */}
+                    <button
+                        type="submit"
+                        className="w-full py-3 bg-[#3A63D8] text-white font-semibold rounded-lg hover:bg-[#2A48B5] transition disabled:opacity-60"
+                        disabled={loading || isLoading}
+                    >
                         {loading || isLoading ? 'Creating...' : 'Create Account'}
                     </button>
                 </form>
 
+                {/* Google Sign-in */}
                 <div className="my-6 relative flex items-center">
                     <div className="flex-grow border-t border-gray-300"></div>
                     <span className="flex-shrink mx-4 text-gray-600">Or continue with</span>
@@ -282,13 +266,14 @@ const Register = ({ onLogin, isLoading = false }) => {
                     )}
                 </button>
 
+                {/* Login Link */}
                 <div className="mt-8 text-center">
                     <p className="text-gray-600">
                         Already have an account?
                         <Link
                             to="/login"
                             onClick={onLogin}
-                            className="text-[#3A63D8] hover:text-indigo-800 font-medium transition"
+                            className="text-[#3A63D8] hover:text-indigo-800 font-medium transition ml-1"
                         >
                             Log In
                         </Link>

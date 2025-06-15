@@ -15,38 +15,15 @@ const Header = () => {
     const Navigate = useNavigate();
 
     const handleLogout = async () => {
-        if (!user || !user.email) {
-            toast.error('No user to logout.');
-            return;
-        }
-
         try {
-            // 1. Optional: Remove JWT cookie from backend
-            await fetch('https://blog-craft-server.vercel.app/logout', {
-                method: 'GET',
-                credentials: 'include',
-            });
-
-            // 2. Optional: Also delete user record if needed (e.g., from a user collection)
-            const response = await fetch(`https://blog-craft-server.vercel.app/users/${user.email}`, {
-                method: 'DELETE',
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                toast.error(`Failed to delete user: ${errorData.message || 'Unknown error'}`);
-                return;
-            }
-
-            // 3. Firebase sign-out and cleanup
             await logOut();
-
             toast.success('Logged out successfully.');
         } catch (error) {
             toast.error('Failed to logout. Please try again.');
             console.error('Logout error:', error);
         }
     };
+
 
 
     useEffect(() => {
@@ -161,7 +138,7 @@ const Header = () => {
                                 </div>
                             ) : user ? (
                                 <div className="border-t border-gray-200 mt-4 pt-4 px-3">
-                                    <div onClick={() => {Navigate('/profile'), setIsOpen(false)}} className="flex items-center">
+                                    <div onClick={() => { Navigate('/profile'), setIsOpen(false) }} className="flex items-center">
                                         <div className="rounded-full h-9 w-9 overflow-hidden border border-gray-300">
                                             {user.photoURL ? (
                                                 <img src={user.photoURL} alt={user.displayName} className="h-full w-full object-cover" />

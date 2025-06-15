@@ -75,7 +75,7 @@ const AllBlogs = () => {
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
-    const categories = ['All', 'Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business'];
+    const categories = ['All' ,'Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
 
     const filteredBlogs = blogs.filter(blog => {
         const searchMatch =
@@ -152,18 +152,15 @@ const AllBlogs = () => {
                         />
                     </div>
                     <div className="relative">
-                        <motion.button
+                        <button
                             onClick={() => setCategoryOpen(open => !open)}
                             className="flex items-center justify-between px-4 py-3 border text-gray-600 border-gray-300 rounded-lg w-48"
                             aria-haspopup="listbox"
                             aria-expanded={categoryOpen}
-                            initial={false}
-                            animate={{ rotate: categoryOpen ? 180 : 0 }}
-                            transition={{ duration: 0.3 }}
                         >
                             <span>{selectedCategory}</span>
                             <ChevronDown className="h-4 w-4 ml-2" />
-                        </motion.button>
+                        </button>
                         <AnimatePresence>
                             {categoryOpen && (
                                 <motion.ul
