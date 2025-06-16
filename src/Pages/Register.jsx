@@ -28,7 +28,6 @@ const Register = ({ onLogin, isLoading = false }) => {
 
     const hasUppercase = /[A-Z]/.test(password);
     const hasLowercase = /[a-z]/.test(password);
-    const hasMinLength = password.length >= 6;
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
@@ -47,9 +46,7 @@ const Register = ({ onLogin, isLoading = false }) => {
         if (!password) {
             newErrors.password = 'Password is required';
         } else {
-            if (!hasMinLength) {
-                newErrors.password = 'Password must be at least 6 characters';
-            } else if (!hasUppercase) {
+            if (!hasUppercase) {
                 newErrors.password = 'Password must include an uppercase letter';
             } else if (!hasNumber) {
                 newErrors.password = 'Password must include a number';
@@ -74,7 +71,6 @@ const Register = ({ onLogin, isLoading = false }) => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Try sending to backend first
             const userData = {
                 uid: user.uid,
                 email: user.email,
@@ -86,23 +82,22 @@ const Register = ({ onLogin, isLoading = false }) => {
             const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
 
             if (res.status === 200 || res.status === 201) {
-                // Backend saved, now update Firebase profile
                 await updateProfile(user, {
                     displayName: fullName,
                     photoURL: profilePhoto || null,
                 });
 
-                toast.success('Account created successfully!');
+                toast.success('Welcome to BlogCraft! Your account is ready.');
                 navigate(from, { replace: true });
             } else {
                 await deleteUser(user);
-                toast.error('Failed to save user to database. Account creation cancelled.');
+                toast.error('Something went wrong while setting up your account. Please try again.');
             }
         } catch (error) {
             if (auth.currentUser) {
                 await deleteUser(auth.currentUser);
             }
-            toast.error(error.message || 'Failed to register. Please try again.');
+            toast.error('Could not create your account. Please double-check your information and try again.');
         } finally {
             setLoading(false);
         }
@@ -127,32 +122,31 @@ const Register = ({ onLogin, isLoading = false }) => {
             const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
 
             if (res.status === 200 || res.status === 201) {
-                toast.success('Google login successful!');
+                toast.success('Signed in with Google. Welcome to BlogCraft!');
                 navigate(from, { replace: true });
             } else {
                 await deleteUser(user);
-                toast.error('Google login failed to save user. Account creation cancelled.');
+                toast.error('Something went wrong during Google sign-in. Please try again.');
             }
         } catch (error) {
             if (auth.currentUser) {
                 await deleteUser(auth.currentUser);
             }
-            toast.error(error.message || 'Google sign-in failed.');
+            toast.error('Google sign-in was unsuccessful. Try again shortly.');
         } finally {
             setGoogleLoading(false);
         }
     };
-    
+
     return (
         <div className='px-3'>
             <div className="w-full max-w-md my-12 mx-auto p-6 bg-white rounded-xl shadow-sm">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-                    <p className="text-gray-600">Register with FrostPay to start managing your bills</p>
+                    <p className="text-gray-600">Register with BlogCraft to start managing your bills</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    {/* Full Name */}
                     <div className="mb-4">
                         <label className="block text-gray-800 font-medium mb-1">Full Name</label>
                         <input
@@ -166,7 +160,6 @@ const Register = ({ onLogin, isLoading = false }) => {
                         {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
                     </div>
 
-                    {/* Email */}
                     <div className="mb-4">
                         <label className="block text-gray-800 font-medium mb-1">Email</label>
                         <input
@@ -180,7 +173,6 @@ const Register = ({ onLogin, isLoading = false }) => {
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
 
-                    {/* Profile Photo */}
                     <div className="mb-4">
                         <label className="block text-gray-800 font-medium mb-1">Profile Photo URL (optional)</label>
                         <input
@@ -193,7 +185,6 @@ const Register = ({ onLogin, isLoading = false }) => {
                         {errors.profilePhoto && <p className="text-red-500 text-sm mt-1">{errors.profilePhoto}</p>}
                     </div>
 
-                    {/* Password */}
                     <div className="mb-6">
                         <label className="block text-gray-800 font-medium mb-2">Password</label>
                         <div className="relative">
@@ -215,10 +206,14 @@ const Register = ({ onLogin, isLoading = false }) => {
                         </div>
                         {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
 
-                        {/* Password Strength */}
                         <div className="mt-3 space-y-2">
                             <p className="text-sm text-gray-600 font-medium">Password requirements:</p>
-                            {[["At least one uppercase letter", hasUppercase], ["At least one lowercase letter", hasLowercase], ["At least 6 characters", hasMinLength], ["At least one number", hasNumber], ["At least one special character", hasSpecialChar]].map(([text, isValid], i) => (
+                            {[
+                                ['At least one uppercase letter', hasUppercase],
+                                ['At least one lowercase letter', hasLowercase],
+                                ['At least one number', hasNumber],
+                                ['At least one special character', hasSpecialChar],
+                            ].map(([text, isValid], i) => (
                                 <div className="flex items-center" key={i}>
                                     <span className={`mr-2 ${isValid ? 'text-green-500' : 'text-gray-400'}`}>
                                         {isValid ? <Check size={16} /> : <X size={16} />}
@@ -229,7 +224,6 @@ const Register = ({ onLogin, isLoading = false }) => {
                         </div>
                     </div>
 
-                    {/* Register Button */}
                     <button
                         type="submit"
                         className="w-full py-3 bg-[#3A63D8] text-white font-semibold rounded-lg hover:bg-[#2A48B5] transition disabled:opacity-60"
@@ -239,7 +233,6 @@ const Register = ({ onLogin, isLoading = false }) => {
                     </button>
                 </form>
 
-                {/* Google Sign-in */}
                 <div className="my-6 relative flex items-center">
                     <div className="flex-grow border-t border-gray-300"></div>
                     <span className="flex-shrink mx-4 text-gray-600">Or continue with</span>
@@ -266,7 +259,6 @@ const Register = ({ onLogin, isLoading = false }) => {
                     )}
                 </button>
 
-                {/* Login Link */}
                 <div className="mt-8 text-center">
                     <p className="text-gray-600">
                         Already have an account?

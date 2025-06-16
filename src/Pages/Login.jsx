@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import {
+    deleteUser,
     GoogleAuthProvider,
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
-    signInWithPopup,
-    deleteUser
+    signInWithPopup
 } from 'firebase/auth';
 import { auth } from '../Firebase/Firebase.init';
 import { toast } from 'sonner';
@@ -49,15 +49,22 @@ const Login = ({ onRegister }) => {
             photoURL: user.photoURL || '',
             lastSignInTime: user.metadata?.lastSignInTime || '',
         };
+
         try {
-            const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
-            if (res.status === 200 || res.status === 201) {
-                return true;
-            } else {
-                throw new Error('Backend rejected user');
+            const existingUser = await axios.get(`https://blog-craft-server.vercel.app/users/${user.email}`);
+            if (existingUser.status === 200 && existingUser.data?.email === user.email) {
+                return true; // User exists
             }
         } catch (error) {
-            throw new Error('Failed to send user to backend');
+            // User not found - proceed to create
+            try {
+                const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
+                if (res.status === 200 || res.status === 201) return true;
+                throw new Error('Backend rejected user');
+            } catch (error) {
+                await deleteUser(user);
+                throw new Error('Something went wrong while setting up your account. Please try again.');
+            }
         }
     };
 
@@ -73,9 +80,6 @@ const Login = ({ onRegister }) => {
             toast.success('Successfully logged in with Google');
             navigate(from, { replace: true });
         } catch (error) {
-            if (auth.currentUser) {
-                await deleteUser(auth.currentUser);
-            }
             toast.error(error.message || 'Google login failed');
         } finally {
             setLoading(false);
@@ -126,12 +130,7 @@ const Login = ({ onRegister }) => {
             toast.success('Successfully logged in.');
             navigate(from, { replace: true });
         } catch (error) {
-            if (auth.currentUser) {
-                await deleteUser(auth.currentUser);
-            }
-
             setLoading(false);
-
             if (error.code === 'auth/user-not-found') {
                 setErrors({ email: 'No user found with this email' });
                 toast.error('No user found with this email');
@@ -149,11 +148,11 @@ const Login = ({ onRegister }) => {
             <div className="w-full max-w-md mx-auto my-12 p-6 bg-white rounded-xl shadow-sm">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-                    <p className="text-gray-600">Sign in to your FrostPay account</p>
+                    <p className="text-gray-600">Sign in to your BlogCraft account</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    {/* Email Field */}
+                    {/* Email */}
                     <div className="mb-4">
                         <label className="block text-gray-800 font-medium mb-1">Email</label>
                         <input
@@ -173,13 +172,13 @@ const Login = ({ onRegister }) => {
                         )}
                     </div>
 
-                    {/* Password Field */}
+                    {/* Password */}
                     <div className="mb-4">
                         <div className="flex justify-between items-center mb-2">
                             <label className="block text-gray-800 font-medium">Password</label>
                             <button
                                 type="button"
-                                onClick={() => handleResetPassword()}
+                                onClick={handleResetPassword}
                                 className="text-indigo-600 hover:text-indigo-800 text-sm font-medium transition"
                                 disabled={loading}
                             >
@@ -228,19 +227,14 @@ const Login = ({ onRegister }) => {
                     </button>
                 </form>
 
-                {/* General Error */}
-                {errors.general && (
-                    <p className="text-red-500 text-sm text-center mt-4">{errors.general}</p>
-                )}
-
-                {/* Or Divider */}
+                {/* Divider */}
                 <div className="my-6 relative flex items-center">
                     <div className="flex-grow border-t border-gray-300"></div>
                     <span className="flex-shrink mx-4 text-gray-600">Or continue with</span>
                     <div className="flex-grow border-t border-gray-300"></div>
                 </div>
 
-                {/* Google Button */}
+                {/* Google Login */}
                 <button
                     type="button"
                     onClick={handleGoogleLogin}
@@ -248,22 +242,10 @@ const Login = ({ onRegister }) => {
                     disabled={loading}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24">
-                        <path
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                            fill="#4285F4"
-                        />
-                        <path
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                            fill="#34A853"
-                        />
-                        <path
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                            fill="#FBBC05"
-                        />
-                        <path
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                            fill="#EA4335"
-                        />
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                     </svg>
                     Google
                 </button>
