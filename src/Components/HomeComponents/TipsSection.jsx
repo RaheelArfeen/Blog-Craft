@@ -48,13 +48,13 @@ const TipsSection = () => {
     };
 
     return (
-        <section className="py-16">
+        <section className="py-16 bg-white dark:bg-gray-800 transition-colors duration-500">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                         Pro Tips for Better Blogging
                     </h2>
-                    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                         Elevate your writing with these expert tips and best practices from successful bloggers.
                     </p>
                 </div>
@@ -72,16 +72,16 @@ const TipsSection = () => {
                             variants={cardVariants}
                             className="group"
                         >
-                            <div className="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 h-full">
+                            <div className="bg-white dark:bg-gray-700 rounded-xl p-6 border border-gray-100 dark:border-gray-600 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 h-full">
                                 <div className={`${tip.color} w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                                     <tip.icon className="h-6 w-6 text-white" />
                                 </div>
 
-                                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                                     {tip.title}
                                 </h3>
 
-                                <p className="text-gray-600 leading-relaxed">
+                                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                                     {tip.description}
                                 </p>
                             </div>

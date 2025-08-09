@@ -38,10 +38,7 @@ const FAQSection = () => {
     };
 
     return (
-        <section className="w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(147,51,234,0.1),transparent_50%)]"></div>
-
+        <section className="w-full relative overflow-hidden bg-gray-50 dark:bg-gray-900 transition-colors duration-500">
             <div className="relative w-full container mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <motion.div
                     className="text-center mb-16"
@@ -62,7 +59,7 @@ const FAQSection = () => {
                         </div>
                     </motion.div>
                     <motion.h2
-                        className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-6"
+                        className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent mb-6"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -71,7 +68,7 @@ const FAQSection = () => {
                         Frequently Asked Questions
                     </motion.h2>
                     <motion.p
-                        className="text-xl md:text-2xl text-gray-600 mx-auto leading-relaxed"
+                        className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mx-auto leading-relaxed"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -92,13 +89,13 @@ const FAQSection = () => {
                             className="group"
                         >
                             <motion.div
-                                className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-white/20"
+                                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg dark:shadow-black/50 hover:shadow-2xl dark:hover:shadow-blue-900 transition-all duration-300 overflow-hidden border border-white/20 dark:border-gray-700"
                                 whileHover={{ scale: 1.02 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
                                 <button
                                     onClick={() => toggleFAQ(index)}
-                                    className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300"
+                                    className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900 dark:hover:to-purple-900 transition-all duration-300"
                                 >
                                     <div className="flex items-center space-x-4">
                                         <motion.div
@@ -108,16 +105,16 @@ const FAQSection = () => {
                                         >
                                             {faq.icon}
                                         </motion.div>
-                                        <h3 className="text-lg md:text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+                                        <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 transition-colors duration-300">
                                             {faq.question}
                                         </h3>
                                     </div>
                                     <motion.div
                                         animate={{ rotate: openIndex === index ? 180 : 0 }}
                                         transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
-                                        className="flex-shrink-0 p-2 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors duration-300"
+                                        className="flex-shrink-0 p-2 rounded-full bg-gray-100 dark:bg-gray-700 group-hover:bg-blue-100 dark:group-hover:bg-blue-800 transition-colors duration-300"
                                     >
-                                        <ChevronDown className="h-5 w-5 text-gray-600 group-hover:text-blue-600 transition-colors duration-300" />
+                                        <ChevronDown className="h-5 w-5 text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300" />
                                     </motion.div>
                                 </button>
 
@@ -138,8 +135,8 @@ const FAQSection = () => {
                                                 className="px-8 pb-6 pt-2"
                                             >
                                                 <div className="pl-16">
-                                                    <div className="h-px bg-gradient-to-r from-blue-200 to-purple-200 mb-4"></div>
-                                                    <p className="text-gray-700 leading-relaxed text-lg">
+                                                    <div className="h-px bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-700 dark:to-purple-700 mb-4"></div>
+                                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
                                                         {faq.answer}
                                                     </p>
                                                 </div>
@@ -151,41 +148,6 @@ const FAQSection = () => {
                         </motion.div>
                     ))}
                 </div>
-
-                <motion.div
-                    className="text-center mt-16"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                >
-                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 mx-auto shadow-xl border border-white/20">
-                        <motion.div
-                            className="flex justify-center mb-6"
-                            initial={{ scale: 0 }}
-                            whileInView={{ scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: 0.6, type: "spring", stiffness: 200 }}
-                        >
-                            <div className="bg-gradient-to-r from-green-400 to-blue-500 p-3 rounded-full">
-                                <MessageCircle className="h-6 w-6 text-white" />
-                            </div>
-                        </motion.div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                            Still have questions?
-                        </h3>
-                        <p className="text-gray-600 mb-6 text-lg">
-                            Our friendly support team is here to help you succeed. Get personalized assistance from our blogging experts.
-                        </p>
-                        <motion.button
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-100"
-                            whileHover={{ scale: 1.05, y: -2 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            Contact Support
-                        </motion.button>
-                    </div>
-                </motion.div>
             </div>
         </section>
     );

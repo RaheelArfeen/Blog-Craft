@@ -44,7 +44,7 @@ const FeedBack = () => {
     };
 
     return (
-        <section ref={ref} className="py-16">
+        <section ref={ref} className="py-16 bg-gray-800 transition-colors duration-500">
             <div className="container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -52,10 +52,10 @@ const FeedBack = () => {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-12"
                 >
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-100 mb-4">
                         What Our Writers Say
                     </h2>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-lg text-gray-300 max-w-2xl mx-auto">
                         Join thousands of writers who have found their voice and built their audience on Blog.
                     </p>
                 </motion.div>
@@ -68,7 +68,7 @@ const FeedBack = () => {
                             initial="hidden"
                             animate={inView ? "visible" : "hidden"}
                             variants={cardVariants}
-                            className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 flex-1 flex flex-col justify-between min-w-60"
+                            className="bg-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 flex-1 flex flex-col justify-between min-w-60"
                         >
                             <div>
                                 <div className="flex items-center mb-3">
@@ -81,7 +81,7 @@ const FeedBack = () => {
 
                                 <div className="relative mb-6">
                                     <Quote className="absolute -top-2 -left-2 h-7 w-7 text-blue-300" />
-                                    <p className="text-gray-700 leading-relaxed pl-7">
+                                    <p className="text-gray-200 leading-relaxed pl-7">
                                         {testimonial.content}
                                     </p>
                                 </div>
@@ -89,11 +89,11 @@ const FeedBack = () => {
 
                             <div className="flex items-center">
                                 <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold mr-4 text-lg shadow-inner overflow-hidden">
-                                    <img src={testimonial.avatar} alt="" />
+                                    <img src={testimonial.avatar} alt={`${testimonial.name} avatar`} />
                                 </div>
                                 <div>
-                                    <h4 className="text-md font-semibold text-gray-900">{testimonial.name}</h4>
-                                    <p className="text-sm text-gray-500">{testimonial.role}</p>
+                                    <h4 className="text-md font-semibold text-gray-100">{testimonial.name}</h4>
+                                    <p className="text-sm text-gray-400">{testimonial.role}</p>
                                 </div>
                             </div>
                         </motion.div>
