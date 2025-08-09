@@ -75,7 +75,7 @@ const AllBlogs = () => {
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
-    const categories = ['All' ,'Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
+    const categories = ['All', 'Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
 
     const filteredBlogs = blogs.filter(blog => {
         const searchMatch =
@@ -130,12 +130,12 @@ const AllBlogs = () => {
     const handleDetails = (id) => navigate(`/blogs/${id}`);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
             <div className="container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Explore Our Blog Library</h1>
-                    <p className="text-xl text-gray-600 dark:text-gray-300 mx-auto max-w-3xl">
+                    <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">Explore Our Blog Library</h1>
+                    <p className="text-xl text-gray-600 dark:text-gray-300 mx-auto max-w-3xl transition-colors duration-300">
                         Discover insights, tutorials, and expert opinions.
                     </p>
                 </div>
@@ -143,9 +143,9 @@ const AllBlogs = () => {
                 {/* Filters */}
                 <div className="flex flex-col md:flex-row gap-4 mb-8 relative" ref={categoryRef}>
                     <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 h-5 w-5" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-400 h-5 w-5 transition-colors duration-300" />
                         <input
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 placeholder-gray-600 dark:placeholder-gray-400 bg-white dark:bg-gray-800 transition-colors"
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-300 placeholder-gray-600 dark:placeholder-gray-400 bg-white dark:bg-gray-800 transition-colors duration-300"
                             placeholder="Search title, author, content..."
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
@@ -154,7 +154,7 @@ const AllBlogs = () => {
                     <div className="relative">
                         <button
                             onClick={() => setCategoryOpen(open => !open)}
-                            className="flex items-center justify-between px-4 py-3 border text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 rounded-lg w-48 bg-white dark:bg-gray-800 transition-colors"
+                            className="flex items-center justify-between px-4 py-3 border text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 rounded-lg w-48 bg-white dark:bg-gray-800 transition-colors duration-300"
                             aria-haspopup="listbox"
                             aria-expanded={categoryOpen}
                         >
@@ -168,14 +168,16 @@ const AllBlogs = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     transition={{ duration: 0.3 }}
-                                    className="absolute z-10 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-md mt-1 shadow-md"
+                                    className="absolute z-10 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-md mt-1 shadow-md transition-colors duration-300"
                                     role="listbox"
                                 >
                                     {categories.map(cat => (
                                         <li
                                             key={cat}
-                                            className={`px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 ${selectedCategory === cat ? 'bg-blue-50 dark:bg-gray-700 font-semibold' : ''
-                                                }`}
+                                            className={`px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 ${selectedCategory === cat
+                                                    ? 'bg-blue-50 dark:bg-gray-700 font-semibold'
+                                                    : ''
+                                                } transition-colors duration-300`}
                                             onClick={() => {
                                                 setSelectedCategory(cat);
                                                 setCategoryOpen(false);
@@ -194,7 +196,7 @@ const AllBlogs = () => {
 
                 {/* Count */}
                 {!loading && (
-                    <p className="mb-6 text-gray-600 dark:text-gray-400">
+                    <p className="mb-6 text-gray-600 dark:text-gray-400 transition-colors duration-300">
                         Showing {filteredBlogs.length} of {blogs.length} articles
                         {selectedCategory !== "All" && ` in ${selectedCategory}`}
                         {debouncedSearchTerm && ` matching "${debouncedSearchTerm}"`}
@@ -205,7 +207,7 @@ const AllBlogs = () => {
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {Array.from({ length: 6 }).map((_, i) => (
-                            <div key={i} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+                            <div key={i} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transition-colors duration-300">
                                 <Skeleton height={192} className="mb-4" />
                                 <Skeleton height={24} width="60%" className="mb-2" />
                                 <Skeleton count={2} />
@@ -240,7 +242,7 @@ const AllBlogs = () => {
                                     }}
                                     whileHover={{ scale: 1.02 }}
                                     transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-                                    className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg transition flex flex-col"
+                                    className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg transition-colors duration-300 flex flex-col"
                                 >
                                     <div className="relative cursor-pointer">
                                         <PhotoView src={blog.image || blog.imageUrl || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}>
@@ -256,14 +258,14 @@ const AllBlogs = () => {
                                         <button
                                             onClick={() => handleWishlist(blog)}
                                             disabled={wishlistLoadingIds.has(blog._id)}
-                                            className="absolute top-4 right-4 p-2 bg-gray-200 rounded-full"
+                                            className="absolute top-4 right-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"
                                             aria-label={isWishlisted(blog._id) ? 'Remove from wishlist' : 'Add to wishlist'}
                                         >
                                             {wishlistLoadingIds.has(blog._id) ? (
                                                 <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
                                             ) : (
                                                 <FaHeart
-                                                    className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400'}`}
+                                                    className={`h-5 w-5 ${isWishlisted(blog._id) ? 'text-red-500' : 'text-gray-400 dark:text-gray-400'}`}
                                                 />
                                             )}
                                         </button>
@@ -272,18 +274,18 @@ const AllBlogs = () => {
                                     <div className="flex flex-col flex-1 p-6">
                                         <h3
                                             onClick={() => handleDetails(blog._id)}
-                                            className="hover:text-blue-600 dark:hover:text-blue-400 mb-4 line-clamp-2 text-xl font-bold cursor-pointer text-gray-900 dark:text-white"
+                                            className="hover:text-blue-600 dark:hover:text-blue-400 mb-4 line-clamp-2 text-xl font-bold cursor-pointer text-gray-900 dark:text-white transition-colors duration-300"
                                         >
                                             {blog.title.length > 40
                                                 ? blog.title.slice(0, 40) + '...'
                                                 : blog.title}
                                         </h3>
-                                        <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+                                        <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3 transition-colors duration-300">
                                             {blog.shortDescription.length > 50
                                                 ? blog.shortDescription.slice(0, 50) + '...'
                                                 : blog.shortDescription}
                                         </p>
-                                        <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                        <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4 transition-colors duration-300">
                                             <div className="flex items-center space-x-1">
                                                 <User className="h-4 w-4" />
                                                 <span>{blog.author}</span>
@@ -304,7 +306,7 @@ const AllBlogs = () => {
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                             onClick={() => handleDetails(blog._id)}
-                                            className="w-full py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 font-semibold"
+                                            className="w-full py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700 font-semibold transition-colors duration-300"
                                         >
                                             Read More
                                         </motion.button>
@@ -318,9 +320,12 @@ const AllBlogs = () => {
                         <div className="mx-auto w-64 mb-6">
                             <Lottie animationData={notFound} loop />
                         </div>
-                        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">{blogs.length === 0 ? 'No blogs yet' : 'No articles found'}</h2>
-                        <p className="mb-8 text-gray-600 dark:text-gray-400">{blogs.length === 0 ? 'Be the first to post!' : 'Adjust your search or category.'}</p>
-                        <button onClick={() => navigate('/add-blog')} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+                        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">{blogs.length === 0 ? 'No blogs yet' : 'No articles found'}</h2>
+                        <p className="mb-8 text-gray-600 dark:text-gray-400 transition-colors duration-300">{blogs.length === 0 ? 'Be the first to post!' : 'Adjust your search or category.'}</p>
+                        <button
+                            onClick={() => navigate('/add-blog')}
+                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors duration-300"
+                        >
                             Write a Blog
                         </button>
                     </div>

@@ -168,7 +168,10 @@ function AddBlogs() {
     return (
       <div className="flex flex-wrap gap-2 mt-2">
         {tags.map((tag, index) => (
-          <div key={index} className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm group">
+          <div
+            key={index}
+            className="flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm group dark:bg-blue-900 dark:text-blue-300"
+          >
             <span>{tag}</span>
             <button type="button" onClick={() => handleRemoveTag(tag)} className="opacity-70 hover:opacity-100 transition-opacity">
               <X size={14} />
@@ -180,9 +183,9 @@ function AddBlogs() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 container mx-auto px-4 py-12">
+    <form onSubmit={handleSubmit} className="space-y-6 container mx-auto px-4 py-12 text-gray-800 dark:text-gray-200">
       <div className="space-y-2">
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
         <input
           type="text"
           id="title"
@@ -190,23 +193,23 @@ function AddBlogs() {
           value={formData.title}
           onChange={handleInputChange}
           placeholder="An engaging title for your blog post"
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:focus:ring-blue-400"
         />
       </div>
 
       <div className="space-y-2" ref={categoryRef}>
-        <label className="block text-sm font-medium text-gray-700">Category</label>
-        <div className="relative border border-gray-300 rounded-lg">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+        <div className="relative border border-gray-300 rounded-lg dark:border-gray-700">
           <button
             type="button"
             onClick={() => setCategoryOpen(prev => !prev)}
-            className="w-full flex justify-between items-center px-4 py-3 text-left"
+            className="w-full flex justify-between items-center px-4 py-3 text-left bg-white dark:bg-gray-900 rounded-lg dark:text-gray-200"
           >
             <span>{formData.category || 'Select a category'}</span>
             {categoryOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
           {categoryOpen && (
-            <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-md mt-1 shadow-lg">
+            <ul className="absolute z-10 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md mt-1 shadow-lg max-h-60 overflow-auto">
               {categories.map(cat => (
                 <li
                   key={cat}
@@ -214,7 +217,7 @@ function AddBlogs() {
                     setFormData(prev => ({ ...prev, category: cat }));
                     setCategoryOpen(false);
                   }}
-                  className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
+                  className="px-4 py-2 hover:bg-blue-100 dark:hover:bg-blue-700 cursor-pointer"
                 >
                   {cat}
                 </li>
@@ -225,7 +228,7 @@ function AddBlogs() {
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="tags" className="block text-sm font-medium text-gray-700">Tags</label>
+        <label htmlFor="tags" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags</label>
         <div className="flex items-center">
           <input
             type="text"
@@ -234,7 +237,7 @@ function AddBlogs() {
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={handleTagInputKeyDown}
             placeholder="Add a tag and press Enter"
-            className="flex-1 border border-gray-300 rounded-l-lg p-3 outline-none focus:ring-blue-500"
+            className="flex-1 border border-gray-300 rounded-l-lg p-3 outline-none focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:focus:ring-blue-400 dark:text-gray-200"
           />
           <button
             type="button"
@@ -248,19 +251,25 @@ function AddBlogs() {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Featured Image</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Featured Image</label>
         <div className="mb-2 flex gap-4">
           <button
             type="button"
             onClick={() => setImageMode('upload')}
-            className={`px-4 py-2 rounded-lg border ${imageMode === 'upload' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white border-gray-300'}`}
+            className={`px-4 py-2 rounded-lg border ${imageMode === 'upload'
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-300'
+              }`}
           >
             Upload Image
           </button>
           <button
             type="button"
             onClick={() => setImageMode('url')}
-            className={`px-4 py-2 rounded-lg border ${imageMode === 'url' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white border-gray-300'}`}
+            className={`px-4 py-2 rounded-lg border ${imageMode === 'url'
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-300'
+              }`}
           >
             Image URL
           </button>
@@ -291,8 +300,8 @@ function AddBlogs() {
                   </button>
                 </motion.div>
               ) : (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <Upload className="mx-auto h-10 w-10 text-gray-400" />
+                <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center dark:text-gray-400 dark:bg-gray-900">
+                  <Upload className="mx-auto h-10 w-10" />
                   <input
                     type="file"
                     id="image"
@@ -300,10 +309,10 @@ function AddBlogs() {
                     onChange={handleImageChange}
                     className="hidden"
                   />
-                  <label htmlFor="image" className="mt-2 block text-sm font-medium text-blue-600 cursor-pointer">
+                  <label htmlFor="image" className="mt-2 block text-sm font-medium text-blue-600 cursor-pointer dark:text-blue-400">
                     Click to upload an image
                   </label>
-                  <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 10MB</p>
                 </div>
               )}
             </motion.div>
@@ -323,7 +332,7 @@ function AddBlogs() {
                 value={formData.imageUrl}
                 onChange={handleInputChange}
                 placeholder="Enter image URL here"
-                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:focus:ring-blue-400 dark:text-gray-200"
               />
               {formData.imageUrl && (
                 <motion.div className="relative mt-4">
@@ -352,7 +361,7 @@ function AddBlogs() {
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="shortDescription" className="block text-sm font-medium text-gray-700">Short Description</label>
+        <label htmlFor="shortDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Short Description</label>
         <textarea
           id="shortDescription"
           name="shortDescription"
@@ -360,12 +369,12 @@ function AddBlogs() {
           value={formData.shortDescription}
           onChange={handleInputChange}
           placeholder="Write a short summary of your blog post"
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:focus:ring-blue-400 dark:text-gray-200"
         />
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="content" className="block text-sm font-medium text-gray-700">Content</label>
+        <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Content</label>
         <textarea
           id="content"
           name="content"
@@ -373,7 +382,7 @@ function AddBlogs() {
           value={formData.content}
           onChange={handleInputChange}
           placeholder="Write the full content of your blog here"
-          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:focus:ring-blue-400 dark:text-gray-200"
         />
       </div>
 
