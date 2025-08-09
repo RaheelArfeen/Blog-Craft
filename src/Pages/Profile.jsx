@@ -69,11 +69,11 @@ const Profile = () => {
 
     if (!user && !loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="border border-gray-300 rounded-lg p-6 bg-white shadow-md text-center">
-                    <p className="text-gray-700">Please log in to view your profile.</p>
+            <div className="flex justify-center items-center h-screen bg-white dark:bg-gray-900">
+                <div className="border border-gray-300 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800 shadow-md text-center">
+                    <p className="text-gray-700 dark:text-gray-300">Please log in to view your profile.</p>
                     <button
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 transition text-white rounded"
                         onClick={() => navigate('/login')}
                     >
                         Go to Login
@@ -85,11 +85,11 @@ const Profile = () => {
 
     return (
         <div className="container mx-auto px-4 py-12">
-            <div className="bg-[#3A63D8] text-white p-8 rounded-t-xl flex flex-col md:flex-row justify-between items-center">
+            <div className="bg-[#3A63D8] dark:bg-[#2a48b5] text-white p-8 rounded-t-xl flex flex-col md:flex-row justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-full bg-white text-[#3A63D8] flex items-center justify-center text-3xl font-bold overflow-hidden">
+                    <div className="w-20 h-20 rounded-full bg-white text-[#3A63D8] dark:text-[#2a48b5] flex items-center justify-center text-3xl font-bold overflow-hidden">
                         {loading ? (
-                            <Skeleton circle width={80} height={80} />
+                            <Skeleton circle width={80} height={80} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                         ) : user.photoURL ? (
                             <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover rounded-full" />
                         ) : (
@@ -98,18 +98,18 @@ const Profile = () => {
                     </div>
                     <div>
                         <h2 className="text-2xl font-bold">
-                            {loading ? <Skeleton width={180} /> : user.displayName || 'No Name'}
+                            {loading ? <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : user.displayName || 'No Name'}
                         </h2>
-                        <p className="text-blue-100">
-                            {loading ? <Skeleton width={120} /> : 'BlogCraft User'}
+                        <p className="text-blue-100 dark:text-blue-200">
+                            {loading ? <Skeleton width={120} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : 'BlogCraft User'}
                         </p>
                     </div>
                 </div>
                 <div>
                     {loading ? (
-                        <Skeleton width={140} height={40} borderRadius={8} />
+                        <Skeleton width={140} height={40} borderRadius={8} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                     ) : (
-                        <button onClick={() => navigate('/edit-profile')} className="mt-6 md:mt-0 bg-white text-[#3A63D8] px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition-all flex items-center gap-2 font-medium">
+                        <button onClick={() => navigate('/edit-profile')} className="mt-6 md:mt-0 bg-white dark:bg-gray-200 text-[#3A63D8] dark:text-[#2a48b5] px-5 py-2 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-gray-300 transition-all flex items-center gap-2 font-medium">
                             <PenSquare size={18} /> Edit Profile
                         </button>
                     )}
@@ -117,43 +117,43 @@ const Profile = () => {
             </div>
 
             {/* Main Content */}
-            <div className="bg-white rounded-b-xl shadow-md">
+            <div className="bg-white dark:bg-gray-800 rounded-b-xl shadow-md">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
                     {/* Personal Info */}
                     <div>
-                        <h3 className="text-xl font-semibold mb-6 pb-2 border-b border-gray-200">Personal Information</h3>
+                        <h3 className="text-xl font-semibold mb-6 pb-2 border-b border-gray-200 dark:border-gray-700 dark:text-gray-100">Personal Information</h3>
                         <div className="space-y-6">
                             <div className="flex items-start gap-4">
-                                <div className="text-gray-400 mt-1">
+                                <div className="text-gray-400 dark:text-gray-500 mt-1">
                                     <User size={20} />
                                 </div>
                                 <div>
-                                    <p className="text-gray-500">Full Name</p>
-                                    <p className="text-gray-900 font-medium">
-                                        {loading ? <Skeleton width={180} /> : user.displayName || 'N/A'}
+                                    <p className="text-gray-500 dark:text-gray-400">Full Name</p>
+                                    <p className="text-gray-900 dark:text-gray-100 font-medium">
+                                        {loading ? <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : user.displayName || 'N/A'}
                                     </p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
-                                <div className="text-gray-400 mt-1">
+                                <div className="text-gray-400 dark:text-gray-500 mt-1">
                                     <Mail size={20} />
                                 </div>
                                 <div>
-                                    <p className="text-gray-500">Email Address</p>
-                                    <p className="text-gray-900 font-medium">
-                                        {loading ? <Skeleton width={180} /> : user.email || 'N/A'}
+                                    <p className="text-gray-500 dark:text-gray-400">Email Address</p>
+                                    <p className="text-gray-900 dark:text-gray-100 font-medium">
+                                        {loading ? <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : user.email || 'N/A'}
                                     </p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
-                                <div className="text-gray-400 mt-1">
+                                <div className="text-gray-400 dark:text-gray-500 mt-1">
                                     <CalendarDays size={20} />
                                 </div>
                                 <div>
-                                    <p className="text-gray-500">Member Since</p>
-                                    <p className="text-gray-900 font-medium">
+                                    <p className="text-gray-500 dark:text-gray-400">Member Since</p>
+                                    <p className="text-gray-900 dark:text-gray-100 font-medium">
                                         {loading ? (
-                                            <Skeleton width={180} />
+                                            <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                                         ) : userMeta?.creationTime ? (
                                             format(new Date(userMeta.creationTime), 'MMMM dd yyyy')
                                         ) : (
@@ -166,12 +166,12 @@ const Profile = () => {
                     </div>
 
                     <div>
-                        <h3 className="text-xl font-semibold mb-6 pb-2 border-b border-gray-200">Activity Stats</h3>
+                        <h3 className="text-xl font-semibold mb-6 pb-2 border-b border-gray-200 dark:border-gray-700 dark:text-gray-100">Activity Stats</h3>
                         <div className="grid grid-cols-2 gap-4">
                             {loading ? (
                                 <>
-                                    <Skeleton height={120} />
-                                    <Skeleton height={120} />
+                                    <Skeleton height={120} baseColor="#f3f3f3" highlightColor="#ecebeb" />
+                                    <Skeleton height={120} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                                 </>
                             ) : (
                                 <>
@@ -192,24 +192,24 @@ const Profile = () => {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="p-6 border-t border-gray-200">
-                    <h3 className="text-xl font-semibold mb-4">Quick Actions</h3>
+                <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+                    <h3 className="text-xl font-semibold mb-4 dark:text-gray-100">Quick Actions</h3>
                     <div className="flex md:flex-row flex-col gap-3">
                         {loading ? (
                             <>
-                                <Skeleton width={140} height={48} borderRadius={8} />
-                                <Skeleton width={140} height={48} borderRadius={8} />
-                                <Skeleton width={160} height={48} borderRadius={8} />
+                                <Skeleton width={140} height={48} borderRadius={8} baseColor="#f3f3f3" highlightColor="#ecebeb" />
+                                <Skeleton width={140} height={48} borderRadius={8} baseColor="#f3f3f3" highlightColor="#ecebeb" />
+                                <Skeleton width={160} height={48} borderRadius={8} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                             </>
                         ) : (
                             <>
-                                <button onClick={() => navigate('/add-blog')} className="px-5 py-3 bg-[#3A63D8] text-white rounded-lg hover:bg-[#2A48B5] transition-all">
+                                <button onClick={() => navigate('/add-blog')} className="px-5 py-3 bg-[#3A63D8] dark:bg-[#2a48b5] text-white rounded-lg hover:bg-[#2A48B5] dark:hover:bg-[#1e367f] transition-all">
                                     Create New Blog
                                 </button>
-                                <button onClick={() => navigate('/wishlist')} className="px-5 py-3 border border-gray-500 rounded-lg hover:bg-gray-50 transition-all">
+                                <button onClick={() => navigate('/wishlist')} className="px-5 py-3 border border-gray-500 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all dark:text-white">
                                     View Wishlist
                                 </button>
-                                <button onClick={() => navigate('/blogs')} className="px-5 py-3 border border-gray-500 rounded-lg hover:bg-gray-50 transition-all">
+                                <button onClick={() => navigate('/blogs')} className="px-5 py-3 border border-gray-500 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all dark:text-white">
                                     Browse All Blogs
                                 </button>
                             </>
