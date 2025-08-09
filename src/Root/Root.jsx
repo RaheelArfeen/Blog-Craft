@@ -7,7 +7,7 @@ import TitleManager from '../TitleManager/TitleManager';
 
 const Root = () => {
     return (
-        <div className='flex flex-col justify-between min-h-screen bg-[#F9FBFB]'>
+        <div className='flex flex-col justify-between min-h-screen bg-[#F9FBFB] dark:bg-gray-900 transition-colors duration-200'>
             <TitleManager></TitleManager>
             <Header></Header>
             <Outlet></Outlet>

@@ -7,13 +7,16 @@ import {
 import { router } from './Router/Router';
 import AuthProvider from './Provider/AuthProvider';
 import { Toaster } from 'sonner';
+import { ThemeProvider } from './Provider/ThemeProvider';
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider>
-      <Toaster position='bottom-right'></Toaster>
-      <RouterProvider router={router}></RouterProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <Toaster position='bottom-right'></Toaster>
+        <RouterProvider router={router}></RouterProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </StrictMode>,
 )

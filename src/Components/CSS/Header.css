@@ -1,3 +1,7 @@
 a.active{
     color: #3A63D8;
 }
+
+.dark a.active {
+    color: #60a5fa;
+}
