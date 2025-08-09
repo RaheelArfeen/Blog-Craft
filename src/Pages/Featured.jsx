@@ -125,7 +125,7 @@ const Featured = () => {
                 accessorKey: 'image',
                 enableSorting: false,
                 cell: ({ row }) => (
-                    <div className="h-20 w-24 overflow-hidden rounded-md shadow-sm bg-gray-100">
+                    <div className="h-20 w-24 overflow-hidden rounded-md shadow-sm bg-gray-100 dark:bg-gray-700">
                         <img
                             src={row.original.image}
                             alt="blog"
@@ -141,7 +141,7 @@ const Featured = () => {
                 cell: ({ row }) => (
                     <button
                         onClick={() => navigate(`/blogs/${row.original._id}`)}
-                        className="text-blue-600 font-medium hover:text-blue-800 hover:underline"
+                        className="text-blue-600 font-medium hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
                     >
                         {row.original.title}
                     </button>
@@ -151,8 +151,8 @@ const Featured = () => {
                 header: 'Author',
                 accessorKey: 'author',
                 cell: ({ row }) => (
-                    <div className="flex items-center text-sm">
-                        <User size={16} className="text-gray-500 mr-1.5" />
+                    <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                        <User size={16} className="text-gray-500 dark:text-gray-400 mr-1.5" />
                         {row.original.author}
                     </div>
                 )
@@ -162,8 +162,8 @@ const Featured = () => {
                 accessorKey: 'category',
                 cell: ({ row }) => (
                     <div className="flex items-center">
-                        <Tag size={16} className="text-gray-500 mr-1.5" />
-                        <span className="text-sm bg-blue-100 text-blue-800 rounded-full px-2 py-0.5">
+                        <Tag size={16} className="text-gray-500 dark:text-gray-400 mr-1.5" />
+                        <span className="text-sm bg-blue-100 text-blue-800 rounded-full px-2 py-0.5 dark:bg-blue-900 dark:text-blue-300">
                             {row.original.category}
                         </span>
                     </div>
@@ -173,7 +173,7 @@ const Featured = () => {
                 header: 'Date',
                 accessorKey: 'date',
                 cell: ({ row }) => (
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                         {format(new Date(row.original.date), 'MMM dd, yyyy')}
                     </span>
                 )
@@ -182,8 +182,8 @@ const Featured = () => {
                 header: 'Read Time',
                 accessorKey: 'readTime',
                 cell: ({ row }) => (
-                    <div className="flex items-center text-sm">
-                        <Clock size={16} className="text-gray-500 mr-1.5" />
+                    <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                        <Clock size={16} className="text-gray-500 dark:text-gray-400 mr-1.5" />
                         {row.original.readTime}
                     </div>
                 )
@@ -195,9 +195,9 @@ const Featured = () => {
                 cell: ({ row }) => (
                     <button
                         onClick={() => navigate(`/blogs/${row.original._id}`)}
-                        className="group flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-500"
+                        className="group flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-500 dark:bg-blue-900 dark:hover:bg-blue-700"
                     >
-                        <Eye size={16} className="text-blue-500 group-hover:text-white" />
+                        <Eye size={16} className="text-blue-500 group-hover:text-white dark:text-blue-300 dark:group-hover:text-white" />
                     </button>
                 )
             },
@@ -209,7 +209,7 @@ const Featured = () => {
                     <button
                         onClick={() => handleWishlist(row.original)}
                         disabled={wishlistLoadingIds.has(row.original._id)}
-                        className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"
+                        className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
                     >
                         {wishlistLoadingIds.has(row.original._id) ? (
                             <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
@@ -217,7 +217,7 @@ const Featured = () => {
                             <FaHeart
                                 className={`h-5 w-5 ${isWishlisted(row.original._id)
                                     ? 'text-red-500'
-                                    : 'text-gray-400'
+                                    : 'text-gray-400 dark:text-gray-500'
                                     }`}
                             />
                         )}
@@ -240,18 +240,20 @@ const Featured = () => {
     });
 
     return (
-        <div className="container min-h-screen mx-auto px-4 py-8">
+        <div className="container min-h-screen mx-auto px-4 py-8 dark:bg-gray-900 dark:text-gray-200">
             <div className="text-center mb-12 w-full">
-                <div className="bg-gradient-to-r from-blue-100 to-purple-100 px-6 py-12 rounded-xl inline-block shadow w-full">
-                    <div className="inline-flex items-center gap-2 border border-blue-200 rounded-full px-4 py-2 mb-4 text-sm font-medium text-blue-700">
+                <div className="bg-gradient-to-r from-blue-100 to-purple-100 px-6 py-12 rounded-xl inline-block shadow w-full
+                                dark:from-gray-800 dark:to-purple-900 dark:shadow-none">
+                    <div className="inline-flex items-center gap-2 border border-blue-200 rounded-full px-4 py-2 mb-4 text-sm font-medium text-blue-700
+                                    dark:border-purple-700 dark:text-purple-400">
                         <TrendingUp className="w-4 h-4" />
                         Featured Blogs
-                        <Sparkles className="w-4 h-4 text-purple-600" />
+                        <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     </div>
-                    <h2 className="text-3xl md:text-5xl font-extrabold text-gray-800">
+                    <h2 className="text-3xl md:text-5xl font-extrabold text-gray-800 dark:text-gray-100">
                         Explore Our Top Picks
                     </h2>
-                    <p className="text-gray-600 mt-4 max-w-xl mx-auto">
+                    <p className="text-gray-600 mt-4 max-w-xl mx-auto dark:text-gray-300">
                         Discover trending blogs carefully selected for you. Stay inspired and informed!
                     </p>
                 </div>
@@ -260,21 +262,26 @@ const Featured = () => {
             {loading ? (
                 <Skeleton count={6} height={100} className="mb-4" />
             ) : featured.length === 0 ? (
-                <div className="text-center py-20 text-gray-400 bg-gray-100 rounded-lg">
+                <div className="text-center py-20 text-gray-400 bg-gray-100 rounded-lg
+                                dark:bg-gray-800 dark:text-gray-400">
                     <h2 className="text-2xl font-semibold mb-2">No Featured Blogs</h2>
-                    <p className="text-gray-500">You haven’t featured any blogs yet.</p>
+                    <p className="text-gray-500 dark:text-gray-400">You haven’t featured any blogs yet.</p>
                     <button
                         onClick={() => navigate('/blogs')}
-                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600
+                                   dark:bg-blue-600 dark:hover:bg-blue-700"
                     >
                         Explore Blogs
                     </button>
                 </div>
             ) : (
-                <div className="rounded-lg md:border border-gray-200 overflow-hidden">
+                <div className="rounded-lg md:border border-gray-200 overflow-hidden
+                                dark:border-gray-700">
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white">
+                        <table className="min-w-full divide-y divide-gray-200 whitespace-nowrap
+                                          dark:divide-gray-700">
+                            <thead className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white
+                                             dark:from-gray-700 dark:to-gray-900">
                                 {table.getHeaderGroups().map(headerGroup => (
                                     <tr key={headerGroup.id}>
                                         {headerGroup.headers.map(header => (
@@ -298,7 +305,8 @@ const Featured = () => {
                                     </tr>
                                 ))}
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200 whitespace-nowrap">
+                            <tbody className="bg-white divide-y divide-gray-200
+                                              dark:bg-gray-800 dark:divide-gray-700">
                                 {table.getRowModel().rows.map(row => (
                                     <tr key={row.id}>
                                         {row.getVisibleCells().map(cell => (
