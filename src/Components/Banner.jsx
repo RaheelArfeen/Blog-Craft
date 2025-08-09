@@ -164,7 +164,7 @@ const Banner = () => {
                                     animate={{ scale: [1, 1.1, 1] }}
                                     transition={{ duration: 2, repeat: Infinity }}
                                 >
-                                    20k+
+                                    50k+
                                 </motion.h3>
                                 <p className="text-blue-200">Active Writers</p>
                             </div>
