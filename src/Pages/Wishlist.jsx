@@ -7,7 +7,7 @@ import {
     getPaginationRowModel,
 } from '@tanstack/react-table';
 import { toast } from 'sonner';
-import { RefreshCcw, BookmarkX, Clock, Tag, User, Trash2, Heart, LoaderCircle, Eye, ChevronUp, ChevronDown, } from 'lucide-react';
+import { RefreshCcw, BookmarkX, Clock, Tag, User, Trash2, Heart, Eye, ChevronUp, ChevronDown, } from 'lucide-react';
 import { format } from 'date-fns';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -18,7 +18,7 @@ import Swal from 'sweetalert2';
 const Wishlists = () => {
     const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [deleteLoading, setDeleteLoading] = useState(false)
+    const [deleteLoading, setDeleteLoading] = useState(false);
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
 
@@ -42,7 +42,7 @@ const Wishlists = () => {
     };
 
     const handleDelete = (id) => {
-        setDeleteLoading(true)
+        setDeleteLoading(true);
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -61,20 +61,20 @@ const Wishlists = () => {
                         if (contentType && contentType.includes("application/json")) {
                             return response.json().then(data => ({ response, data }));
                         }
-                        setDeleteLoading(false)
+                        setDeleteLoading(false);
                         return { response, data: null };
                     })
                     .then(({ response, data }) => {
                         if (!response.ok) {
                             throw new Error(data?.message || `Failed with status ${response.status}`);
                         }
-                        setDeleteLoading(false)
+                        setDeleteLoading(false);
                         setWishlist(prev => prev.filter(wishlist => wishlist._id !== id));
                         Swal.fire("Deleted!", "Your wishlist has been deleted.", "success");
                     })
                     .catch(error => {
                         console.error('Error deleting wishlist:', error);
-                        setDeleteLoading(false)
+                        setDeleteLoading(false);
                         Swal.fire("Error!", error.message || "Something went wrong while deleting.", "error");
                     });
             }
@@ -92,7 +92,7 @@ const Wishlists = () => {
             header: 'Image',
             accessorKey: 'image',
             cell: ({ row }) => (
-                <div className="h-20 w-24 overflow-hidden rounded-md shadow-sm bg-gray-100">
+                <div className="h-20 w-24 overflow-hidden rounded-md shadow-sm bg-gray-100 dark:bg-gray-700">
                     <img
                         src={row.original.image || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
                         alt={row.original.title}
@@ -111,7 +111,7 @@ const Wishlists = () => {
             cell: ({ row }) => (
                 <button
                     onClick={() => navigate(`/blogs/${row.original.blogId}`)}
-                    className="text-blue-600 font-medium hover:text-blue-800 transition-colors duration-200 hover:underline"
+                    className="text-blue-600 font-medium hover:text-blue-800 transition-colors duration-200 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
                 >
                     {row.original.title}
                 </button>
@@ -121,8 +121,8 @@ const Wishlists = () => {
             header: 'Author',
             accessorKey: 'author',
             cell: ({ row }) => (
-                <div className="flex items-center">
-                    <User size={16} className="text-gray-500 mr-1.5" />
+                <div className="flex items-center text-gray-700 dark:text-gray-300">
+                    <User size={16} className="text-gray-500 dark:text-gray-400 mr-1.5" />
                     <span>{row.original.author}</span>
                 </div>
             ),
@@ -132,8 +132,8 @@ const Wishlists = () => {
             accessorKey: 'category',
             cell: ({ row }) => (
                 <div className="flex items-center">
-                    <Tag size={16} className="text-gray-500 mr-1.5" />
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <Tag size={16} className="text-gray-500 dark:text-gray-400 mr-1.5" />
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                         {row.original.category}
                     </span>
                 </div>
@@ -144,7 +144,7 @@ const Wishlists = () => {
             header: 'Date',
             accessorKey: 'date',
             cell: ({ row }) => (
-                <div className="text-gray-600 text-sm">
+                <div className="text-gray-600 text-sm dark:text-gray-400">
                     {format(new Date(row.original.date), 'MMM dd, yyyy')}
                 </div>
             ),
@@ -154,8 +154,8 @@ const Wishlists = () => {
             header: 'Read Time',
             accessorKey: 'readTime',
             cell: ({ row }) => (
-                <div className="flex items-center">
-                    <Clock size={16} className="text-gray-500 mr-1.5" />
+                <div className="flex items-center text-gray-700 dark:text-gray-300">
+                    <Clock size={16} className="text-gray-500 dark:text-gray-400 mr-1.5" />
                     <span>{row.original.readTime}</span>
                 </div>
             ),
@@ -167,12 +167,12 @@ const Wishlists = () => {
             cell: ({ row }) => (
                 <button
                     onClick={() => navigate(`/blogs/${row.original.blogId}`)}
-                    className="group flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-500 transition-colors"
+                    className="group flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-500 transition-colors dark:bg-blue-900 dark:hover:bg-blue-700"
                     aria-label="View details"
                 >
                     <Eye
                         size={16}
-                        className="text-blue-500 group-hover:text-white transition-colors duration-200"
+                        className="text-blue-500 group-hover:text-white transition-colors duration-200 dark:text-blue-300 dark:group-hover:text-white"
                     />
                 </button>
             ),
@@ -183,14 +183,18 @@ const Wishlists = () => {
             cell: ({ row }) => (
                 <button
                     onClick={() => handleDelete(row.original._id)}
-                    className="group flex items-center justify-center w-8 h-8 rounded-full bg-red-100 hover:bg-red-500 transition-colors outline-none border-none"
+                    className="group flex items-center justify-center w-8 h-8 rounded-full bg-red-100 hover:bg-red-500 transition-colors outline-none border-none dark:bg-red-900 dark:hover:bg-red-700"
                     aria-label="Delete from wishlist"
                 >
-                    {deleteLoading ? <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" /> : <Trash2 size={16} className="text-red-500 group-hover:text-white transition-colors duration-200" />}
+                    {deleteLoading ? (
+                        <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                        <Trash2 size={16} className="text-red-500 group-hover:text-white transition-colors duration-200" />
+                    )}
                 </button>
             ),
         },
-    ], [navigate]);
+    ], [navigate, deleteLoading]);
 
     const table = useReactTable({
         data: wishlist,
@@ -203,13 +207,13 @@ const Wishlists = () => {
     });
 
     return (
-        <div className="container min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="container min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-8 dark:bg-gray-900 dark:text-gray-200">
             <div className="mb-8">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                     <div className="flex flex-col items-center gap-y-2 justify-start w-full">
-                        <Heart className="py-2 px-2 bg-gray-100 h-16 w-16 rounded-full text-red-400" />
-                        <h1 className="text-3xl font-bold text-gray-900">Your Wishlist</h1>
-                        <p className="text-gray-600">
+                        <Heart className="py-2 px-2 bg-gray-100 h-16 w-16 rounded-full text-red-400 dark:bg-gray-700" />
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Your Wishlist</h1>
+                        <p className="text-gray-600 dark:text-gray-400">
                             {!loading && wishlist.length > 0
                                 ? `${wishlist.length} saved ${wishlist.length === 1 ? 'item' : 'items'}`
                                 : 'Saved blogs for later reading'}
@@ -218,7 +222,7 @@ const Wishlists = () => {
                     {!loading && wishlist.length > 0 && (
                         <button
                             onClick={fetchWishlist}
-                            className="mt-4 sm:mt-0 flex items-center px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors"
+                            className="mt-4 sm:mt-0 flex items-center px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
                         >
                             <RefreshCcw size={16} className="mr-2" />
                             Refresh
@@ -228,9 +232,9 @@ const Wishlists = () => {
             </div>
 
             {loading ? (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead className="bg-gradient-to-r from-cyan-500 to-blue-600 w-full">
                                 <tr>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Image</th>
@@ -243,9 +247,9 @@ const Wishlists = () => {
                                     <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"></th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody>
                                 {Array.from({ length: 5 }).map((_, i) => (
-                                    <tr key={i} className="hover:bg-blue-50 transition-colors duration-200">
+                                    <tr key={i} className="hover:bg-blue-50 transition-colors duration-200 dark:hover:bg-gray-700">
                                         <td className="px-4 py-4"><Skeleton height={80} width={96} /></td>
                                         <td className="px-4 py-4"><Skeleton width={120} height={20} /></td>
                                         <td className="px-4 py-4"><Skeleton width={100} height={16} /></td>
@@ -261,19 +265,21 @@ const Wishlists = () => {
                     </div>
                 </div>
             ) : wishlist.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-gray-100 rounded-lg">
+                <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-gray-100 rounded-lg dark:bg-gray-800 dark:text-gray-400">
                     <BookmarkX size={60} className="mb-4" />
                     <h2 className="text-2xl font-semibold mb-2">No Blogs Found</h2>
-                    <p className="max-w-md text-center text-gray-500">
+                    <p className="max-w-md text-center text-gray-500 dark:text-gray-400">
                         You don't have any blogs saved in your wishlist yet. Start exploring and save your favorites for later!
                     </p>
-                    <button onClick={() => navigate('/blogs')} className='mt-2 py-2 px-4 bg-red-400 text-white rounded-lg cursor-pointer'>Add your first blog to your wishlist</button>
+                    <button onClick={() => navigate('/blogs')} className='mt-2 py-2 px-4 bg-red-400 text-white rounded-lg cursor-pointer hover:bg-red-500 transition-colors'>
+                        Add your first blog to your wishlist
+                    </button>
                 </div>
             ) : (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
                     <div className="overflow-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white">
+                        <table className="min-w-full divide-y divide-gray-200 whitespace-nowrap dark:divide-gray-700">
+                            <thead className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white dark:from-gray-700 dark:to-gray-900">
                                 {table.getHeaderGroups().map(headerGroup => (
                                     <tr key={headerGroup.id}>
                                         {headerGroup.headers.map(header => (
@@ -297,9 +303,9 @@ const Wishlists = () => {
                                     </tr>
                                 ))}
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200 whitespace-nowrap">
+                            <tbody>
                                 {table.getRowModel().rows.map(row => (
-                                    <tr key={row.id}>
+                                    <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                         {row.getVisibleCells().map(cell => (
                                             <td
                                                 key={cell.id}
@@ -315,15 +321,17 @@ const Wishlists = () => {
                         </table>
                     </div>
 
-                    <div className="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                        <p className="text-sm text-gray-700">Showing <span className="font-medium">{table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}</span> to <span className="font-medium">{Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, wishlist.length)}</span>of <span className="font-medium">{wishlist.length}</span> results</p>
+                    <div className="px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 dark:border-gray-700">
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                            Showing <span className="font-medium">{table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}</span> to <span className="font-medium">{Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, wishlist.length)}</span> of <span className="font-medium">{wishlist.length}</span> results
+                        </p>
                         <div className="flex space-x-2">
                             <button
                                 onClick={() => table.previousPage()}
                                 disabled={!table.getCanPreviousPage()}
                                 className={`px-4 py-2 rounded-md border text-sm ${table.getCanPreviousPage()
-                                    ? 'bg-white hover:bg-gray-50 text-gray-700'
-                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    ? 'bg-white hover:bg-gray-50 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300'
+                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
                                     }`}
                             >
                                 Previous
@@ -332,8 +340,8 @@ const Wishlists = () => {
                                 onClick={() => table.nextPage()}
                                 disabled={!table.getCanNextPage()}
                                 className={`px-4 py-2 rounded-md border text-sm ${table.getCanNextPage()
-                                    ? 'bg-white hover:bg-gray-50 text-gray-700'
-                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    ? 'bg-white hover:bg-gray-50 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300'
+                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
                                     }`}
                             >
                                 Next
