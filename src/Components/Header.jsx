@@ -4,7 +4,7 @@ import { BookOpen, Menu, X } from 'lucide-react';
 import { toast } from 'sonner';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import './CSS/header.css';
+import './CSS/Header.css';
 import { AuthContext } from '../Provider/AuthProvider';
 
 const Header = () => {
