@@ -10,7 +10,7 @@ const categories = [
     "UI/UX", "Career", "Tutorial"
 ];
 
-export default function EditBlog() {
+const EditBlog = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -177,33 +177,33 @@ export default function EditBlog() {
     };
 
     return (
-        <div className="min-h-screen py-12 px-4 container mx-auto">
-            <div className="bg-white shadow-md rounded-lg p-8">
-                <h2 className="text-3xl font-bold text-blue-600 mb-6">Edit Blog</h2>
+        <div className="min-h-screen py-12 px-4 container mx-auto bg-white text-gray-700 dark:bg-gray-900 dark:text-gray-300">
+            <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8">
+                <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-6">Edit Blog</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Title */}
                     <div>
-                        <label className="block font-medium text-gray-700 mb-1">Title</label>
+                        <label className="block font-medium mb-1">Title</label>
                         <input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full border border-gray-300 p-3 rounded-lg"
+                            className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                         />
                     </div>
 
                     {/* Category */}
                     <div ref={categoryRef} className="relative">
-                        <label className="block font-medium text-gray-700 mb-1">Category</label>
+                        <label className="block font-medium mb-1">Category</label>
                         <button
                             type="button"
                             onClick={() => setCategoryOpen((p) => !p)}
-                            className="w-full flex justify-between items-center border border-gray-300 p-3 rounded-lg"
+                            className="w-full flex justify-between items-center border border-gray-300 dark:border-gray-700 p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                         >
                             <span>{category || "Select a category"}</span>
                             {categoryOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                         </button>
                         {categoryOpen && (
-                            <ul className="absolute z-10 bg-white border mt-1 w-full shadow-md rounded-lg max-h-48 overflow-auto">
+                            <ul className="absolute z-10 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-700 mt-1 w-full shadow-md rounded-lg max-h-48 overflow-auto text-gray-700 dark:text-gray-300">
                                 {categories.map((cat) => (
                                     <li
                                         key={cat}
@@ -211,7 +211,7 @@ export default function EditBlog() {
                                             setCategory(cat);
                                             setCategoryOpen(false);
                                         }}
-                                        className="p-2 hover:bg-blue-100 cursor-pointer"
+                                        className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer"
                                     >
                                         {cat}
                                     </li>
@@ -222,19 +222,19 @@ export default function EditBlog() {
 
                     {/* Tags */}
                     <div>
-                        <label className="block font-medium text-gray-700 mb-1">Tags</label>
+                        <label className="block font-medium mb-1">Tags</label>
                         <div className="flex items-center">
                             <input
                                 value={tagInput}
                                 onChange={(e) => setTagInput(e.target.value)}
                                 onKeyDown={handleTagKeyDown}
-                                className="flex-1 border border-gray-300 p-3 rounded-l-lg"
+                                className="flex-1 border border-gray-300 dark:border-gray-700 p-3 rounded-l-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                                 placeholder="Type a tag and press Enter"
                             />
                             <button
                                 type="button"
                                 onClick={addTag}
-                                className="bg-blue-600 text-white p-4 rounded-r-lg"
+                                className="bg-blue-600 dark:bg-blue-500 text-white dark:text-gray-900 p-4 rounded-r-lg"
                             >
                                 <Plus size={18} />
                             </button>
@@ -243,7 +243,7 @@ export default function EditBlog() {
                             {tags.map((tag) => (
                                 <span
                                     key={tag}
-                                    className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                                    className="flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded-full text-sm"
                                 >
                                     {tag}
                                     <button onClick={() => removeTag(tag)}>
@@ -256,12 +256,12 @@ export default function EditBlog() {
 
                     {/* Image Upload / URL */}
                     <div>
-                        <label className="block font-medium text-gray-700 mb-1">Image</label>
+                        <label className="block font-medium mb-1">Image</label>
                         <div className="flex gap-4 mb-4">
                             <button
                                 type="button"
                                 onClick={() => setImageMode("upload")}
-                                className={`px-4 py-2 rounded-lg border ${imageMode === "upload" ? "bg-blue-600 text-white" : "bg-white border-gray-300"
+                                className={`px-4 py-2 rounded-lg border ${imageMode === "upload" ? "bg-blue-600 text-white dark:bg-blue-500 dark:text-gray-900" : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                                     }`}
                             >
                                 Upload
@@ -269,7 +269,7 @@ export default function EditBlog() {
                             <button
                                 type="button"
                                 onClick={() => setImageMode("url")}
-                                className={`px-4 py-2 rounded-lg border ${imageMode === "url" ? "bg-blue-600 text-white" : "bg-white border-gray-300"
+                                className={`px-4 py-2 rounded-lg border ${imageMode === "url" ? "bg-blue-600 text-white dark:bg-blue-500 dark:text-gray-900" : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                                     }`}
                             >
                                 URL
@@ -280,15 +280,15 @@ export default function EditBlog() {
                             {imageMode === "upload" && (
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                                     {!imagePreview ? (
-                                        <label className="block border-dashed border-2 border-gray-300 p-6 text-center rounded-lg cursor-pointer">
-                                            <Upload className="mx-auto text-gray-400" />
+                                        <label className="block border-dashed border-2 border-gray-300 dark:border-gray-700 p-6 text-center rounded-lg cursor-pointer bg-white dark:bg-gray-700 text-gray-400 dark:text-gray-500">
+                                            <Upload className="mx-auto" />
                                             <input
                                                 type="file"
                                                 accept="image/*"
                                                 className="hidden"
                                                 onChange={handleImageChange}
                                             />
-                                            <p className="mt-2 text-blue-600">Click to upload</p>
+                                            <p className="mt-2 text-blue-600 dark:text-blue-400">Click to upload</p>
                                         </label>
                                     ) : (
                                         <div className="relative mt-4">
@@ -296,7 +296,7 @@ export default function EditBlog() {
                                             <button
                                                 type="button"
                                                 onClick={handleRemoveImage}
-                                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                                                className="absolute top-2 right-2 bg-red-500 dark:bg-red-600 text-white p-1 rounded-full"
                                             >
                                                 <X size={16} />
                                             </button>
@@ -315,7 +315,7 @@ export default function EditBlog() {
                                             setImageUrl(e.target.value);
                                             setImagePreview(e.target.value);
                                         }}
-                                        className="w-full border border-gray-300 p-3 rounded-lg"
+                                        className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                                     />
                                     {imagePreview && (
                                         <div className="relative mt-4">
@@ -331,7 +331,7 @@ export default function EditBlog() {
                                             <button
                                                 type="button"
                                                 onClick={handleRemoveImageUrl}
-                                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                                                className="absolute top-2 right-2 bg-red-500 dark:bg-red-600 text-white p-1 rounded-full"
                                             >
                                                 <X size={16} />
                                             </button>
@@ -344,23 +344,23 @@ export default function EditBlog() {
 
                     {/* Short Description */}
                     <div>
-                        <label className="block font-medium text-gray-700 mb-1">Short Description</label>
+                        <label className="block font-medium mb-1">Short Description</label>
                         <textarea
                             value={shortDescription}
                             onChange={(e) => setShortDescription(e.target.value)}
                             rows={3}
-                            className="w-full border border-gray-300 p-3 rounded-lg"
+                            className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                         />
                     </div>
 
                     {/* Content */}
                     <div>
-                        <label className="block font-medium text-gray-700 mb-1">Content</label>
+                        <label className="block font-medium mb-1">Content</label>
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             rows={10}
-                            className="w-full border border-gray-300 p-3 rounded-lg"
+                            className="w-full border border-gray-300 dark:border-gray-700 p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                         />
                     </div>
 
@@ -369,7 +369,7 @@ export default function EditBlog() {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2"
+                            className="bg-blue-600 dark:bg-blue-500 text-white dark:text-gray-900 px-6 py-3 rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Save size={20} />
                             {isSubmitting ? "Saving..." : "Save Changes"}
@@ -377,7 +377,7 @@ export default function EditBlog() {
                         <button
                             type="button"
                             onClick={() => navigate(`/blogs/${id}`)}
-                            className="bg-gray-300 text-gray-800 px-6 py-3 rounded-lg flex items-center gap-2"
+                            className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-300 px-6 py-3 rounded-lg flex items-center gap-2"
                         >
                             Cancel
                         </button>
@@ -387,3 +387,5 @@ export default function EditBlog() {
         </div>
     );
 }
+
+export default EditBlog;
