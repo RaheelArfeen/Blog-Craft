@@ -144,27 +144,29 @@ const Login = ({ onRegister }) => {
     };
 
     return (
-        <div className='px-3'>
-            <div className="w-full max-w-md mx-auto my-12 p-6 bg-white rounded-xl shadow-sm">
+        <div className='px-3 flex items-center justify-center'>
+            <div className="w-full max-w-md mx-auto my-12 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-                    <p className="text-gray-600">Sign in to your BlogCraft account</p>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Welcome Back</h1>
+                    <p className="text-gray-600 dark:text-gray-300">Sign in to your BlogCraft account</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     {/* Email */}
                     <div className="mb-4">
-                        <label className="block text-gray-800 font-medium mb-1">Email</label>
+                        <label className="block text-gray-800 dark:text-gray-200 font-medium mb-1">Email</label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="your.email@example.com"
                             required
-                            className={`w-full px-4 py-3 rounded-lg border ${errors.email
-                                ? 'border-red-500 focus:ring-red-200'
-                                : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-200'
-                                } focus:ring-2 focus:ring-opacity-50 outline-none transition duration-200`}
+                            className={`w-full px-4 py-3 rounded-lg border
+                                ${errors.email
+                                    ? 'border-red-500 focus:ring-red-200'
+                                    : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-200'
+                                } focus:ring-2 focus:ring-opacity-50 outline-none transition duration-200
+                                bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                             disabled={loading}
                         />
                         {errors.email && (
@@ -175,11 +177,11 @@ const Login = ({ onRegister }) => {
                     {/* Password */}
                     <div className="mb-4">
                         <div className="flex justify-between items-center mb-2">
-                            <label className="block text-gray-800 font-medium">Password</label>
+                            <label className="block text-gray-800 dark:text-gray-200 font-medium">Password</label>
                             <button
                                 type="button"
                                 onClick={handleResetPassword}
-                                className="text-indigo-600 hover:text-indigo-800 text-sm font-medium transition"
+                                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-600 text-sm font-medium transition"
                                 disabled={loading}
                             >
                                 Forgot Password?
@@ -193,15 +195,17 @@ const Login = ({ onRegister }) => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
                                 required
-                                className={`w-full px-4 py-3 rounded-lg border ${errors.password
-                                    ? 'border-red-500 focus:ring-red-200'
-                                    : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-200'
-                                    } focus:ring-2 focus:ring-opacity-50 outline-none transition duration-200 pr-12`}
+                                className={`w-full px-4 py-3 rounded-lg border
+                                    ${errors.password
+                                        ? 'border-red-500 focus:ring-red-200'
+                                        : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-200'
+                                    } focus:ring-2 focus:ring-opacity-50 outline-none transition duration-200 pr-12
+                                    bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                 disabled={loading}
                             />
                             <button
                                 type="button"
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                                 onClick={() => setShowPassword(!showPassword)}
                                 disabled={loading}
                             >
@@ -220,7 +224,7 @@ const Login = ({ onRegister }) => {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className="w-full bg-[#3A63D8] text-white py-3 rounded-lg font-medium hover:bg-[#2A48B5] transition duration-200 my-4 disabled:opacity-50"
+                        className="w-full bg-[#3A63D8] dark:bg-[#2a48b5] text-white dark:text-gray-100 py-3 rounded-lg font-medium hover:bg-[#2A48B5] dark:hover:bg-[#1e367f] transition duration-200 my-4 disabled:opacity-50"
                         disabled={loading}
                     >
                         {loading ? 'Logging in...' : 'Log In'}
@@ -229,16 +233,16 @@ const Login = ({ onRegister }) => {
 
                 {/* Divider */}
                 <div className="my-6 relative flex items-center">
-                    <div className="flex-grow border-t border-gray-300"></div>
-                    <span className="flex-shrink mx-4 text-gray-600">Or continue with</span>
-                    <div className="flex-grow border-t border-gray-300"></div>
+                    <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                    <span className="flex-shrink mx-4 text-gray-600 dark:text-gray-400">Or continue with</span>
+                    <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
                 </div>
 
                 {/* Google Login */}
                 <button
                     type="button"
                     onClick={handleGoogleLogin}
-                    className="w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-lg hover:bg-gray-100 transition"
+                    className="w-full flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition dark:text-white text-gray-800"
                     disabled={loading}
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24">
@@ -252,12 +256,12 @@ const Login = ({ onRegister }) => {
 
                 {/* Register Link */}
                 <div className="mt-8 text-center">
-                    <p className="text-gray-600">
-                        Don&apos;t have an account?
+                    <p className="text-gray-600 dark:text-gray-300">
+                        Don&apos;t have an account?{' '}
                         <Link
                             to="/register"
                             onClick={onRegister}
-                            className="text-[#3A63D8] hover:text-[#2A48B5] hover:underline font-medium transition"
+                            className="text-[#3A63D8] dark:text-[#2a48b5] hover:text-[#2A48B5] dark:hover:text-[#1e367f] hover:underline font-medium transition"
                         >
                             Register
                         </Link>

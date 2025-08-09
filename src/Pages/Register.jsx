@@ -139,67 +139,70 @@ const Register = ({ onLogin, isLoading = false }) => {
     };
 
     return (
-        <div className='px-3'>
-            <div className="w-full max-w-md my-12 mx-auto p-6 bg-white rounded-xl shadow-sm">
+        <div className='px-3 bg-white dark:bg-gray-900 min-h-screen flex items-center justify-center'>
+            <div className="w-full max-w-md my-12 mx-auto p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-                    <p className="text-gray-600">Register with BlogCraft to start managing your bills</p>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Create Account</h1>
+                    <p className="text-gray-600 dark:text-gray-300">Register with BlogCraft to start managing your bills</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="block text-gray-800 font-medium mb-1">Full Name</label>
+                        <label className="block text-gray-800 dark:text-gray-200 font-medium mb-1">Full Name</label>
                         <input
                             type='text'
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                             placeholder="John Doe"
-                            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:bg-gray-700 dark:text-gray-100 outline-none transition"
                             required
                         />
                         {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
                     </div>
 
                     <div className="mb-4">
-                        <label className="block text-gray-800 font-medium mb-1">Email</label>
+                        <label className="block text-gray-800 dark:text-gray-200 font-medium mb-1">Email</label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="your.email@example.com"
-                            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:bg-gray-700 dark:text-gray-100 outline-none transition"
                             required
                         />
                         {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
 
                     <div className="mb-4">
-                        <label className="block text-gray-800 font-medium mb-1">Profile Photo URL (optional)</label>
+                        <label className="block text-gray-800 dark:text-gray-200 font-medium mb-1">Profile Photo URL (optional)</label>
                         <input
                             type='url'
                             value={profilePhoto}
                             onChange={(e) => setProfilePhoto(e.target.value)}
                             placeholder="https://example.com/photo.jpg"
-                            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition"
+                            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:bg-gray-700 dark:text-gray-100 outline-none transition"
                         />
                         {errors.profilePhoto && <p className="text-red-500 text-sm mt-1">{errors.profilePhoto}</p>}
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-gray-800 font-medium mb-2">Password</label>
+                        <label className="block text-gray-800 dark:text-gray-200 font-medium mb-2">Password</label>
                         <div className="relative">
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-indigo-500 focus:ring-indigo-200'} focus:ring-2 focus:ring-opacity-50 outline-none transition duration-200 pr-12`}
+                                className={`w-full px-4 py-3 rounded-lg border
+                                    ${errors.password ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-200'}
+                                    focus:ring-2 focus:ring-opacity-50 outline-none transition duration-200 pr-12
+                                    bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                 required
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                             >
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
@@ -207,7 +210,7 @@ const Register = ({ onLogin, isLoading = false }) => {
                         {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
 
                         <div className="mt-3 space-y-2">
-                            <p className="text-sm text-gray-600 font-medium">Password requirements:</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">Password requirements:</p>
                             {[
                                 ['At least one uppercase letter', hasUppercase],
                                 ['At least one lowercase letter', hasLowercase],
@@ -218,7 +221,7 @@ const Register = ({ onLogin, isLoading = false }) => {
                                     <span className={`mr-2 ${isValid ? 'text-green-500' : 'text-gray-400'}`}>
                                         {isValid ? <Check size={16} /> : <X size={16} />}
                                     </span>
-                                    <span className="text-sm text-gray-600">{text}</span>
+                                    <span className="text-sm text-gray-600 dark:text-gray-300">{text}</span>
                                 </div>
                             ))}
                         </div>
@@ -226,7 +229,7 @@ const Register = ({ onLogin, isLoading = false }) => {
 
                     <button
                         type="submit"
-                        className="w-full py-3 bg-[#3A63D8] text-white font-semibold rounded-lg hover:bg-[#2A48B5] transition disabled:opacity-60"
+                        className="w-full py-3 bg-[#3A63D8] dark:bg-[#2a48b5] text-white dark:text-gray-100 font-semibold rounded-lg hover:bg-[#2A48B5] dark:hover:bg-[#1e367f] transition disabled:opacity-60"
                         disabled={loading || isLoading}
                     >
                         {loading || isLoading ? 'Creating...' : 'Create Account'}
@@ -234,14 +237,14 @@ const Register = ({ onLogin, isLoading = false }) => {
                 </form>
 
                 <div className="my-6 relative flex items-center">
-                    <div className="flex-grow border-t border-gray-300"></div>
-                    <span className="flex-shrink mx-4 text-gray-600">Or continue with</span>
-                    <div className="flex-grow border-t border-gray-300"></div>
+                    <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                    <span className="flex-shrink mx-4 text-gray-600 dark:text-gray-400">Or continue with</span>
+                    <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
                 </div>
 
                 <button
                     onClick={handleGoogleLogin}
-                    className="w-full py-3 border border-gray-300 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-100 transition disabled:opacity-60"
+                    className="w-full py-3 border border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition disabled:opacity-60"
                     disabled={googleLoading}
                 >
                     {googleLoading ? (
@@ -254,18 +257,18 @@ const Register = ({ onLogin, isLoading = false }) => {
                                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                             </svg>
-                            <span>Google</span>
+                            <span className='dark:text-white text-gray-800'>Google</span>
                         </>
                     )}
                 </button>
 
                 <div className="mt-8 text-center">
-                    <p className="text-gray-600">
-                        Already have an account?
+                    <p className="text-gray-600 dark:text-gray-300">
+                        Already have an account?{' '}
                         <Link
                             to="/login"
                             onClick={onLogin}
-                            className="text-[#3A63D8] hover:text-indigo-800 font-medium transition ml-1"
+                            className="text-[#3A63D8] dark:text-[#2a48b5] hover:text-indigo-800 dark:hover:text-indigo-400 font-medium transition ml-1"
                         >
                             Log In
                         </Link>
