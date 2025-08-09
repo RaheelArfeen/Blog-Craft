@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router";
-import { Calendar, Clock, User, Share2, ArrowLeft, MessageCircle, Heart, Reply, Ban, SquarePen, EllipsisVertical } from "lucide-react";
+import { useParams, useNavigate } from "react-router";
+import { Calendar, Clock, Share2, ArrowLeft, MessageCircle, SquarePen, EllipsisVertical } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { AuthContext } from "../Provider/AuthProvider";
@@ -17,12 +17,12 @@ const BlogDetails = () => {
     const [loading, setLoading] = useState(true);
     const [loadingComments, setLoadingComments] = useState(false);
     const [error, setError] = useState(null);
-    const [commentLoading, setCommentLoading] = useState(false)
+    const [commentLoading, setCommentLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        window.scrollTo(0, 0)
-    }, [])
+        window.scrollTo(0, 0);
+    }, []);
 
     useEffect(() => {
         const fetchAllData = async () => {
@@ -33,10 +33,6 @@ const BlogDetails = () => {
                 if (!blogRes.ok) throw new Error("Blog not found");
                 const blogData = await blogRes.json();
                 setBlog(blogData);
-
-                const allBlogsRes = await fetch(`https://blog-craft-server.vercel.app/blogs`);
-                if (!allBlogsRes.ok) throw new Error("Failed to fetch blogs");
-
             } catch (err) {
                 setError(err.message || "Failed to load blog");
             } finally {
@@ -76,22 +72,25 @@ const BlogDetails = () => {
                     url: window.location.href,
                 });
             } else {
-                await navigator.clipboard.writeText(window.location.href);
-                toast({
-                    title: "Link Copied!",
-                    description: "Blog link has been copied to your clipboard.",
-                });
+                toast.info("Web Share API is not supported on this browser.");
             }
         } catch (error) {
-            toast("Unable to share this blog post.");
+            // toast.error("Unable to share this blog post.");
             console.log(error);
         }
     };
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        setCommentLoading(true)
-        if (!commentText.trim()) return toast.error("Comment cannot be empty");
+        setCommentLoading(true);
+        if (!user) {
+            setCommentLoading(false);
+            return toast.error("You must log in to comment.");
+        }
+        if (!commentText.trim()) {
+            setCommentLoading(false);
+            return toast.error("Comment cannot be empty");
+        }
 
         const userName = user?.displayName || "Anonymous";
         const userInitial = user?.displayName?.charAt(0).toUpperCase() || "A";
@@ -110,12 +109,12 @@ const BlogDetails = () => {
 
             await fetchComments();
             setCommentText("");
-            setCommentLoading(false)
+            setCommentLoading(false);
             toast.success("Comment posted!");
         } catch (error) {
             console.error(error);
             toast.error("Failed to post comment");
-            setCommentLoading(false)
+            setCommentLoading(false);
         }
     };
 
@@ -160,13 +159,12 @@ const BlogDetails = () => {
         }
     };
 
-
     if (loading) {
         return (
-            <div className="flex items-center justify-center py-80">
+            <div className="flex items-center justify-center py-80 bg-gray-50 dark:bg-gray-900">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600 text-lg font-medium">Loading article...</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">Loading article...</p>
                 </div>
             </div>
         );
@@ -174,11 +172,11 @@ const BlogDetails = () => {
 
     if (error || !blog) {
         return (
-            <div className="py-40">
+            <div className="py-40 bg-gray-50 dark:bg-gray-900">
                 <div className="container mx-auto px-4 py-16 text-center">
-                    <div className="bg-white rounded-2xl shadow-xl p-12">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4">Article Not Found</h1>
-                        <p className="text-gray-600 mb-6 text-lg">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-12">
+                        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Article Not Found</h1>
+                        <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg">
                             {error || "The article you're looking for doesn't exist."}
                         </p>
                         <button
@@ -195,17 +193,17 @@ const BlogDetails = () => {
     }
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             <article className="container mx-auto px-4 py-8">
                 <button
                     onClick={() => navigate(-1)}
-                    className="inline-flex items-center mb-8 px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-white rounded-xl transition-all duration-200 group"
+                    className="inline-flex items-center mb-8 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-white dark:hover:bg-gray-800 rounded-xl transition-all duration-200 group"
                 >
                     <ArrowLeft className="h-4 w-4 mr-2 transform group-hover:-translate-x-1 transition-transform" />
                     <span className="font-medium">Back to articles</span>
                 </button>
 
-                <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
                     <div className="relative">
                         <img
                             src={blog.image || blog.imageUrl || 'https://www.pngkey.com/png/detail/233-2332677_image-500580-placeholder-transparent.png'}
@@ -223,14 +221,14 @@ const BlogDetails = () => {
                                 {blog.tags?.map((tag) => (
                                     <span
                                         key={tag}
-                                        className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors"
+                                        className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                                     >
                                         #{tag}
                                     </span>
                                 ))}
                             </div>
 
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
+                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-8 leading-tight">
                                 {blog.title}
                             </h1>
 
@@ -250,10 +248,10 @@ const BlogDetails = () => {
                                         )}
                                     </div>
                                     <div>
-                                        <div className="flex items-center space-x-2 text-gray-800 mb-1">
+                                        <div className="flex items-center space-x-2 text-gray-900 dark:text-white mb-1">
                                             <span className="font-semibold text-lg">{blog.author}</span>
                                         </div>
-                                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                                             <div className="flex items-center space-x-1">
                                                 <Calendar className="h-4 w-4" />
                                                 <span>{format(new Date(blog.date), "MMM dd, yyyy")}</span>
@@ -275,7 +273,7 @@ const BlogDetails = () => {
                                             <SquarePen className="h-4 w-4" />
                                             <span>Update Article</span>
                                         </button>
-                                    ) : ('')}
+                                    ) : null}
 
                                     <button
                                         onClick={handleShare}
@@ -288,12 +286,12 @@ const BlogDetails = () => {
                             </div>
                         </header>
 
-                        <div className="bg-blue-50 border-l-4 border-blue-500 p-6 mb-10 rounded-r-xl max-w-none">
-                            <p className="text-lg text-gray-700 italic leading-relaxed break-words whitespace-pre-wrap">{blog.shortDescription}</p>
+                        <div className="bg-blue-50 dark:bg-blue-950 border-l-4 border-blue-500 p-6 mb-10 rounded-r-xl max-w-none">
+                            <p className="text-lg text-gray-700 dark:text-gray-200 italic leading-relaxed break-words whitespace-pre-wrap">{blog.shortDescription}</p>
                         </div>
 
-                        <div className="prose prose-lg max-w-none border border-gray-100 rounded-xl p-4">
-                            <div className="text-gray-800 leading-relaxed break-words whitespace-pre-wrap text-lg">
+                        <div className="prose prose-lg max-w-none border border-gray-100 dark:border-gray-700 rounded-xl p-4">
+                            <div className="text-gray-800 dark:text-gray-300 leading-relaxed break-words whitespace-pre-wrap text-lg">
                                 {blog.content}
                             </div>
                         </div>
@@ -301,41 +299,45 @@ const BlogDetails = () => {
                 </div>
 
                 <div className="mt-8 md:mt-12">
-                    <div className="bg-white rounded-3xl shadow-xl p-6 md:p-12">
+                    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 md:p-12">
                         <div className="flex items-center space-x-2 space-y-2 mb-6">
                             <div className="p-3 bg-blue-500 rounded-xl flex-shrink-0">
                                 <MessageCircle className="h-6 w-6 text-white" />
                             </div>
-                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                                 Discussion ({comments.length})
                             </h2>
                         </div>
 
                         {/* Comment Form */}
                         <div className="mb-8 md:mb-10">
-                            <div className="rounded-2xl  md:p-6 border border-gray-100">
+                            <div className="rounded-2xl md:p-6 border border-gray-100 dark:border-gray-700">
                                 {user?.email === blog?.email ? (
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 p-4 md:p-6">
                                         <div className="bg-slate-200 p-3 rounded-full flex-shrink-0">
                                             <MessageCircle className="h-6 w-6 text-slate-600" />
                                         </div>
                                         <div>
-                                            <h3 className="text-lg font-semibold text-slate-800 mb-1">
+                                            <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-1">
                                                 Comment Not Allowed
                                             </h3>
-                                            <p className="text-sm text-slate-700 max-w-md">
+                                            <p className="text-sm text-slate-700 dark:text-gray-300 max-w-md">
                                                 You can't comment on your own blog post. Let the community join the discussion!
                                             </p>
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
-                                        {user?.photoURL && (
+                                        {user?.photoURL ? (
                                             <img
                                                 src={user.photoURL}
                                                 alt={user.displayName}
                                                 className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-md flex-shrink-0"
                                             />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-bold">
+                                                {user?.displayName?.charAt(0).toUpperCase() || 'U'}
+                                            </div>
                                         )}
                                         <form onSubmit={handleCommentSubmit} className="flex-1 min-w-0">
                                             <textarea
@@ -344,10 +346,10 @@ const BlogDetails = () => {
                                                 onChange={(e) => setCommentText(e.target.value)}
                                                 maxLength={500}
                                                 placeholder="Share your thoughts about this article..."
-                                                className="w-full p-4 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm"
+                                                className="w-full p-4 border border-gray-200 dark:border-gray-700 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
                                             />
                                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 space-y-2 sm:space-y-0">
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
                                                     {commentText.length}/500 characters
                                                 </p>
                                                 <button
@@ -368,24 +370,24 @@ const BlogDetails = () => {
                         {loadingComments ? (
                             <div className="text-center py-12">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                                <p className="text-gray-600">Loading comments...</p>
+                                <p className="text-gray-600 dark:text-gray-300">Loading comments...</p>
                             </div>
                         ) : comments.length === 0 ? (
                             <div className="text-center py-16 px-4">
-                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <MessageCircle className="h-8 w-8 text-gray-400" />
+                                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <MessageCircle className="h-8 w-8 text-gray-400 dark:text-gray-400" />
                                 </div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No comments yet</h3>
-                                <p className="text-gray-600 max-w-sm mx-auto">Be the first to share your thoughts!</p>
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No comments yet</h3>
+                                <p className="text-gray-600 dark:text-gray-300 max-w-sm mx-auto">Be the first to share your thoughts!</p>
                             </div>
                         ) : (
                             <div className="mt-10 space-y-4">
                                 {comments.map((comment) => (
                                     <div
                                         key={comment._id}
-                                        className="group hover:bg-gray-50 rounded-2xl md:p-6 transition-all duration-200 border border-transparent hover:border-gray-100 border-t relative"
+                                        className="group hover:bg-gray-50 dark:hover:bg-gray-700 rounded-2xl md:p-6 transition-all duration-200 border border-transparent hover:border-gray-100 dark:hover:border-gray-600 border-t relative"
                                     >
-                                        <div className="flex space-x-4 border-b border-gray-200 pb-4">
+                                        <div className="flex space-x-4 border-b border-gray-200 dark:border-gray-700 pb-4">
                                             <div className="relative flex-shrink-0">
                                                 {comment.userImage?.startsWith("http") ? (
                                                     <img
@@ -403,15 +405,15 @@ const BlogDetails = () => {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <div className="flex flex-col">
-                                                        <h4 className="font-semibold text-gray-900">{comment.userName}</h4>
-                                                        <time className="text-sm text-gray-500">
+                                                        <h4 className="font-semibold text-gray-900 dark:text-white">{comment.userName}</h4>
+                                                        <time className="text-sm text-gray-500 dark:text-gray-400">
                                                             {comment.createdAt
                                                                 ? format(new Date(comment.createdAt), "MMM dd, yyyy 'at' HH:mm")
                                                                 : "Just now"}
                                                         </time>
                                                     </div>
 
-                                                    {user?.email !== blog?.email && (
+                                                    {user?.email === blog?.email && (
                                                         <div className="relative">
                                                             <button
                                                                 onClick={() =>
@@ -419,16 +421,16 @@ const BlogDetails = () => {
                                                                         prev === comment._id ? null : comment._id
                                                                     )
                                                                 }
-                                                                className="p-2 hover:bg-gray-200 rounded-full transition"
+                                                                className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition"
                                                             >
-                                                                <EllipsisVertical className="h-5 w-5 text-gray-500" />
+                                                                <EllipsisVertical className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                                                             </button>
 
                                                             {activeMenuId === comment._id && (
-                                                                <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg overflow-hidden shadow-lg z-10">
+                                                                <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg z-10">
                                                                     <button
                                                                         onClick={() => handleDeleteComment(comment._id)}
-                                                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer transition"
+                                                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/50 cursor-pointer transition"
                                                                     >
                                                                         Delete
                                                                     </button>
@@ -438,7 +440,7 @@ const BlogDetails = () => {
                                                     )}
                                                 </div>
 
-                                                <p className="text-gray-700 whitespace-pre-wrap break-words">
+                                                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">
                                                     {comment.text}
                                                 </p>
                                             </div>
