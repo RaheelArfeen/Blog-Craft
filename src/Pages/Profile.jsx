@@ -10,7 +10,7 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 
 // --- API & Query Key Constants ---
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://blog-craft-server.vercel.app';
 const WISHLIST_COUNT_QUERY_KEY = 'profileWishlistCount';
 const BLOGS_COUNT_QUERY_KEY = 'profileBlogsCount';
 const FIREBASE_META_QUERY_KEY = 'userFirebaseMeta';

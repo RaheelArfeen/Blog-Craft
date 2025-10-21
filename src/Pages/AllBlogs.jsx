@@ -17,7 +17,7 @@ import 'react-photo-view/dist/react-photo-view.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // --- API & Query Key Constants ---
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://blog-craft-server.vercel.app';
 const ALL_BLOGS_QUERY_KEY = 'allBlogs';
 const WISHLIST_QUERY_KEY = 'wishlist';
 

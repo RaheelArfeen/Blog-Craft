@@ -26,7 +26,7 @@ import { toast } from 'sonner';
 import { FaHeart } from 'react-icons/fa';
 
 // --- API & Query Key Constants ---
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://blog-craft-server.vercel.app';
 const FEATURED_BLOGS_QUERY_KEY = 'featuredBlogs';
 const WISHLIST_QUERY_KEY = 'wishlist';
 

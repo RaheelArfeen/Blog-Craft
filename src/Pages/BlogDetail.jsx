@@ -10,7 +10,7 @@ import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // --- API & Query Key Constants ---
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://blog-craft-server.vercel.app';
 const BLOG_QUERY_KEY = 'blog';
 const COMMENTS_QUERY_KEY = 'comments';
 const AUTHOR_QUERY_KEY = 'author';
