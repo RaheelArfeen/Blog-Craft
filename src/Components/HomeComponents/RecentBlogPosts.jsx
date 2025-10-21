@@ -1,58 +1,96 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Eye, Calendar, User } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Lottie from 'lottie-react';
+// Make sure this path is correct based on your project structure
 import notFound from '../../assets/notFound.json';
 import { FaHeart } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+// Make sure this path is correct based on your project structure
 import { AuthContext } from '../../Provider/AuthProvider';
 import { motion } from 'framer-motion';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+// --- API Constants ---
+const BASE_URL = 'http://localhost:3000';
+const RECENT_BLOGS_QUERY_KEY = 'recentBlogs';
+const WISHLIST_QUERY_KEY = 'wishlist';
+
+// --- Fetch Functions ---
+
+// 1. Fetch Recent Blog Posts (Limit 6)
+const fetchRecentBlogPosts = async () => {
+  const { data } = await axios.get(`${BASE_URL}/blogs`);
+  // Simulate original logic of slicing the first 6
+  return data.slice(0, 6);
+};
+
+// 2. Fetch User Wishlist IDs
+const fetchWishlistIds = async (email) => {
+  if (!email) return new Set();
+  const { data } = await axios.get(`${BASE_URL}/wishlist`, {
+    params: { email },
+  });
+  return new Set(data.map((item) => String(item.blogId)));
+};
+
+// --- Component ---
+
 const RecentBlogPosts = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const queryClient = useQueryClient();
 
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [wishlistIds, setWishlistIds] = useState(new Set());
-  const [wishlistLoadingIds, setWishlistLoadingIds] = useState(new Set());
+  // 1. TanStack Query for Recent Blog Posts
+  const {
+    data: blogs = [],
+    isLoading: isBlogsLoading,
+    isError: isBlogsError,
+  } = useQuery({
+    queryKey: [RECENT_BLOGS_QUERY_KEY],
+    queryFn: fetchRecentBlogPosts,
+    staleTime: 1000 * 60 * 5, // Data considered fresh for 5 minutes
+  });
 
-  useEffect(() => {
-    axios
-      .get('https://blog-craft-server.vercel.app/blogs')
-      .then((res) => {
-        setBlogs(res.data.slice(0, 6));
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (!user?.email) {
-      setWishlistIds(new Set());
-      return;
-    }
-
-    axios
-      .get('https://blog-craft-server.vercel.app/wishlist', {
-        params: { email: user.email },
-      })
-      .then((res) => {
-        const ids = new Set(res.data.map((item) => String(item.blogId)));
-        setWishlistIds(ids);
-      })
-      .catch(() => setWishlistIds(new Set()));
-  }, [user, loading]);
+  // 2. TanStack Query for User Wishlist
+  const { data: wishlistIds = new Set(), isLoading: isWishlistLoading } = useQuery({
+    queryKey: [WISHLIST_QUERY_KEY, user?.email],
+    queryFn: () => fetchWishlistIds(user?.email),
+    enabled: !!user?.email, // Only run this query if the user is logged in
+    staleTime: 1000 * 60,
+  });
 
   const isWishlisted = (blogId) => wishlistIds.has(String(blogId));
 
-  const handleWishlist = async (blog) => {
+  // 3. TanStack Mutation for Adding to Wishlist
+  const { mutate: addToWishlist, isLoading: isAddingToWishlist } = useMutation({
+    mutationFn: async (payload) => {
+      const response = await axios.post(`${BASE_URL}/wishlist`, payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success('Wishlisted Successfully');
+      // Invalidate the wishlist query to refetch and update the UI automatically
+      queryClient.invalidateQueries({ queryKey: [WISHLIST_QUERY_KEY, user.email] });
+    },
+    onError: (error) => {
+      if (error.response?.status === 409) {
+        toast.info('Already wishlisted');
+      } else {
+        toast.error('Failed to add to wishlist');
+      }
+      console.error('Wishlist error:', error);
+    },
+  });
+
+  const handleWishlist = (blog) => {
     if (!user) return toast.error('You must log in to add to wishlist');
     if (isWishlisted(blog._id)) return toast.info('Already wishlisted');
 
@@ -70,29 +108,12 @@ const RecentBlogPosts = () => {
       readTime: blog.readTime,
     };
 
-    try {
-      setWishlistLoadingIds((prev) => new Set(prev).add(blog._id));
-      await axios.post('https://blog-craft-server.vercel.app/wishlist', payload);
-      setWishlistIds((prev) => new Set(prev).add(String(blog._id)));
-      toast.success('Wishlisted Successfully');
-    } catch (err) {
-      if (err.response?.status === 409) {
-        toast.info('Already wishlisted');
-      } else {
-        toast.error('Failed to add to wishlist');
-      }
-      console.error(err);
-    } finally {
-      setWishlistLoadingIds((prev) => {
-        const copy = new Set(prev);
-        copy.delete(blog._id);
-        return copy;
-      });
-    }
+    addToWishlist(payload);
   };
 
   const handleDetails = (id) => navigate(`/blogs/${id}`);
 
+  // --- Animation Variants (Unchanged) ---
   const containerVariants = {
     hidden: {},
     visible: {
@@ -106,6 +127,19 @@ const RecentBlogPosts = () => {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
   };
+  // ------------------------------------
+
+  // Consolidated loading state for the main content
+  const overallLoading = isBlogsLoading;
+
+  if (isBlogsError) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center text-red-600 dark:text-red-400">
+        <h2 className="text-2xl font-bold">Error loading recent posts! 😔</h2>
+        <p>Please check your network connection or try again later.</p>
+      </div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
@@ -117,7 +151,7 @@ const RecentBlogPosts = () => {
           </p>
         </div>
 
-        {loading ? (
+        {overallLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
@@ -176,11 +210,13 @@ const RecentBlogPosts = () => {
                       {blog.category}
                     </span>
                     <button
+                      // Check if the current blog ID is actively being added/mutated
                       onClick={() => handleWishlist(blog)}
-                      disabled={wishlistLoadingIds.has(blog._id)}
+                      disabled={isAddingToWishlist && mutation.variables?.blogId === blog._id}
                       className="absolute top-4 right-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors disabled:opacity-50"
                     >
-                      {wishlistLoadingIds.has(blog._id) ? (
+                      {/* Check if the current blog ID is actively being added/mutated */}
+                      {isAddingToWishlist && mutation.variables?.blogId === blog._id ? (
                         <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
                       ) : (
                         <FaHeart
@@ -191,7 +227,6 @@ const RecentBlogPosts = () => {
                       )}
                     </button>
                   </div>
-
                   <div className="flex flex-col flex-1 p-6">
                     <h3
                       onClick={() => handleDetails(blog._id)}
@@ -218,9 +253,7 @@ const RecentBlogPosts = () => {
                         <span>{blog.readTime}</span>
                       </div>
                     </div>
-
                     <div className="flex-grow" />
-
                     <motion.button
                       onClick={() => handleDetails(blog._id)}
                       className="w-full py-3 text-white bg-blue-600 dark:bg-blue-700 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 font-semibold"

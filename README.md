@@ -4,21 +4,33 @@
 
 ---
 
-## Features
+## Live Website
 
-**Live Website:** [https://blogcraft-raheel.netlify.app/](https://blogcraft-raheel.netlify.app/)
+[https://blogcraft-raheel.netlify.app/](https://blogcraft-raheel.netlify.app/)
+
 ---
 
 ## Features
 
-- **User Authentication** (JWT + Cookies)
-- **Create, Edit, and Delete Blogs**
-- **Comment System** (with user profile integration)
-- **Add to Wishlist (Favorites)**
-- **View Blog Stats** (views, comment, etc.)
-- **Search and Filter Blogs by Category**
-- **Responsive and Theme-Aware UI**
-- **Admin-Ready Backend APIs**
+- **User Authentication** (JWT + Cookies)  
+- **Create, Edit, and Delete Blogs**  
+- **Comment System** (with user profile integration)  
+- **Add to Wishlist (Favorites)**  
+- **View Blog Stats** (views, comments, etc.)  
+- **Search and Filter Blogs by Category**  
+- **Responsive and Theme-Aware UI**  
+- **Admin-Ready Backend APIs**  
+
+### New Features
+
+- **Blog Likes ✅**  
+  Add a “like” or “heart” button for each blog. Can be a simple counter in MongoDB or an array of user IDs who liked it. Shows visible engagement and is easy to implement with a single API endpoint.
+
+- **Blog Reading Time ✅**  
+  Display an estimated reading time for each blog (e.g., “5 min read”). Calculated based on word count of the blog: `Math.ceil(wordCount / 200)` assuming 200 words/min. Simple to implement on the frontend when fetching blog content.
+
+- **Author Badge / Profile Highlight ✅**  
+  Show a small badge or highlight for the blog author (e.g., “Top Author” or “New Author”). Can be based on number of blogs posted or likes received. Easy to add on the frontend using conditional rendering.
 
 ---
 
@@ -36,7 +48,7 @@ BlogCraft is built using a modern tech stack to ensure fast performance, beautif
   Provides secure and easy-to-use user authentication (sign up, log in, log out).
 
 - **MongoDB Database**  
-  Stores all application data including blogs, users, comments, and wishlist items.
+  Stores all application data including blogs, users, comments, likes, and wishlist items.
 
 - **TailwindCSS**  
   Utility-first CSS framework used for creating responsive, modern, and maintainable UI designs.
@@ -68,12 +80,15 @@ BlogCraft is built using a modern tech stack to ensure fast performance, beautif
 - **Netlify**  
   Hosts and deploys the BlogCraft frontend with support for continuous deployment and HTTPS.
 
-
+- **Zod** ✅  
+  Provides schema validation for backend data, ensuring that all incoming requests are type-safe and validated before processing.
 
 ---
 
 ### Backend
-- **Node.js & Express**
-- **MongoDB (Native Driver)**
-- **JWT for Auth**
-- **CORS & Cookie Parser**
+
+- **Node.js & Express**  
+- **MongoDB (Native Driver)**  
+- **JWT for Auth**  
+- **CORS & Cookie Parser**  
+- **Zod for Input Validation** ✅

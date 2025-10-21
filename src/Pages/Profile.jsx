@@ -1,73 +1,113 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { CalendarDays, Mail, User, PenSquare, BookOpen, Heart } from 'lucide-react';
-import { AuthContext } from '../Provider/AuthProvider';
+import { AuthContext } from '../Provider/AuthProvider'; // Ensure path is correct
 import { useNavigate } from 'react-router';
 import { getAuth } from 'firebase/auth';
 import { format } from 'date-fns';
 import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
+
+// --- API & Query Key Constants ---
+const BASE_URL = 'http://localhost:3000';
+const WISHLIST_COUNT_QUERY_KEY = 'profileWishlistCount';
+const BLOGS_COUNT_QUERY_KEY = 'profileBlogsCount';
+const FIREBASE_META_QUERY_KEY = 'userFirebaseMeta';
+
+// --- Data Fetching Functions ---
+
+// 1. Fetch User's Wishlist Count
+const fetchWishlistCount = async (email) => {
+    if (!email) return 0;
+    const res = await axios.get(`${BASE_URL}/wishlist?email=${email}`);
+    // Assuming the endpoint returns only the current user's wishlist items
+    return res.data.length;
+};
+
+// 2. Fetch User's Published Blogs Count
+const fetchBlogsCount = async (email) => {
+    if (!email) return 0;
+    const res = await axios.get(`${BASE_URL}/blogs`);
+    // Filter client-side to count only the current user's blogs
+    const userBlogs = res.data.filter(blog => blog.email === email);
+    return userBlogs.length;
+};
+
+// 3. Fetch Firebase User Metadata (requires auth access)
+const fetchFirebaseUserMeta = async (currentUser) => {
+    if (!currentUser) return null;
+    // Force a reload to ensure metadata is up to date, then return it
+    const auth = getAuth();
+    await auth.currentUser?.reload();
+    return auth.currentUser?.metadata || null;
+};
+
+// --- Component ---
 
 const Profile = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const [userMeta, setUserMeta] = useState(null);
-    const [wishlist, setWishlist] = useState([]);
-    const [blogs, setBlogs] = useState([]);
 
+    // Scroll to top on mount
     useEffect(() => {
-        window.scrollTo(0, 0)
-    }, [])
+        window.scrollTo(0, 0);
+    }, []);
 
-    // Fetch wishlist for the current user
-    useEffect(() => {
-        if (!user) return;
-        const fetchWishlist = async () => {
-            try {
-                const res = await axios.get(`https://blog-craft-server.vercel.app/wishlist?email=${user.email}`);
-                const userWishlist = res.data.filter(item => item.email === user.email);
-                setWishlist(userWishlist);
-            } catch (error) {
-                console.error('Error fetching wishlist:', error);
-            }
-        };
-        fetchWishlist();
-    }, [user]);
+    const userEmail = user?.email;
+    const isAuthenticated = !!userEmail;
+    
+    // --- TanStack Query Hooks ---
+    
+    // Query 1: Firebase User Metadata
+    const { 
+        data: userMeta = null, 
+        isLoading: isMetaLoading 
+    } = useQuery({
+        queryKey: [FIREBASE_META_QUERY_KEY, userEmail],
+        queryFn: () => fetchFirebaseUserMeta(user),
+        enabled: isAuthenticated,
+        staleTime: 1000 * 60 * 5, // Meta data doesn't change often
+    });
 
-    useEffect(() => {
-        if (!user) return;
-        const fetchBlogs = async () => {
-            try {
-                const res = await axios.get('https://blog-craft-server.vercel.app/blogs');
-                const userBlogs = res.data.filter(blog => blog.email === user.email);
-                setBlogs(userBlogs);
-            } catch (error) {
-                console.error('Error fetching blogs:', error);
-            }
-        };
-        fetchBlogs();
-    }, [user]);
+    // Query 2: Blogs Count
+    const { 
+        data: blogsCount = 0, 
+        isLoading: isBlogsCountLoading 
+    } = useQuery({
+        queryKey: [BLOGS_COUNT_QUERY_KEY, userEmail],
+        queryFn: () => fetchBlogsCount(userEmail),
+        enabled: isAuthenticated,
+        staleTime: 1000 * 60,
+    });
 
-    useEffect(() => {
-        if (!user) return;
-        const timeout = setTimeout(() => {
-            const auth = getAuth();
-            auth.currentUser?.reload().then(() => {
-                setUserMeta(auth.currentUser.metadata);
-                setLoading(false);
-            });
-        }, 100);
+    // Query 3: Wishlist Count
+    const { 
+        data: wishlistCount = 0, 
+        isLoading: isWishlistCountLoading 
+    } = useQuery({
+        queryKey: [WISHLIST_COUNT_QUERY_KEY, userEmail],
+        queryFn: () => fetchWishlistCount(userEmail),
+        enabled: isAuthenticated,
+        staleTime: 1000 * 60,
+    });
 
-        return () => clearTimeout(timeout);
-    }, [user]);
+    // Determine overall loading state
+    const overallLoading = isMetaLoading || isBlogsCountLoading || isWishlistCountLoading;
+
+
+    // --- Helper Functions ---
 
     const getInitials = (name) => {
         if (!name) return '?';
         return name.split(' ').map(n => n[0]).join('').toUpperCase();
     };
 
-    if (!user && !loading) {
+
+    // --- Conditional Rendering ---
+    
+    // If not logged in and loading is complete (or not started)
+    if (!user && !overallLoading) {
         return (
             <div className="flex justify-center items-center h-screen bg-white dark:bg-gray-900">
                 <div className="border border-gray-300 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800 shadow-md text-center">
@@ -82,13 +122,25 @@ const Profile = () => {
             </div>
         );
     }
+    
+    // If user exists, but we are waiting for data
+    if (!user) { // This handles the initial user check while data might still be loading
+        return (
+            <div className="flex items-center justify-center py-80 bg-gray-50 dark:bg-gray-900">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">Loading profile...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-4 py-12">
             <div className="bg-[#3A63D8] dark:bg-[#2a48b5] text-white p-8 rounded-t-xl flex flex-col md:flex-row justify-between items-center">
                 <div className="flex items-center gap-4">
                     <div className="w-20 h-20 rounded-full bg-white text-[#3A63D8] dark:text-[#2a48b5] flex items-center justify-center text-3xl font-bold overflow-hidden">
-                        {loading ? (
+                        {overallLoading ? (
                             <Skeleton circle width={80} height={80} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                         ) : user.photoURL ? (
                             <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover rounded-full" />
@@ -98,15 +150,15 @@ const Profile = () => {
                     </div>
                     <div>
                         <h2 className="text-2xl font-bold">
-                            {loading ? <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : user.displayName || 'No Name'}
+                            {overallLoading ? <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : user.displayName || 'No Name'}
                         </h2>
                         <p className="text-blue-100 dark:text-blue-200">
-                            {loading ? <Skeleton width={120} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : 'BlogCraft User'}
+                            {overallLoading ? <Skeleton width={120} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : 'BlogCraft User'}
                         </p>
                     </div>
                 </div>
                 <div>
-                    {loading ? (
+                    {overallLoading ? (
                         <Skeleton width={140} height={40} borderRadius={8} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                     ) : (
                         <button onClick={() => navigate('/edit-profile')} className="mt-6 md:mt-0 bg-white dark:bg-gray-200 text-[#3A63D8] dark:text-[#2a48b5] px-5 py-2 rounded-lg shadow hover:bg-gray-100 dark:hover:bg-gray-300 transition-all flex items-center gap-2 font-medium">
@@ -130,7 +182,7 @@ const Profile = () => {
                                 <div>
                                     <p className="text-gray-500 dark:text-gray-400">Full Name</p>
                                     <p className="text-gray-900 dark:text-gray-100 font-medium">
-                                        {loading ? <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : user.displayName || 'N/A'}
+                                        {overallLoading ? <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : user.displayName || 'N/A'}
                                     </p>
                                 </div>
                             </div>
@@ -141,7 +193,7 @@ const Profile = () => {
                                 <div>
                                     <p className="text-gray-500 dark:text-gray-400">Email Address</p>
                                     <p className="text-gray-900 dark:text-gray-100 font-medium">
-                                        {loading ? <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : user.email || 'N/A'}
+                                        {overallLoading ? <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" /> : user.email || 'N/A'}
                                     </p>
                                 </div>
                             </div>
@@ -152,7 +204,7 @@ const Profile = () => {
                                 <div>
                                     <p className="text-gray-500 dark:text-gray-400">Member Since</p>
                                     <p className="text-gray-900 dark:text-gray-100 font-medium">
-                                        {loading ? (
+                                        {overallLoading ? (
                                             <Skeleton width={180} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                                         ) : userMeta?.creationTime ? (
                                             format(new Date(userMeta.creationTime), 'MMMM dd yyyy')
@@ -168,21 +220,21 @@ const Profile = () => {
                     <div>
                         <h3 className="text-xl font-semibold mb-6 pb-2 border-b border-gray-200 dark:border-gray-700 dark:text-gray-100">Activity Stats</h3>
                         <div className="grid grid-cols-2 gap-4">
-                            {loading ? (
+                            {overallLoading ? (
                                 <>
                                     <Skeleton height={120} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                                     <Skeleton height={120} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                                 </>
                             ) : (
                                 <>
-                                    <div className="rounded-xl p-6 text-center hover:shadow-md" style={{ backgroundColor: '#E6ECFD' }}>
+                                    <div className="rounded-xl p-6 text-center hover:shadow-md transition-shadow duration-300" style={{ backgroundColor: '#E6ECFD' }}>
                                         <BookOpen className="mx-auto mb-2" size={28} color="#3A63D8" />
-                                        <p className="text-4xl font-bold" style={{ color: '#3A63D8' }}>{blogs.length}</p>
+                                        <p className="text-4xl font-bold" style={{ color: '#3A63D8' }}>{blogsCount}</p>
                                         <p className="font-medium" style={{ color: '#3A63D8' }}>Blogs Published</p>
                                     </div>
-                                    <div className="rounded-xl p-6 text-center hover:shadow-md" style={{ backgroundColor: '#FDE8E8' }}>
+                                    <div className="rounded-xl p-6 text-center hover:shadow-md transition-shadow duration-300" style={{ backgroundColor: '#FDE8E8' }}>
                                         <Heart className="mx-auto mb-2" size={28} color="#EF4444" />
-                                        <p className="text-4xl font-bold" style={{ color: '#EF4444' }}>{wishlist.length}</p>
+                                        <p className="text-4xl font-bold" style={{ color: '#EF4444' }}>{wishlistCount}</p>
                                         <p className="font-medium" style={{ color: '#EF4444' }}>Wishlist Items</p>
                                     </div>
                                 </>
@@ -195,7 +247,7 @@ const Profile = () => {
                 <div className="p-6 border-t border-gray-200 dark:border-gray-700">
                     <h3 className="text-xl font-semibold mb-4 dark:text-gray-100">Quick Actions</h3>
                     <div className="flex md:flex-row flex-col gap-3">
-                        {loading ? (
+                        {overallLoading ? (
                             <>
                                 <Skeleton width={140} height={48} borderRadius={8} baseColor="#f3f3f3" highlightColor="#ecebeb" />
                                 <Skeleton width={140} height={48} borderRadius={8} baseColor="#f3f3f3" highlightColor="#ecebeb" />

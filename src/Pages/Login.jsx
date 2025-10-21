@@ -51,14 +51,14 @@ const Login = ({ onRegister }) => {
         };
 
         try {
-            const existingUser = await axios.get(`https://blog-craft-server.vercel.app/users/${user.email}`);
+            const existingUser = await axios.get(`http://localhost:3000/users/${user.email}`);
             if (existingUser.status === 200 && existingUser.data?.email === user.email) {
                 return true; // User exists
             }
         } catch (error) {
             // User not found - proceed to create
             try {
-                const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
+                const res = await axios.post('http://localhost:3000/users', userData);
                 if (res.status === 200 || res.status === 201) return true;
                 throw new Error('Backend rejected user');
             } catch (error) {
@@ -121,7 +121,7 @@ const Login = ({ onRegister }) => {
                 lastSignInTime: user.metadata?.lastSignInTime,
             };
 
-            await fetch('https://blog-craft-server.vercel.app/users', {
+            await fetch('http://localhost:3000/users', {
                 method: 'PATCH',
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify(signInInfo),

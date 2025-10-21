@@ -79,7 +79,7 @@ const Register = ({ onLogin, isLoading = false }) => {
                 lastSignInTime: user.metadata?.lastSignInTime || '',
             };
 
-            const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
+            const res = await axios.post('http://localhost:3000/users', userData);
 
             if (res.status === 200 || res.status === 201) {
                 await updateProfile(user, {
@@ -119,7 +119,7 @@ const Register = ({ onLogin, isLoading = false }) => {
                 lastSignInTime: user.metadata?.lastSignInTime || '',
             };
 
-            const res = await axios.post('https://blog-craft-server.vercel.app/users', userData);
+            const res = await axios.post('http://localhost:3000/users', userData);
 
             if (res.status === 200 || res.status === 201) {
                 toast.success('Signed in with Google. Welcome to BlogCraft!');

@@ -74,7 +74,7 @@ const FeaturedCategories = () => {
   };
 
   return (
-    <section className="py-16 bg-white dark:bg-gray-900 transition-colors duration-500">
+    <section className="py-16 bg-white dark:bg-gray-800 transition-colors duration-500">
       <div className="container mx-auto px-4">
         <motion.div
           className="text-center mb-12"

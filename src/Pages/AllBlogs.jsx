@@ -5,66 +5,128 @@ import { useNavigate } from 'react-router';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Lottie from 'lottie-react';
-import notFound from '../assets/notFound.json';
+import notFound from '../assets/notFound.json'; // Make sure path is correct
 import { FaHeart } from 'react-icons/fa';
-import { AuthContext } from '../Provider/AuthProvider';
+import { AuthContext } from '../Provider/AuthProvider'; // Make sure path is correct
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+// --- API & Query Key Constants ---
+const BASE_URL = 'http://localhost:3000';
+const ALL_BLOGS_QUERY_KEY = 'allBlogs';
+const WISHLIST_QUERY_KEY = 'wishlist';
+
+// --- Data Fetching Hooks/Functions ---
+
+// 1. Fetch All Blog Posts
+const fetchAllBlogPosts = async () => {
+    const { data } = await axios.get(`${BASE_URL}/blogs`);
+    return data;
+};
+
+// 2. Fetch User Wishlist IDs
+const fetchWishlistIds = async (email) => {
+    if (!email) return new Set();
+    const { data } = await axios.get(`${BASE_URL}/wishlist`, {
+        params: { email }
+    });
+    return new Set(data.map((item) => String(item.blogId)));
+};
+
+// Custom hook for debouncing a value
+const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+    return debouncedValue;
+};
+
+
 const AllBlogs = () => {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const queryClient = useQueryClient();
 
+    // --- Local State for UI/Filtering ---
     const [searchTerm, setSearchTerm] = useState('');
-    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [categoryOpen, setCategoryOpen] = useState(false);
-    const [blogs, setBlogs] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [wishlistIds, setWishlistIds] = useState(new Set());
-    const [wishlistLoadingIds, setWishlistLoadingIds] = useState(new Set());
-
     const categoryRef = useRef(null);
+    
+    // Debounce the search term to reduce re-filtering
+    const debouncedSearchTerm = useDebounce(searchTerm.trim().toLowerCase(), 300);
 
+    // Categories list (kept locally as it's static)
+    const categories = ['All', 'Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
+
+    // --- TanStack Query for Blogs ---
+    const {
+        data: blogs = [],
+        isLoading: isBlogsLoading,
+        isError: isBlogsError,
+    } = useQuery({
+        queryKey: [ALL_BLOGS_QUERY_KEY],
+        queryFn: fetchAllBlogPosts,
+        staleTime: 1000 * 60 * 5, // Blog list is relatively stable
+    });
+    
+    // --- TanStack Query for Wishlist ---
+    const { 
+        data: wishlistIds = new Set(), 
+        isLoading: isWishlistLoading, 
+        isFetching: isWishlistFetching 
+    } = useQuery({
+        queryKey: [WISHLIST_QUERY_KEY, user?.email],
+        queryFn: () => fetchWishlistIds(user?.email),
+        enabled: !!user?.email, // Only run this query if the user is logged in
+        staleTime: 1000 * 60,
+    });
+    
+    // --- TanStack Mutation for Wishlist ---
+    const { mutate: addToWishlist, isLoading: isMutatingWishlist } = useMutation({
+        mutationFn: async (payload) => {
+            const response = await axios.post(`${BASE_URL}/wishlist`, payload);
+            return response.data;
+        },
+        onSuccess: (data, variables) => {
+            toast.success("Wishlisted Successfully");
+            // Optimistically update the client state for a snappier feel
+            // Invalidate the query to ensure eventual consistency
+            queryClient.invalidateQueries({ queryKey: [WISHLIST_QUERY_KEY, user.email] });
+            
+            // NOTE: The original component used a local state (wishlistIds) which is now replaced
+            // by the useQuery data. The onSuccess will trigger the useQuery to refetch,
+            // updating the UI automatically.
+        },
+        onError: (error, variables) => {
+            if (error.response?.status === 409) {
+                toast.info("Already wishlisted");
+            } else {
+                toast.error("Failed to add to wishlist");
+            }
+            console.error('Wishlist error:', error);
+        },
+    });
+
+    // --- Handlers & Effects ---
+    
+    // Auto-scroll to top on component mount
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
-    useEffect(() => {
-        axios.get('https://blog-craft-server.vercel.app/blogs')
-            .then(res => {
-                setBlogs(res.data);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
-
-    useEffect(() => {
-        if (!user?.email) {
-            setWishlistIds(new Set());
-            return;
-        }
-
-        axios.get('https://blog-craft-server.vercel.app/wishlist', {
-            params: { email: user.email }
-        })
-            .then(res => {
-                const ids = new Set(res.data.map(item => String(item.blogId)));
-                setWishlistIds(ids);
-            })
-            .catch(() => setWishlistIds(new Set()));
-    }, [user, loading]);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearchTerm(searchTerm.trim().toLowerCase());
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [searchTerm]);
-
+    // Close category dropdown on outside click
     useEffect(() => {
         const handleClick = (e) => {
             if (categoryRef.current && !categoryRef.current.contains(e.target)) {
@@ -75,20 +137,9 @@ const AllBlogs = () => {
         return () => document.removeEventListener('mousedown', handleClick);
     }, []);
 
-    const categories = ['All', 'Technology', 'Design', 'Backend', 'AI', 'CSS', 'Marketing', 'Lifestyle', 'Business', 'Development', 'UI/UX', 'Career', 'Tutorial'];
-
-    const filteredBlogs = blogs.filter(blog => {
-        const searchMatch =
-            blog.title.toLowerCase().includes(debouncedSearchTerm) ||
-            blog.shortDescription.toLowerCase().includes(debouncedSearchTerm) ||
-            blog.author.toLowerCase().includes(debouncedSearchTerm);
-        const categoryMatch = selectedCategory === 'All' || blog.category === selectedCategory;
-        return searchMatch && categoryMatch;
-    });
-
     const isWishlisted = (blogId) => wishlistIds.has(String(blogId));
 
-    const handleWishlist = async (blog) => {
+    const handleWishlist = (blog) => {
         if (!user) return toast.error("You must log in to add to wishlist");
         if (isWishlisted(blog._id)) return toast.info("Already wishlisted");
 
@@ -105,29 +156,44 @@ const AllBlogs = () => {
             date: blog.date,
             readTime: blog.readTime,
         };
-
-        try {
-            setWishlistLoadingIds(prev => new Set(prev).add(blog._id));
-            await axios.post('https://blog-craft-server.vercel.app/wishlist', payload);
-            setWishlistIds(prev => new Set(prev).add(String(blog._id)));
-            toast.success("Wishlisted Successfully");
-        } catch (err) {
-            if (err.response?.status === 409) {
-                toast.info("Already wishlisted");
-            } else {
-                toast.error("Failed to add to wishlist");
-            }
-            console.error(err);
-        } finally {
-            setWishlistLoadingIds(prev => {
-                const copy = new Set(prev);
-                copy.delete(blog._id);
-                return copy;
-            });
-        }
+        
+        // Pass the blog ID to the mutation to help manage the loading state per button
+        addToWishlist(payload, {
+            // This is how we'll track the specific button's loading state
+            meta: { blogId: blog._id } 
+        });
     };
+    
+    // Determine if a specific blog button is currently loading
+    const isBlogWishlistLoading = (blogId) => 
+        isMutatingWishlist && addToWishlist.variables?.blogId === blogId;
+
 
     const handleDetails = (id) => navigate(`/blogs/${id}`);
+
+    // --- Filtering Logic (now using TanStack Query data) ---
+    const filteredBlogs = blogs.filter(blog => {
+        const searchMatch =
+            blog.title.toLowerCase().includes(debouncedSearchTerm) ||
+            blog.shortDescription.toLowerCase().includes(debouncedSearchTerm) ||
+            blog.author.toLowerCase().includes(debouncedSearchTerm);
+            
+        const categoryMatch = selectedCategory === 'All' || blog.category === selectedCategory;
+        
+        return searchMatch && categoryMatch;
+    });
+
+    // --- Render Logic ---
+    const overallLoading = isBlogsLoading;
+
+    if (isBlogsError) {
+        return (
+            <div className="container mx-auto px-4 py-16 text-center text-red-600 dark:text-red-400">
+                <h2 className="text-2xl font-bold">Error loading blog posts! 😔</h2>
+                <p>Could not fetch articles. Please try refreshing the page.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -195,19 +261,20 @@ const AllBlogs = () => {
                 </div>
 
                 {/* Count */}
-                {!loading && (
+                {!overallLoading && (
                     <p className="mb-6 text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                        Showing {filteredBlogs.length} of {blogs.length} articles
+                        Showing **{filteredBlogs.length}** of **{blogs.length}** articles
                         {selectedCategory !== "All" && ` in ${selectedCategory}`}
                         {debouncedSearchTerm && ` matching "${debouncedSearchTerm}"`}
                     </p>
                 )}
 
                 {/* Blog Grid */}
-                {loading ? (
+                {overallLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {Array.from({ length: 6 }).map((_, i) => (
                             <div key={i} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transition-colors duration-300">
+                                {/* Use TanStack Query's loading state (isBlogsLoading) to control Skeleton */}
                                 <Skeleton height={192} className="mb-4" />
                                 <Skeleton height={24} width="60%" className="mb-2" />
                                 <Skeleton count={2} />
@@ -257,11 +324,11 @@ const AllBlogs = () => {
                                         </span>
                                         <button
                                             onClick={() => handleWishlist(blog)}
-                                            disabled={wishlistLoadingIds.has(blog._id)}
+                                            disabled={isBlogWishlistLoading(blog._id)}
                                             className="absolute top-4 right-4 p-2 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"
                                             aria-label={isWishlisted(blog._id) ? 'Remove from wishlist' : 'Add to wishlist'}
                                         >
-                                            {wishlistLoadingIds.has(blog._id) ? (
+                                            {isBlogWishlistLoading(blog._id) ? (
                                                 <div className="h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
                                             ) : (
                                                 <FaHeart
@@ -320,8 +387,12 @@ const AllBlogs = () => {
                         <div className="mx-auto w-64 mb-6">
                             <Lottie animationData={notFound} loop />
                         </div>
-                        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">{blogs.length === 0 ? 'No blogs yet' : 'No articles found'}</h2>
-                        <p className="mb-8 text-gray-600 dark:text-gray-400 transition-colors duration-300">{blogs.length === 0 ? 'Be the first to post!' : 'Adjust your search or category.'}</p>
+                        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">
+                            {blogs.length === 0 ? 'No blogs yet' : 'No articles found'}
+                        </h2>
+                        <p className="mb-8 text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                            {blogs.length === 0 ? 'Be the first to post!' : 'Adjust your search or category.'}
+                        </p>
                         <button
                             onClick={() => navigate('/add-blog')}
                             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors duration-300"
